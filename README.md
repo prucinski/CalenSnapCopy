@@ -19,7 +19,7 @@ A template repository for student software development teams to use in for cours
 How do I test the code to ensure the build is correct?
   
 ## Running the application
- What do I do to deploy and/or run this?
+ What do I do to deploy and/or run this? Checking if this works
   
 ## Team Members
  Who's working on this application?
