@@ -1,25 +1,27 @@
-# PROJECT NAME
-A template repository for student software development teams to use in for coursework
+# OCR App
+A repository for student software development teams to use in for coursework
 
-## Your next steps
-* Change the .gitignore file to suite your needs - it's currently set to ignore python related temp files, etc. Google 'gitignore <your language>' to find examples.
-* Edit this file to fill in relevant empty sections below
-* Change the licence as required to a more suitable one. 
+## Our next steps
+* Create a UI "skeleton" for the app
+* Create all the backend magic
+* Change the licence as required to a more suitable one
   
 ## Vision
- Add something about what the application will do when more complete
+This is the repository for the application that will allow you to scan a poster etc. find an event, and then add it to your calendar. For second term, you
+will be able to scan schedules, as well as share these events with your friends.
   
 ## Requirements
-  List the libraries needed to build your application
+//external libraries and such - tbd
   
 ## Building the application
  What steps are there to build this application?
 
 ## Testing the build
-How do I test the code to ensure the build is correct?
-  
+For now, manual tests. Set up JTests - skeleton file is provided.  
 ## Running the application
- What do I do to deploy and/or run this? Checking if this works
+  To use this repository, you need Android Studio with gradle installed.
+  You'll also need to have a smartphone virtual machine set up to inspect this application - this can be done inside Android Studio.
+  For submission, we will include the .apk file, as well as this repo.
   
 ## Team Members
- Who's working on this application?
+ Leah Hughes (PL), Piotr Rucinski(DPL), Alexandru Closca-Gheorghiu, Matey Krastev, Aleksandra Nenkova, Erik Staas, Stanislav Stoyanov 
