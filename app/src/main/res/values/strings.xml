@@ -12,4 +12,9 @@
     <string name="scan_button_text">Scan</string>
     <string name="tutorial_button_text">Tutorial</string>
     <string name="tutorial_button_message">This will lead to the tutorial</string>
+    <string name="camera">Camera</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="scan_again">scan again</string>
+    <string name="home">Home</string>
+    <string name="success">The event was created successfuly!</string>
 </resources>
