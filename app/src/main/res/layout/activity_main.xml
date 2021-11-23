@@ -15,7 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/very_light_teal"
             app:popupTheme="@style/Theme.OCRHotel.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -24,11 +24,13 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
+        android:layout_width="395dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:backgroundTint="@color/very_light_teal"
+        app:rippleColor="@color/white"
+        app:srcCompat="@android:drawable/ic_dialog_info" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
