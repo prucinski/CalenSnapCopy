@@ -4,17 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fadingEdge="none"
+    android:filterTouchesWhenObscured="true"
     tools:context=".MainMenu">
 
     <Button
         android:id="@+id/scan"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="#80DEEA"
+        android:background="@drawable/button_shape"
         android:insetLeft="6dp"
         android:insetRight="6dp"
         android:text="@string/scan_button_text"
-        android:textColor="#0277BD"
+        android:textColor="@color/dark_blue"
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/tutorial"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,13 +29,13 @@
         android:id="@+id/tutorial"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="#80DEEA"
+        android:background="@drawable/button_shape"
         android:text="@string/tutorial_button_text"
-        android:textColor="#0277BD"
+        android:textColor="@color/dark_blue"
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    
+
 </androidx.constraintlayout.widget.ConstraintLayout>
