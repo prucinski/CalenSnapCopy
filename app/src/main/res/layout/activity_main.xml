@@ -9,28 +9,20 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.OCRHotel.AppBarOverlay">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/very_light_teal"
-            app:popupTheme="@style/Theme.OCRHotel.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:theme="@style/Theme.OCRHotel.AppBarOverlay"/>
 
     <include layout="@layout/content_main" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="395dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_gravity="bottom|center"
+        android:layout_marginEnd="0dp"
         android:layout_marginBottom="16dp"
-        app:backgroundTint="@color/very_light_teal"
+        app:backgroundTint="@color/dark_blue"
         app:rippleColor="@color/white"
-        app:srcCompat="@android:drawable/ic_dialog_info" />
+        app:srcCompat="@android:drawable/ic_dialog_info"
+        tools:visibility="visible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

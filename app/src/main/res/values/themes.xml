@@ -2,6 +2,10 @@
     <!-- Base application theme. -->
 
     <style name="Theme.OCRHotel" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <!-- Adding so that the Action bar is not visible -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/very_light_teal</item>
         <item name="colorPrimaryVariant">@color/lightest_teal</item>
@@ -15,11 +19,13 @@
         <!-- The background of the application. -->
         <item name="android:windowBackground">@drawable/gradient_background</item>
 
+
     </style>
 
     <style name="Theme.OCRHotel.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="Theme.OCRHotel.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
