@@ -1,20 +1,39 @@
 package com.example.ocrhotel
 
+import android.app.Activity
+import android.content.Context
+import android.net.Uri
+import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import android.util.Log
 import java.io.File
 import java.util.*
 
-class CameraProcessor {
-
+class ImageProvider(
+    resultCaller: ActivityResultCaller,
+    private val activity: Activity?,
+    private val onImageProvided: (Uri) -> Unit,
+) {
+    private var tempFileUri: Uri? = null
 
     private val cameraLauncher =
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-            // TODO: handle return value
+        resultCaller.registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                tempFileUri?.let { onImageProvided(it) }
+            }
         }
 
-    public fun takeImage() {
-        val file = File(context?.filesDir, "tempPictureFile")
+    private val filePickerLauncher =
+        resultCaller.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                onImageProvided(uri)
+            }
+        }
+
+
+    public fun useCamera() {
+        val file = File(activity?.filesDir, "tempPictureFile")
         val a = activity
         a?.let {
             // Get uri for the file that was just created
@@ -23,11 +42,14 @@ class CameraProcessor {
                 BuildConfig.APPLICATION_ID + ".provider", file
             );
             // Actually launch the camera
+            tempFileUri = uri
             cameraLauncher.launch(uri)
         }
 
+    }
 
-        //just a skeleton, do whatever you want with it! Its here just for reference
-        //for UI (see MainMenu). Feel free to update that section too for testing ~Piotr
+    public fun useGallery() {
+
+        filePickerLauncher.launch("image/*")
     }
 }
