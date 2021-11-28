@@ -17,4 +17,6 @@
     <string name="scan_again">scan again</string>
     <string name="home">Home</string>
     <string name="success">The event was created successfuly!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">I\'d like this to be the page that contains: settings/buy premium/scan history. It\'s late and I don\'t want to add buttons now</string>
 </resources>

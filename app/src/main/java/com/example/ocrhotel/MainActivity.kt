@@ -22,18 +22,25 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        //setSupportActionBar(binding.toolbar)
+
+
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        //appBarConfiguration = AppBarConfiguration(navController.graph)
+        //setupActionBarWithNavController(navController, appBarConfiguration)
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        binding.fab.setOnClickListener {
+            //Navigate from Floating Action Button to Settings menu. Can be clicked multiple
+            //times and we don't really want that. T
+            //TODO: Check if the fragment you're in is settings, if yes don't navigate
+            val navController = findNavController(R.id.nav_host_fragment_content_main)
+
+                navController.navigate(R.id.action_global_settingsMenu)
+
         }
     }
-
+//NOW I BELIEVE THAT THIS CAN BE THROWN OUT SINCE WE'RE NOT GENERATING A TOOLBAR
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
