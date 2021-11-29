@@ -36,10 +36,12 @@ class ModifyEvent : Fragment() {
         }
 
         binding.submit.setOnClickListener {
-            //idk why but NOTHING shows. I'll look into this later tonight
-            Toast.makeText(context, "working", Toast.LENGTH_SHORT).show()
+
+
             var eventName = binding.EventTitle.text
-            var printEventDetails= Toast.makeText(context, eventName, Toast.LENGTH_SHORT)
+            var eventDate = binding.EventDate.text
+            var eventTime = binding.EventHour.text
+            var printEventDetails= Toast.makeText(context, eventDate, Toast.LENGTH_SHORT)
             printEventDetails.show()
 
 
