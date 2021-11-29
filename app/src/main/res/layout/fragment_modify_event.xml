@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_shape"
+        android:text="@string/submit"
+        android:textColor="@color/dark_blue"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.74" />
+
+    <Button
+        android:id="@+id/continued"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_shape"
+        android:text="@string/continued"
+        android:textColor="@color/dark_blue"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submit"
+        app:layout_constraintVertical_bias="0.26" />
+
+    <TextView
+        android:id="@+id/success"
+        android:layout_width="294dp"
+        android:layout_height="wrap_content"
+        android:text="@string/found_this_event"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/dark_blue"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/submit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.18" />
+
+    <EditText
+        android:id="@+id/EventDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="date"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/submit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/success" />
+
+    <TextView
+        android:id="@+id/DateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:text="Date"
+        app:layout_constraintBottom_toBottomOf="@+id/EventDate"
+        app:layout_constraintEnd_toStartOf="@+id/EventDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/EventDate" />
+
+    <EditText
+        android:id="@+id/EventTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="AM Concert"
+        app:layout_constraintBottom_toTopOf="@+id/EventDate"
+        app:layout_constraintEnd_toEndOf="@+id/EventDate"
+        app:layout_constraintStart_toStartOf="@+id/EventDate"
+        app:layout_constraintTop_toBottomOf="@+id/success"
+        app:layout_constraintVertical_bias="0.506" />
+
+    <TextView
+        android:id="@+id/EventTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        app:layout_constraintBottom_toBottomOf="@+id/EventTitle"
+        app:layout_constraintEnd_toEndOf="@+id/DateText"
+        app:layout_constraintStart_toStartOf="@+id/DateText"
+        app:layout_constraintTop_toTopOf="@+id/EventTitle"
+        app:layout_constraintVertical_bias="0.692" />
+
+    <TextView
+        android:id="@+id/TimeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time (hh:mm)"
+        app:layout_constraintBottom_toBottomOf="@+id/EventHour"
+        app:layout_constraintEnd_toEndOf="@+id/DateText"
+        app:layout_constraintStart_toStartOf="@+id/DateText"
+        app:layout_constraintTop_toTopOf="@+id/EventHour" />
+
+    <EditText
+        android:id="@+id/EventHour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="16:00"
+        app:layout_constraintBottom_toTopOf="@+id/submit"
+        app:layout_constraintEnd_toEndOf="@+id/EventDate"
+        app:layout_constraintStart_toStartOf="@+id/EventDate"
+        app:layout_constraintTop_toBottomOf="@+id/EventDate" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
