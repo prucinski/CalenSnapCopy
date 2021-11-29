@@ -9,6 +9,7 @@ const val exampleString =
  *  TODO
  *  - Handle American style dates, i.e. MM.DD.YYYY
  *  - Handle multiple dates for the same event, e.g. 21-22 April 2022
+ *  - Handle cases where year is omitted
  */
 
 val months = arrayOf(
@@ -35,13 +36,15 @@ class EventCreator {
     fun extractDates(text: String): MutableList<Long> {
         var result = mutableListOf<Long>()
 
-        val monthsString = months.joinToString(prefix = "(", postfix = ")", separator = "|")
-        val regex = Regex("""\d\d[/ .]$monthsString[/ .]\d\d\d\d""")
+        val monthsString = (months + monthsShort).joinToString(separator = "|")
+        val regex = Regex("""(\d\d)[/ .-]($monthsString|\d?\d)[/ .-]((?:\d\d)?\d\d|)""")
 
         println(regex.pattern)
         val matches = regex.findAll(text.lowercase())
         for (match in matches) {
-            println(match.value)
+            println("Day: ${match.groups[1]}")
+            println("Month: ${match.groups[2]}")
+            println("Year: ${match.groups[3]}")
         }
 
         return result
