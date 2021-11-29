@@ -7,7 +7,9 @@ class EventCreator {
 
     class EventPlaceholder(public val dateMilliseconds: Long, public val name: String)
 
-    fun createEvent(results: AnalyzeResults): EventPlaceholder {
+    fun createEvent(rawText: String): EventPlaceholder {
+
+
         val date = Date().time
         val name = "Placeholder"
 
