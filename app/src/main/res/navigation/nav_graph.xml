@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_MainMenu_to_modifyEvent"
+            app:destination="@id/modifyEvent" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -33,4 +36,23 @@
     <action
         android:id="@+id/action_global_settingsMenu"
         app:destination="@id/settingsMenu" />
+    <fragment
+        android:id="@+id/succesfulScan"
+        android:name="com.example.ocrhotel.SuccessfulScan"
+        android:label="SuccesfulScan" >
+        <action
+            android:id="@+id/action_succesfulScan_to_MainMenu"
+            app:destination="@id/MainMenu" />
+        <action
+            android:id="@+id/action_succesfulScan_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/modifyEvent"
+        android:name="com.example.ocrhotel.ModifyEvent"
+        android:label="ModifyEvent" >
+        <action
+            android:id="@+id/action_modifyEvent_to_succesfulScan"
+            app:destination="@id/succesfulScan" />
+    </fragment>
 </navigation>
