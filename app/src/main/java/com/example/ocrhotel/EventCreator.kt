@@ -48,17 +48,27 @@ class EventCreator {
     private val regex = Regex("""(\d\d)[/ .-]($monthsString|\d?\d)[/ .-]((?:\d\d)?\d\d|)""")
 
     fun extractDates(text: String): Sequence<Long> {
+
+        // Match the OCR text against regex to find all matches
         val matches = regex.findAll(text.lowercase())
+
+        // Convert matches into LocalDateTime objects
         val dates: Sequence<LocalDateTime> = matches.map { match ->
+            // group at index 1 is day
             val day = match.groups[1]?.value?.toInt()
+
+            // group at index 2 is month
             val month = match.groups[2]?.value?.let { m ->
+                
+                // check if the month is represented as a number
                 var res = m.toIntOrNull()
                 if (res == null) {
+                    // If the month is not a number, check the months HashMap for the co-responding month value
                     res = months.get(m)
                 }
                 res
             }
-            val year = match.groups[3]?.value?.toInt()
+            val year = match.groups[3]?.value?.toInt() // group at index 3 is year
             if (year == null || month == null || day == null) {
             } else {
                 // TODO: Handle times
@@ -66,6 +76,7 @@ class EventCreator {
             }
             return@map LocalDateTime.now()
         }
+        // Convert the localDateTimes to unix epoch timestamps
         return dates.map { it ->
             it.atZone(ZoneId.systemDefault()).toEpochSecond()
         }
@@ -73,6 +84,7 @@ class EventCreator {
     }
 
     fun createEvent(rawText: String): EventPlaceholder {
+        // This is just a stub so far.
         val date = Date().time
         val name = "Placeholder"
 
@@ -84,6 +96,7 @@ class EventCreator {
 }
 
 fun main() {
+    // Main function that can be used to test functionality outside of android.
     val creator = EventCreator()
 
     for (date in creator.extractDates(exampleString)) {
