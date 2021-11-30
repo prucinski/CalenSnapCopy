@@ -43,6 +43,7 @@ class MainMenu : Fragment() {
             //toast is kind of like printing to console, but in android - idk how to get this to work
             val helloTutorial = Toast.makeText(context, "@string/tutorial_button_message", Toast.LENGTH_SHORT)
             helloTutorial.show()
+            findNavController().navigate(R.id.action_MainMenu_to_modifyEvent)
         }
     }
 
