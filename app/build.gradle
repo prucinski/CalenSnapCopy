@@ -71,8 +71,8 @@ dependencies {
     implementation 'com.google.mlkit:text-recognition:16.0.0-beta1'
 
     // Those below are for the REST API that would be the alternative way of doing it.
-    // Sadly those are deprecated by Android, so the code (OCR_Azure_REST.java) needs refactoring.
-
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation 'com.google.http-client:google-http-client:1.40.1'
+    implementation 'com.google.code.gson:gson:2.8.9'
+
 }
