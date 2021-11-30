@@ -52,19 +52,18 @@ class SecondFragment : Fragment() {
 
     private fun handleImage(uri: String) {
 //        val file = File(uri.path)
-        val ocr = OCR_Azure_REST()
+        val ocr = OCRAzureREST()
 
-        ocr.GetImageTextDataFromURL(uri) { s -> Log.d("OCR", s) }
+        ocr.getImageTextDataFromURL(uri) { s -> s?.let { Log.d("OCR", it) } }
 
         val output = ocr.resultsText;
 
-        Log.d("OCR", output)
+        output?.let { Log.d("OCR", it) }
         // TODO: handle creation of image
     }
 
     private fun handleImageURL(url: String) {
-        val ocr = OCR_Azure_REST()
-        ocr.GetImageTextDataFromURL(url) { s -> Log.d("OCR", s) }
+        val ocr = OCRAzureREST()
 
     }
 
