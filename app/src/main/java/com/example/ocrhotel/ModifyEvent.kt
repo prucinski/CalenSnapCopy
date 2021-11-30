@@ -15,9 +15,7 @@ import java.time.format.DateTimeFormatter
 
 class ModifyEvent : Fragment() {
 
-    private var eventName = "null"
-    private var eventDate = "null"
-    private var eventHour = "null"
+
 
     private var _binding: FragmentModifyEventBinding? = null
 
@@ -36,7 +34,6 @@ class ModifyEvent : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         //TODO: if event found, put the values from output of algo
         if(false){
 
@@ -46,8 +43,8 @@ class ModifyEvent : Fragment() {
             val current = LocalDateTime.now()
             val currentDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
             val currentHourFormatter = DateTimeFormatter.ofPattern("HH:mm")
-            eventDate = current.format(currentDateFormatter)
-            eventHour = current.format(currentHourFormatter)
+            val eventDate = current.format(currentDateFormatter)
+            val eventHour = current.format(currentHourFormatter)
             binding.EventDate.setText(eventDate.toString())
             binding.EventHour.setText(eventHour.toString())
         }
@@ -57,8 +54,6 @@ class ModifyEvent : Fragment() {
         binding.continued.setOnClickListener {
             //TODO - continue button clicked. Call a class that will create an event with variables and send
             //TODO - a calendar invitation that user may accept. Then, navigate
-            var eventCreator = EventCreator(eventName, eventDate, eventHour)
-            Toast.makeText(context, "event created", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
         }
 
@@ -66,9 +61,9 @@ class ModifyEvent : Fragment() {
 
 
 
-            eventName = binding.EventTitle.text.toString()
-            eventDate = binding.EventDate.text.toString()
-            eventHour = binding.EventHour.text.toString()
+            var eventName = binding.EventTitle.text
+            var eventDate = binding.EventDate.text
+            var eventTime = binding.EventHour.text
             var printEventDetails= Toast.makeText(context, eventDate, Toast.LENGTH_SHORT)
             printEventDetails.show()
 
