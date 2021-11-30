@@ -10,8 +10,12 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
 import com.example.ocrhotel.databinding.FragmentSecondBinding
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ModifyEvent : Fragment() {
+
+
 
     private var _binding: FragmentModifyEventBinding? = null
 
@@ -30,12 +34,31 @@ class ModifyEvent : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //TODO: if event found, put the values from output of algo
+        if(false){
+
+        }
+        //TODO: if NO event found, put in dummy values
+        else{
+            val current = LocalDateTime.now()
+            val currentDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+            val currentHourFormatter = DateTimeFormatter.ofPattern("HH:mm")
+            val eventDate = current.format(currentDateFormatter)
+            val eventHour = current.format(currentHourFormatter)
+            binding.EventDate.setText(eventDate.toString())
+            binding.EventHour.setText(eventHour.toString())
+        }
+
+
 
         binding.continued.setOnClickListener {
+            //TODO - continue button clicked. Call a class that will create an event with variables and send
+            //TODO - a calendar invitation that user may accept. Then, navigate
             findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
         }
 
         binding.submit.setOnClickListener {
+
 
 
             var eventName = binding.EventTitle.text
