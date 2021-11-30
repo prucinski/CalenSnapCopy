@@ -4,12 +4,13 @@ package com.example.ocrhotel;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+//import com.google.gson.Gson;
+//import com.google.gson.JsonObject;
+//import com.google.gson.JsonParser;
 import com.microsoft.azure.cognitiveservices.vision.computervision.*;
 import com.microsoft.azure.cognitiveservices.vision.computervision.implementation.ComputerVisionImpl;
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.*;
+
 import java.io.File;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 
 public class OCR_Azure_REST {
@@ -123,9 +125,7 @@ public class OCR_Azure_REST {
     }
 
 
-    public void GetImageTextDataFromURL(String url)  {
-
-
+    public void GetImageTextDataFromURL(String url, Consumer<String> callback) {
         post(POST_URLBase, String.join("", "{\"url\":\"", url, "\"}"), new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -156,6 +156,8 @@ public class OCR_Azure_REST {
                     }
                 }
                 ExtractText();
+
+                callback.accept(resultsText);
 
 //                    get(GET_URLBase+operationId, new Callback(){
 //                        @Override
@@ -334,10 +336,6 @@ public class OCR_Azure_REST {
     }
 
 
-
-
-
-
     public static void main(String[] args) {
 //        File file = new File("C:\\Users\\matey\\Downloads\\image.jpg");
 //        System.out.println(new OCR_Azure_REST().GetOnlyText(file));
@@ -345,7 +343,7 @@ public class OCR_Azure_REST {
         String url = "https://s3.amazonaws.com/thumbnails.venngage.com/template/112a39f4-2d97-44aa-ae3a-0e95a60abbce.png";
         OCR_Azure_REST ocrClient = new OCR_Azure_REST();
 
-        ocrClient.GetImageTextDataFromURL(url);
+        ocrClient.GetImageTextDataFromURL(url, System.out::println);
 
         System.out.println(ocrClient.getResultsText());
 //        System.out.println(res);

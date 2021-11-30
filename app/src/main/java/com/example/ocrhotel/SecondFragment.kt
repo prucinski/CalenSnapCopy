@@ -54,7 +54,7 @@ class SecondFragment : Fragment() {
 //        val file = File(uri.path)
         val ocr = OCR_Azure_REST()
 
-        ocr.GetImageTextDataFromURL(uri)
+        ocr.GetImageTextDataFromURL(uri) { s -> Log.d("OCR", s) }
 
         val output = ocr.resultsText;
 
@@ -64,11 +64,8 @@ class SecondFragment : Fragment() {
 
     private fun handleImageURL(url: String) {
         val ocr = OCR_Azure_REST()
-        ocr.GetImageTextDataFromURL(url)
-        val output = ocr.resultsText
+        ocr.GetImageTextDataFromURL(url) { s -> Log.d("OCR", s) }
 
-        Log.d("OCR", output)
-        // TODO: handle creation of image
     }
 
     override fun onDestroyView() {
