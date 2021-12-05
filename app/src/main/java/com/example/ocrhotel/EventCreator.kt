@@ -1,5 +1,6 @@
 package com.example.ocrhotel
 
+import androidx.fragment.*
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
@@ -30,11 +31,12 @@ class EventCreator(eventName: String, eventDate: String, eventTime: String, even
         private val minute = eventTime.slice(3..4)
         private val hourEnd = (hour.toInt() + eventDuration).toString()
 
+
     //resolve the primary calendar ID that the user has.
-    private fun getCalendarId(activity: Activity) : Long? {
+    private fun getCalendarId() : Long? {
 
         //via https://stackoverflow.com/questions/16242472/retrieve-the-default-calendar-id-in-android
-        
+
         val projection = arrayOf(CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
 
         var calCursor = activity.contentResolver.query(
@@ -66,6 +68,8 @@ class EventCreator(eventName: String, eventDate: String, eventTime: String, even
                 calID = calCursor.getString(idCol)
 
                 Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
+                val helloTutorial = Toast.makeText(activity.applicationContext, "Event is created at this calendar: $calName", Toast.LENGTH_SHORT)
+                helloTutorial.show()
 
                 calCursor.close()
                 return calID.toLong()
@@ -91,7 +95,7 @@ class EventCreator(eventName: String, eventDate: String, eventTime: String, even
 
 
          //try choosing a calendar ID. If null returned, throw exception.
-         val calID : Long = getCalendarId(activity)!!
+         val calID : Long = getCalendarId()!!
 
 
          val values = ContentValues().apply {
