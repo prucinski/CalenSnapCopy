@@ -157,15 +157,12 @@ class OCRAzureREST {
         @JvmStatic
         fun main(args: Array<String>) {
             val file = File("C:\\Users\\matey\\Downloads\\image.jpg")
-            val url =
-                "https://s3.amazonaws.com/thumbnails.venngage.com/template/112a39f4-2d97-44aa-ae3a-0e95a60abbce.png"
+            val url = "https://i.imgur.com/FEiKUeh.jpg"
             val ocrClient = OCRAzureREST()
             ocrClient.getImageTextData(file) { x: String? -> println(x) }
 
-//        ocrClient.getImageTextDataFromURL(url, System.out::println);
+            ocrClient.getImageTextDataFromURL(url) { x: String? -> println(x)}
 
-//        System.out.println(ocrClient.getResultsText());
-//        System.out.println(res);
         }
     }
 }
