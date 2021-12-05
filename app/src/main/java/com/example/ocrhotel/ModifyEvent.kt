@@ -57,10 +57,15 @@ class ModifyEvent : Fragment() {
         binding.continued.setOnClickListener {
             //TODO - continue button clicked. Call a class that will create an event with variables and send
             //TODO - a calendar invitation that user may accept. Then, navigate
-            var eventCreator = EventCreator(eventName, eventDate, eventHour,2, activity)
-            eventCreator.addEvent()
-            //Toast.makeText(context, "event created", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
+            activity?.let { activity ->
+                var eventCreator = EventCreator(eventName, eventDate, eventHour, 2, activity)
+
+                if(eventCreator.addEvent()){
+                    findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
+                }
+
+
+            }
         }
 
         binding.submit.setOnClickListener {
