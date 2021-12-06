@@ -40,7 +40,7 @@ val months = hashMapOf(
     "dec" to 12
 )
 
-class EventCreator {
+class Algorithm {
 
     class EventPlaceholder(public val dateMilliseconds: Long, public val name: String)
 
@@ -97,7 +97,7 @@ class EventCreator {
 
 fun main() {
     // Main function that can be used to test functionality outside of android.
-    val creator = EventCreator()
+    val creator = Algorithm()
 
     for (date in creator.extractDates(exampleString)) {
         println(Instant.ofEpochSecond(date))
