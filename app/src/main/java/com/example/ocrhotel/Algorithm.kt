@@ -5,7 +5,8 @@ import java.time.*
 import java.util.*
 import kotlin.math.abs
 
-const val exampleString = "Organised by SPE International Aberdeen Section Well Decommissioning - The Future 20 April 2022, P&J Live SUBMIT YOUR ABSTRACT TODAY!"
+const val exampleString =
+    "Organised by SPE International Aberdeen Section Well Decommissioning - The Future 20 April 2022, P&J Live SUBMIT YOUR ABSTRACT TODAY!"
 
 const val url = "https://images-ext-2.discordapp.net/external/Q8m3jqPr-xJagawHD4guOzmvTojHs7v-qIdTnPtFo-Q/%3Fwidth%3D1270%26height%3D670/https/media.discordapp.net/attachments/903307652224913419/903308950768853042/Well-Decommissioning-Highlight_1024x540_0.png"
 
@@ -16,7 +17,7 @@ const val url = "https://images-ext-2.discordapp.net/external/Q8m3jqPr-xJagawHD4
  *  - Handle cases where year is omitted
  */
 
-val months = hashMapOf(
+private val months = hashMapOf(
     "january" to 1,
     "february" to 2,
     "march" to 3,
@@ -45,12 +46,16 @@ val months = hashMapOf(
 
 class Algorithm {
 
-    class EventPlaceholder(val dateMilliseconds: Long, val name: String)
+    class Result(val dateTime: LocalDateTime, val name: String) {
+        override fun toString (): String {
+            return "$name @ $dateTime"
+        }
+    }
 
     private val monthsString = months.keys.joinToString(separator = "|")
-    private val regex = Regex("""(\d\d)[/ .-]($monthsString|\d?\d)[/ .-]((?:\d\d)?\d\d|)""")
+    private val regex = Regex("""(\d\d)[/ .-]($monthsString|\d?\d)[/ .-]((?:\d\d)?\d\d)""")
 
-    fun extractDates(text: String): Sequence<Long> {
+    fun extractDates(text: String): Sequence<LocalDateTime> {
 
         // Match the OCR text against regex to find all matches
         val matches = regex.findAll(text.lowercase())
@@ -62,7 +67,7 @@ class Algorithm {
 
             // group at index 2 is month
             val month = match.groups[2]?.value?.let { m ->
-                
+
                 // check if the month is represented as a number
                 var res = m.toIntOrNull()
                 if (res == null) {
@@ -73,36 +78,34 @@ class Algorithm {
             }
             val year = match.groups[3]?.value?.toInt() // group at index 3 is year
             if (year == null || month == null || day == null) {
-                return@map LocalDateTime.now()
-            }
-            else {
+            } else {
                 // TODO: Handle times
                 return@map LocalDateTime.of(year, month, day, 0, 0, 0)
             }
+            return@map LocalDateTime.now()
         }
+
         // Convert the localDateTimes to unix epoch timestamps
-        return dates.map {
-            it.atZone(ZoneId.systemDefault()).toEpochSecond()
-        }
+        return dates
 
     }
 
-    // Gets the area of a bounding box specified by 4 coordinates.
-    private fun getBoundingBoxArea(boundingBox: List<Double>): Double{
-        return abs((boundingBox[0]*boundingBox[3]-boundingBox[1]*boundingBox[2])
-                + (boundingBox[2]*boundingBox[5]-boundingBox[3]*boundingBox[4])
-                + (boundingBox[4]*boundingBox[7]-boundingBox[5]*boundingBox[6])
-        )/2
+    private fun getBoundingBoxArea(boundingBox: List<Double>): Double {
+        return abs(
+            (boundingBox[0] * boundingBox[3] - boundingBox[1] * boundingBox[2])
+                    + (boundingBox[2] * boundingBox[5] - boundingBox[3] * boundingBox[4])
+                    + (boundingBox[4] * boundingBox[7] - boundingBox[5] * boundingBox[6])
+        ) / 2
     }
 
-    // Returns the text box with the biggest bounding box.
-    fun extractTitleFromReadOperationResult(results: ReadOperationResult?): String{
+
+    fun extractTitleFromReadOperationResult(results: ReadOperationResult?): String {
         var maxvalue = 0.0
         var maxvalueText = ""
-        for(result in results!!.analyzeResult().readResults()){
-            for(line in result.lines()){
+        for (result in results!!.analyzeResult().readResults()) {
+            for (line in result.lines()) {
                 var area = getBoundingBoxArea(line.boundingBox())
-                if(area > maxvalue) {
+                if (area > maxvalue) {
                     maxvalue = area
                     maxvalueText = line.text()
                 }
@@ -114,29 +117,33 @@ class Algorithm {
         return maxvalueText
     }
 
-    fun createEvent(rawText: String): EventPlaceholder {
+    fun execute(rawText: String?, results: ReadOperationResult?): Result {
         // This is just a stub so far.
-        val date = Date().time
-        val name = "Placeholder"
-
-        val event = EventPlaceholder(date, name)
-
-        return event
+        val date = extractDates(rawText!!).elementAt(0) // Just pick the first element for now.
+        val name = extractTitleFromReadOperationResult(results)
+        return Result(date, name)
     }
 
 }
 
 fun main() {
     // Main function that can be used to test functionality outside of android.
-    val creator = Algorithm()
+    val algorithm = Algorithm()
+
+//    for (date in algorithm.extractDates(exampleString)) {
+//        println(Instant.ofEpochSecond(date))
+//    }
+
+//    val client = OCRAzureREST()
+//    client.getImageTextDataFromURL(url){
+//        var it = client.results
+//        println("\nThis is the final result:"+algorithm.extractTitleFromReadOperationResult(it))
+//    }
+
     val client = OCRAzureREST()
-
-    for (date in creator.extractDates(exampleString)) {
-        println(Instant.ofEpochSecond(date))
-    }
-
-    client.getImageTextDataFromURL(url){
-        var it = client.results
-        println("\nThis is the final result:"+creator.extractTitleFromReadOperationResult(it))
+    client.getImageTextDataFromURL(url) {
+        println(client.resultsText)
+        val result = algorithm.execute(client.resultsText, client.results);
+        println("\nThis is the final result:" + result.toString())
     }
 }
