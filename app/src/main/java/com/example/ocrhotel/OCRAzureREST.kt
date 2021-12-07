@@ -18,7 +18,7 @@ import java.util.*
 import java.util.function.Consumer
 
 class OCRAzureREST {
-    private var results: ReadOperationResult? = null
+    var results: ReadOperationResult? = null
     var resultsText: String? = null
 
         private set
