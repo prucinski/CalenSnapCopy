@@ -26,7 +26,7 @@ class SecondFragment : Fragment() {
 
     private lateinit var imageProvider: ImageProvider
 
-    private lateinit var eventData: Algorithm.Result
+    private var eventData: Algorithm.Result? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,17 +58,15 @@ class SecondFragment : Fragment() {
     }
 
     private fun handleContinue() {
-        if (this::eventData.isInitialized) {
-            Toast.makeText(context, "Event Title: ${eventData.name}", Toast.LENGTH_SHORT).show()
-
+        if (eventData != null) {
             val bundle =
-                bundleOf("date" to eventData.dateTime, "title" to eventData.name)
+                bundleOf("date" to eventData!!.dateTime, "title" to eventData!!.name)
+            eventData = null
             findNavController().navigate(
                 R.id.action_SecondFragment_to_modifyEvent,
                 bundle
             )
-        }
-        else {
+        } else {
             Toast.makeText(context, "Result not available yet!", Toast.LENGTH_SHORT).show()
         }
 
