@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import com.example.ocrhotel.databinding.FragmentSecondBinding
 import java.io.File
 
@@ -63,7 +65,11 @@ class SecondFragment : Fragment() {
 
                 ocr.getImageTextData(bytes) { s ->
                     s?.let { result ->
-                        Log.d("OCR", result);
+                        Log.d("OCR", result)
+                        //Sends the results over to the receiving Fragment, in this case ModifyEvent
+                        setFragmentResult("eventData", bundleOf("ocrResults" to ocr.results,
+                                                                            "ocrStringResults" to result))
+
                     }
                 }
             }

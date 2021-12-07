@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
 import com.example.ocrhotel.databinding.FragmentSecondBinding
+import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
+import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOptionalParameter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -18,6 +21,10 @@ class ModifyEvent : Fragment() {
     private var eventName = "null"
     private var eventDate = "null"
     private var eventHour = "null"
+
+    private val algo = Algorithm()
+    private var title= ""
+    private var dates = mutableListOf<Long>()
 
     private var _binding: FragmentModifyEventBinding? = null
 
@@ -30,6 +37,19 @@ class ModifyEvent : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
+        super.onCreate(savedInstanceState)
+        // Use the Kotlin extension in the fragment-ktx artifact
+        setFragmentResultListener("eventData") { requestKey, bundle ->
+
+            // Receive both results, this is here to display the usage but can be definitely improved.
+            val results = bundle.get("ocrResults") as ReadOperationResult
+            val textResults = bundle.getString("ocrStringResults","")
+            title = algo.extractTitleFromReadOperationResult(results)
+            dates = algo.extractDates(textResults) as MutableList<Long>
+            // Do something with the result
+        }
+
         _binding = FragmentModifyEventBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -38,7 +58,7 @@ class ModifyEvent : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //TODO: if event found, put the values from output of algo
-        if(false){
+        if(title != ""){
 
         }
         //TODO: if NO event found, put in dummy values

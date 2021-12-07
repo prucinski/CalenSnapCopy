@@ -73,19 +73,21 @@ class Algorithm {
             }
             val year = match.groups[3]?.value?.toInt() // group at index 3 is year
             if (year == null || month == null || day == null) {
-            } else {
+                return@map LocalDateTime.now()
+            }
+            else {
                 // TODO: Handle times
                 return@map LocalDateTime.of(year, month, day, 0, 0, 0)
             }
-            return@map LocalDateTime.now()
         }
         // Convert the localDateTimes to unix epoch timestamps
-        return dates.map { it ->
+        return dates.map {
             it.atZone(ZoneId.systemDefault()).toEpochSecond()
         }
 
     }
 
+    // Gets the area of a bounding box specified by 4 coordinates.
     private fun getBoundingBoxArea(boundingBox: List<Double>): Double{
         return abs((boundingBox[0]*boundingBox[3]-boundingBox[1]*boundingBox[2])
                 + (boundingBox[2]*boundingBox[5]-boundingBox[3]*boundingBox[4])
@@ -93,7 +95,7 @@ class Algorithm {
         )/2
     }
 
-
+    // Returns the text box with the biggest bounding box.
     fun extractTitleFromReadOperationResult(results: ReadOperationResult?): String{
         var maxvalue = 0.0
         var maxvalueText = ""
@@ -127,12 +129,12 @@ class Algorithm {
 fun main() {
     // Main function that can be used to test functionality outside of android.
     val creator = Algorithm()
-
-//    for (date in creator.extractDates(exampleString)) {
-//        println(Instant.ofEpochSecond(date))
-//    }
-
     val client = OCRAzureREST()
+
+    for (date in creator.extractDates(exampleString)) {
+        println(Instant.ofEpochSecond(date))
+    }
+
     client.getImageTextDataFromURL(url){
         var it = client.results
         println("\nThis is the final result:"+creator.extractTitleFromReadOperationResult(it))

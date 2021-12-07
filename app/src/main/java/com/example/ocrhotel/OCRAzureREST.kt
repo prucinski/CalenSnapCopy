@@ -128,7 +128,7 @@ class OCRAzureREST {
         for (pageResult in results!!.analyzeResult().readResults()) {
             for (line in pageResult.lines()) {
                 builder.append(line.text())
-                builder.append("\n")
+                builder.append(" \n ")
             }
         }
         resultsText = builder.toString()
