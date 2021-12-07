@@ -76,7 +76,12 @@ class Algorithm {
                 }
                 res
             }
-            val year = match.groups[3]?.value?.toInt() // group at index 3 is year
+            val yearStr = match.groups[3]?.value
+            var year = yearStr?.toInt()!! // group at index 3 is year
+            if(yearStr.length == 2)  { // its only the 2 last digits of the year
+                year += 2000 // TODO: in 80 years this wont work anymore ;)
+            }
+
             if (year == null || month == null || day == null) {
             } else {
                 // TODO: Handle times

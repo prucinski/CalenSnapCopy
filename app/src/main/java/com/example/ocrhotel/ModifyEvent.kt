@@ -13,6 +13,7 @@ import com.example.ocrhotel.databinding.FragmentModifyEventBinding
 import com.example.ocrhotel.databinding.FragmentSecondBinding
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOptionalParameter
+import android.util.Log
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -57,21 +58,27 @@ class ModifyEvent : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO: if event found, put the values from output of algo
-        if(title != ""){
+        title = arguments?.getString("title") as String
+        val date = arguments?.getSerializable("date") as LocalDateTime
 
+        val currentDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val currentHourFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        //TODO: if event found, put the values from output of algo
+        if(title != "" && title != null){
+            eventDate = date.format(currentDateFormatter)
+            eventHour = date.format(currentHourFormatter)
         }
         //TODO: if NO event found, put in dummy values
         else{
             val current = LocalDateTime.now()
-            val currentDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-            val currentHourFormatter = DateTimeFormatter.ofPattern("HH:mm")
             eventDate = current.format(currentDateFormatter)
             eventHour = current.format(currentHourFormatter)
-            binding.EventDate.setText(eventDate.toString())
-            binding.EventHour.setText(eventHour.toString())
         }
 
+        binding.EventDate.setText(eventDate.toString())
+        binding.EventHour.setText(eventHour.toString())
+        binding.EventTitle.setText(title)
 
 
         binding.continued.setOnClickListener {
@@ -83,9 +90,6 @@ class ModifyEvent : Fragment() {
         }
 
         binding.submit.setOnClickListener {
-
-
-
             eventName = binding.EventTitle.text.toString()
             eventDate = binding.EventDate.text.toString()
             eventHour = binding.EventHour.text.toString()

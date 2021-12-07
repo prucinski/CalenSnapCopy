@@ -1,6 +1,5 @@
 package com.example.ocrhotel
 
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,11 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentSecondBinding
-import java.io.File
 
 
 /**
@@ -29,17 +26,23 @@ class SecondFragment : Fragment() {
 
     private lateinit var imageProvider: ImageProvider
 
+    private lateinit var eventData: Algorithm.Result
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+//        binding.continueButton.isEnabled = false
+//        binding.continueButton.isClickable = false
+        binding.continueButton.setOnClickListener { handleContinue() }
 
         imageProvider = ImageProvider(this, activity, this::handleImage)
         binding.uploadImage.setOnClickListener {
@@ -54,21 +57,35 @@ class SecondFragment : Fragment() {
 
     }
 
+    private fun handleContinue() {
+        if (this::eventData.isInitialized) {
+            Toast.makeText(context, "Event Title: ${eventData.name}", Toast.LENGTH_SHORT).show()
+
+            val bundle =
+                bundleOf("date" to eventData.dateTime, "title" to eventData.name)
+            findNavController().navigate(
+                R.id.action_SecondFragment_to_modifyEvent,
+                bundle
+            )
+        }
+        else {
+            Toast.makeText(context, "Result not available yet!", Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
     private fun handleImage(uri: Uri) {
-        Toast.makeText(context, uri.toString(), Toast.LENGTH_LONG).show()
-
-
         activity?.let { a ->
             a.contentResolver.openInputStream(uri)?.let { inputStream ->
                 val bytes = inputStream.readBytes();
                 val ocr = OCRAzureREST()
-
+                val algo = Algorithm()
                 ocr.getImageTextData(bytes) { s ->
                     s?.let { result ->
                         Log.d("OCR", result)
-                        //Sends the results over to the receiving Fragment, in this case ModifyEvent
-                        setFragmentResult("eventData", bundleOf("ocrResults" to ocr.results,
-                                                                            "ocrStringResults" to result))
+                        eventData = algo.execute(ocr.resultsText, ocr.results)
+//                        binding.continueButton.isEnabled = true
+//                        binding.continueButton.isClickable = true
 
                     }
                 }

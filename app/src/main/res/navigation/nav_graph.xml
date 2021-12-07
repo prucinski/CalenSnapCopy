@@ -27,6 +27,9 @@
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/MainMenu" />
+        <action
+            android:id="@+id/action_SecondFragment_to_modifyEvent"
+            app:destination="@id/modifyEvent" />
     </fragment>
     <fragment
         android:id="@+id/settingsMenu"
@@ -54,5 +57,10 @@
         <action
             android:id="@+id/action_modifyEvent_to_succesfulScan"
             app:destination="@id/succesfulScan" />
+        <argument android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="date"
+            app:argType="java.time.LocalDateTime" />
     </fragment>
 </navigation>
