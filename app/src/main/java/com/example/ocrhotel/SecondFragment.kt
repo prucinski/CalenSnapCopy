@@ -1,5 +1,6 @@
 package com.example.ocrhotel
 
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.FileProvider
 import com.example.ocrhotel.databinding.FragmentSecondBinding
 import java.io.File
 
@@ -36,30 +39,37 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        imageProvider = ImageProvider(this, activity, this::handleImage)
-//        binding.uploadImage.setOnClickListener {
-//            imageProvider.useGallery()
-//            handleImage(imageProvider)
-//        }
-//
-//        binding.camera.setOnClickListener {
-//            imageProvider.useCamera()
-//        }
+        imageProvider = ImageProvider(this, activity, this::handleImage)
+        binding.uploadImage.setOnClickListener {
+            imageProvider.useGallery()
+        }
 
-        handleImageURL("https://s3.amazonaws.com/thumbnails.venngage.com/template/112a39f4-2d97-44aa-ae3a-0e95a60abbce.png")
+        binding.camera.setOnClickListener {
+            imageProvider.useCamera()
+        }
+
+//        handleImageURL("https://s3.amazonaws.com/thumbnails.venngage.com/template/112a39f4-2d97-44aa-ae3a-0e95a60abbce.png")
 
     }
 
-    private fun handleImage(uri: String) {
-//        val file = File(uri.path)
-        val ocr = OCRAzureREST()
+    private fun handleImage(uri: Uri) {
+        Toast.makeText(context, uri.toString(), Toast.LENGTH_LONG).show()
 
-        ocr.getImageTextDataFromURL(uri) { s -> s?.let { Log.d("OCR", it) } }
 
-        val output = ocr.resultsText;
+        activity?.let { a ->
+            a.contentResolver.openInputStream(uri)?.let { inputStream ->
+                val bytes = inputStream.readBytes();
+                val ocr = OCRAzureREST()
 
-        output?.let { Log.d("OCR", it) }
-        // TODO: handle creation of image
+                ocr.getImageTextData(bytes) { s ->
+                    s?.let { result ->
+                        Log.d("OCR", result);
+                    }
+                }
+            }
+
+        }
+
     }
 
     private fun handleImageURL(url: String) {
