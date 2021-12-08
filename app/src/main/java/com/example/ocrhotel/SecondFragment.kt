@@ -9,6 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentSecondBinding
 
@@ -18,6 +22,12 @@ import com.example.ocrhotel.databinding.FragmentSecondBinding
  */
 class SecondFragment : Fragment() {
 
+    class EventDataViewModel : ViewModel() {
+        var eventData: MutableLiveData<Algorithm.Result?> = MutableLiveData(null)
+        var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    }
+
     private var _binding: FragmentSecondBinding? = null
 
     // This property is only valid between onCreateView and
@@ -25,6 +35,9 @@ class SecondFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var imageProvider: ImageProvider
+
+    private val algorithmModel: EventDataViewModel by activityViewModels()
+
 
     private var eventData: Algorithm.Result? = null
 
@@ -40,10 +53,6 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        binding.continueButton.isEnabled = false
-//        binding.continueButton.isClickable = false
-        binding.continueButton.setOnClickListener { handleContinue() }
-
         imageProvider = ImageProvider(this, activity, this::handleImage)
         binding.uploadImage.setOnClickListener {
             imageProvider.useGallery()
@@ -52,24 +61,30 @@ class SecondFragment : Fragment() {
         binding.camera.setOnClickListener {
             imageProvider.useCamera()
         }
+        algorithmModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
+            binding.loadingSpinner.visibility = if (isLoading) View.VISIBLE else View.GONE
+        })
 
-//        handleImageURL("https://s3.amazonaws.com/thumbnails.venngage.com/template/112a39f4-2d97-44aa-ae3a-0e95a60abbce.png")
+        algorithmModel.eventData.observe(viewLifecycleOwner, { res ->
+            if (res != null) {
+                // Reset the model for the next time
+                algorithmModel.eventData.postValue(null)
+                algorithmModel.isLoading.postValue(false)
 
-    }
+                // Prepare data to be passed to ModifyEvent
+                val bundle =
+                    bundleOf(
+                        "date" to res.dateTime,
+                        "title" to algorithmModel.eventData.value!!.name
+                    )
 
-    private fun handleContinue() {
-        if (eventData != null) {
-            val bundle =
-                bundleOf("date" to eventData!!.dateTime, "title" to eventData!!.name)
-            eventData = null
-            findNavController().navigate(
-                R.id.action_SecondFragment_to_modifyEvent,
-                bundle
-            )
-        } else {
-            Toast.makeText(context, "Result not available yet!", Toast.LENGTH_SHORT).show()
-        }
-
+                // Proceed to the ModifyEvent fragment
+                findNavController().navigate(
+                    R.id.action_SecondFragment_to_modifyEvent,
+                    bundle
+                )
+            }
+        })
     }
 
     private fun handleImage(uri: Uri) {
@@ -78,23 +93,17 @@ class SecondFragment : Fragment() {
                 val bytes = inputStream.readBytes();
                 val ocr = OCRAzureREST()
                 val algo = Algorithm()
+                algorithmModel.isLoading.postValue(true) // Tell the loading spinner that it can stop
                 ocr.getImageTextData(bytes) { s ->
                     s?.let { result ->
                         Log.d("OCR", result)
-                        eventData = algo.execute(ocr.resultsText, ocr.results)
-//                        binding.continueButton.isEnabled = true
-//                        binding.continueButton.isClickable = true
-
+                        val data = algo.execute(ocr.resultsText, ocr.results)
+                        algorithmModel.eventData.postValue(data)
                     }
                 }
             }
 
         }
-
-    }
-
-    private fun handleImageURL(url: String) {
-        val ocr = OCRAzureREST()
 
     }
 
