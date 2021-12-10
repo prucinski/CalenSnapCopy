@@ -11,13 +11,11 @@ This is the repository for the application that will allow you to scan a poster 
 will be able to scan schedules, as well as share these events with your friends.
   
 ## Requirements
-//external libraries and such - tbd
+External library requirements specified in the package manager.
   
 ## Building the application
- What steps are there to build this application?
+ The application can be built using Android Studio.
 
-## Testing the build
-For now, manual tests. Set up JTests - skeleton file is provided.  
 ## Running the application
   To use this repository, you need Android Studio with gradle installed.
   You'll also need to have a smartphone virtual machine set up to inspect this application - this can be done inside Android Studio.
