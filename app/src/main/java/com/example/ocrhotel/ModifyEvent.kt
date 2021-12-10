@@ -44,15 +44,15 @@ class ModifyEvent : Fragment() {
 
         super.onCreate(savedInstanceState)
         // Use the Kotlin extension in the fragment-ktx artifact
-        setFragmentResultListener("eventData") { requestKey, bundle ->
-
-            // Receive both results, this is here to display the usage but can be definitely improved.
-            val results = bundle.get("ocrResults") as ReadOperationResult
-            val textResults = bundle.getString("ocrStringResults","")
-            title = algo.extractTitleFromReadOperationResult(results)
-            dates = algo.extractDates(textResults) as MutableList<Long>
-            // Do something with the result
-        }
+//        setFragmentResultListener("eventData") { requestKey, bundle ->
+//
+//            // Receive both results, this is here to display the usage but can be definitely improved.
+//            val results = bundle.get("ocrResults") as ReadOperationResult
+//            val textResults = bundle.getString("ocrStringResults","")
+//            title = algo.extractTitleFromReadOperationResult(results)
+//            dates = algo.extractDates(textResults) as MutableList<Long>
+//            // Do something with the result
+//        }
 
         _binding = FragmentModifyEventBinding.inflate(inflater, container, false)
         return binding.root
