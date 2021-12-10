@@ -86,11 +86,11 @@ class EventCreator(eventName: String, eventDate: String, eventTime: String, even
 
 
          val beginTime = Calendar.getInstance()
-         beginTime.set(year.toInt(), month.toInt(), day.toInt(), hour.toInt(), minute.toInt())
+         beginTime.set(year.toInt(), month.toInt() - 1, day.toInt(), hour.toInt(), minute.toInt())
          val startMillis = beginTime.timeInMillis
 
          val endTime = Calendar.getInstance()
-         endTime.set(year.toInt(), month.toInt(), day.toInt(), hourEnd.toInt(), minute.toInt())
+         endTime.set(year.toInt(), month.toInt() - 1, day.toInt(), hourEnd.toInt(), minute.toInt())
          val endMillis = endTime.timeInMillis
 
 
