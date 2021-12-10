@@ -17,7 +17,6 @@ import com.example.ocrhotel.databinding.FragmentModifyEventBinding
 import com.example.ocrhotel.databinding.FragmentSecondBinding
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOptionalParameter
-import android.util.Log
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
