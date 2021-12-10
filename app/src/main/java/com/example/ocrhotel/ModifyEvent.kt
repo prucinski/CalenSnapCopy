@@ -1,13 +1,17 @@
 package com.example.ocrhotel
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
 import com.example.ocrhotel.databinding.FragmentSecondBinding
@@ -84,9 +88,21 @@ class ModifyEvent : Fragment() {
         binding.continued.setOnClickListener {
             //TODO - continue button clicked. Call a class that will create an event with variables and send
             //TODO - a calendar invitation that user may accept. Then, navigate
-            var eventCreator = EventCreator(eventName, eventDate, eventHour)
-            Toast.makeText(context, "event created", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
+
+
+            activity?.let { activity ->
+                //request permission from user to access their calendars
+                ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
+                if(checkIfHasPermission()) {
+                    var eventCreator = EventCreator(eventName, eventDate, eventHour, 2, activity)
+                    if (eventCreator.addEvent()) {
+                        findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
+                    }
+                }
+
+
+
+            }
         }
 
         binding.submit.setOnClickListener {
@@ -98,6 +114,12 @@ class ModifyEvent : Fragment() {
 
 
         }
+    }
+    private fun checkIfHasPermission() :Boolean{
+        var result = context?.let { ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR) }
+        Log.e("PERMISSION", "$result" )
+        return result == PackageManager.PERMISSION_GRANTED
+
     }
 
     override fun onDestroyView() {
