@@ -17,10 +17,10 @@
     <string name="scan_again">scan again</string>
     <string name="found_this_event">The following event has been found. Please modify the values if necessary and press "submit", then "continue".</string>
     <string name="home">Home</string>
-    <string name="success">The event was created successfuly!</string>
+    <string name="success">The event was created successfully!</string>
     <string name="continued">continue</string>
     <string name="submit">submit</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">I\'d like this to be the page that contains: settings/buy premium/scan history. It\'s late and I don\'t want to add buttons now</string>
+    <string name="hello_blank_fragment">This page will contain: settings/buy premium/scan history. Buttons for those will be added in second term.</string>
     <string name="continue_label">Continue</string>
 </resources>
