@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        //Code for the ads
+        //Code for the banner ads
 
         MobileAds.initialize(this) {}
 
@@ -33,13 +33,7 @@ class MainActivity : AppCompatActivity() {
         val adRequest = AdRequest.Builder().build()
         mAdView.loadAd(adRequest)
 
-        //setSupportActionBar(binding.toolbar)
 
-
-
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        //appBarConfiguration = AppBarConfiguration(navController.graph)
-        //setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener {
             //Navigate from Floating Action Button to Settings menu. Can be clicked multiple
@@ -51,26 +45,5 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-//NOW I BELIEVE THAT THIS CAN BE THROWN OUT SINCE WE'RE NOT GENERATING A TOOLBAR
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
-    }
 }

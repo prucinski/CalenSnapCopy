@@ -72,7 +72,7 @@ class ModifyEvent : Fragment() {
             eventDate = date.format(currentDateFormatter)
             eventHour = date.format(currentHourFormatter)
         }
-        //TODO: if NO event found, put in dummy values
+        //if NO event found, put in dummy values
         else{
             val current = LocalDateTime.now()
             eventDate = current.format(currentDateFormatter)
@@ -85,15 +85,13 @@ class ModifyEvent : Fragment() {
 
 
         binding.continued.setOnClickListener {
-            //TODO - continue button clicked. Call a class that will create an event with variables and send
-            //TODO - a calendar invitation that user may accept. Then, navigate
-
 
             activity?.let { activity ->
                 //request permission from user to access their calendars
                 ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
                 if(checkIfHasPermission()) {
                     var eventCreator = EventCreator(eventName, eventDate, eventHour, 2, activity)
+                    //this is slightly wonky and has to be pressed twice - but it's a minor bug
                     if (eventCreator.addEvent()) {
                         findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
                     }

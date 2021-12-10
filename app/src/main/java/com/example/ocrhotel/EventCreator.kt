@@ -19,9 +19,9 @@ import android.provider.CalendarContract
 
 class EventCreator(eventName: String, eventDate: String, eventTime: String, eventDuration: Int = 2, activity: Activity){
 
-    //TODO: Create an object of type CalendarContract and add an element to it. Looks scary!
 
-        //TODO: WORKS ONLY FOR ONE DATE FORMAT FOR NOW
+
+        //TODO: WORKS ONLY FOR ONE DATE FORMAT FOR NOW - this will be handled in ModifyEvent.
         private val eventName = eventName
         private var activity = activity
         private val year = eventDate.slice(6..9)
@@ -86,11 +86,11 @@ class EventCreator(eventName: String, eventDate: String, eventTime: String, even
 
 
          val beginTime = Calendar.getInstance()
-         beginTime.set(year.toInt(), month.toInt(), day.toInt(), hour.toInt(), minute.toInt())
+         beginTime.set(year.toInt(), month.toInt() - 1, day.toInt(), hour.toInt(), minute.toInt())
          val startMillis = beginTime.timeInMillis
 
          val endTime = Calendar.getInstance()
-         endTime.set(year.toInt(), month.toInt(), day.toInt(), hourEnd.toInt(), minute.toInt())
+         endTime.set(year.toInt(), month.toInt() - 1, day.toInt(), hourEnd.toInt(), minute.toInt())
          val endMillis = endTime.timeInMillis
 
 
@@ -102,7 +102,7 @@ class EventCreator(eventName: String, eventDate: String, eventTime: String, even
              put(Events.DTSTART, startMillis)
              put(Events.DTEND, endMillis)
              put(Events.TITLE, eventName)
-             put(Events.DESCRIPTION, "Thank you for using our app")
+             put(Events.DESCRIPTION, "Thank you for using CalenSnap")
              put(Events.CALENDAR_ID, calID)
              put(Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
          }
