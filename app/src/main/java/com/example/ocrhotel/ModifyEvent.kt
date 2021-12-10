@@ -10,10 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.setFragmentResultListener
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
 import com.example.ocrhotel.databinding.FragmentSecondBinding
+import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
+import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOptionalParameter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -22,6 +25,10 @@ class ModifyEvent : Fragment() {
     private var eventName = "null"
     private var eventDate = "null"
     private var eventHour = "null"
+
+    private val algo = Algorithm()
+    private var title= ""
+    private var dates = mutableListOf<Long>()
 
     private var _binding: FragmentModifyEventBinding? = null
 
@@ -34,6 +41,19 @@ class ModifyEvent : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
+        super.onCreate(savedInstanceState)
+        // Use the Kotlin extension in the fragment-ktx artifact
+        setFragmentResultListener("eventData") { requestKey, bundle ->
+
+            // Receive both results, this is here to display the usage but can be definitely improved.
+            val results = bundle.get("ocrResults") as ReadOperationResult
+            val textResults = bundle.getString("ocrStringResults","")
+            title = algo.extractTitleFromReadOperationResult(results)
+            dates = algo.extractDates(textResults) as MutableList<Long>
+            // Do something with the result
+        }
+
         _binding = FragmentModifyEventBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -41,21 +61,27 @@ class ModifyEvent : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO: if event found, put the values from output of algo
-        if(false){
+        title = arguments?.getString("title") as String
+        val date = arguments?.getSerializable("date") as LocalDateTime
 
+        val currentDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val currentHourFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        //TODO: if event found, put the values from output of algo
+        if(title != "" && title != null){
+            eventDate = date.format(currentDateFormatter)
+            eventHour = date.format(currentHourFormatter)
         }
         //TODO: if NO event found, put in dummy values
         else{
             val current = LocalDateTime.now()
-            val currentDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-            val currentHourFormatter = DateTimeFormatter.ofPattern("HH:mm")
             eventDate = current.format(currentDateFormatter)
             eventHour = current.format(currentHourFormatter)
-            binding.EventDate.setText(eventDate.toString())
-            binding.EventHour.setText(eventHour.toString())
         }
 
+        binding.EventDate.setText(eventDate.toString())
+        binding.EventHour.setText(eventHour.toString())
+        binding.EventTitle.setText(title)
 
 
         binding.continued.setOnClickListener {
@@ -79,9 +105,6 @@ class ModifyEvent : Fragment() {
         }
 
         binding.submit.setOnClickListener {
-
-
-
             eventName = binding.EventTitle.text.toString()
             eventDate = binding.EventDate.text.toString()
             eventHour = binding.EventHour.text.toString()

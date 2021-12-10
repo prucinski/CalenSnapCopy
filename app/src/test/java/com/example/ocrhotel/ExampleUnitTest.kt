@@ -26,7 +26,7 @@ class OCRUnitTest{
     @Test
     fun ocrWorksWithFile() {
         val file = File("C:\\Users\\matey\\Downloads\\event.jpg")
-        client.getImageTextData(file){
+        client.getImageTextData(file.readBytes()){
                 it -> it?.let {
                     assertEquals("09.11",it.contains("09.11"))
                 }

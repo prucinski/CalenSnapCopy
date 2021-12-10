@@ -22,4 +22,5 @@
     <string name="submit">submit</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">I\'d like this to be the page that contains: settings/buy premium/scan history. It\'s late and I don\'t want to add buttons now</string>
+    <string name="continue_label">Continue</string>
 </resources>

@@ -7,14 +7,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentSecondBinding
-import java.io.File
 
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class SecondFragment : Fragment() {
+
+    class EventDataViewModel : ViewModel() {
+        var eventData: MutableLiveData<Algorithm.Result?> = MutableLiveData(null)
+        var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    }
 
     private var _binding: FragmentSecondBinding? = null
 
@@ -24,46 +36,74 @@ class SecondFragment : Fragment() {
 
     private lateinit var imageProvider: ImageProvider
 
+    private val algorithmModel: EventDataViewModel by activityViewModels()
+
+
+    private var eventData: Algorithm.Result? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
+
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        imageProvider = ImageProvider(this, activity, this::handleImage)
-//        binding.uploadImage.setOnClickListener {
-//            imageProvider.useGallery()
-//            handleImage(imageProvider)
-//        }
-//
-//        binding.camera.setOnClickListener {
-//            imageProvider.useCamera()
-//        }
+        imageProvider = ImageProvider(this, activity, this::handleImage)
+        binding.uploadImage.setOnClickListener {
+            imageProvider.useGallery()
+        }
 
-        handleImageURL("https://s3.amazonaws.com/thumbnails.venngage.com/template/112a39f4-2d97-44aa-ae3a-0e95a60abbce.png")
+        binding.camera.setOnClickListener {
+            imageProvider.useCamera()
+        }
+        algorithmModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
+            binding.loadingSpinner.visibility = if (isLoading) View.VISIBLE else View.GONE
+        })
 
+        algorithmModel.eventData.observe(viewLifecycleOwner, { res ->
+            if (res != null) {
+                // Reset the model for the next time
+                algorithmModel.eventData.postValue(null)
+                algorithmModel.isLoading.postValue(false)
+
+                // Prepare data to be passed to ModifyEvent
+                val bundle =
+                    bundleOf(
+                        "date" to res.dateTime,
+                        "title" to algorithmModel.eventData.value!!.name
+                    )
+
+                // Proceed to the ModifyEvent fragment
+                findNavController().navigate(
+                    R.id.action_SecondFragment_to_modifyEvent,
+                    bundle
+                )
+            }
+        })
     }
 
-    private fun handleImage(uri: String) {
-//        val file = File(uri.path)
-        val ocr = OCRAzureREST()
+    private fun handleImage(uri: Uri) {
+        activity?.let { a ->
+            a.contentResolver.openInputStream(uri)?.let { inputStream ->
+                val bytes = inputStream.readBytes();
+                val ocr = OCRAzureREST()
+                val algo = Algorithm()
+                algorithmModel.isLoading.postValue(true) // Tell the loading spinner that it can stop
+                ocr.getImageTextData(bytes) { s ->
+                    s?.let { result ->
+                        Log.d("OCR", result)
+                        val data = algo.execute(ocr.resultsText, ocr.results)
+                        algorithmModel.eventData.postValue(data)
+                    }
+                }
+            }
 
-        ocr.getImageTextDataFromURL(uri) { s -> s?.let { Log.d("OCR", it) } }
-
-        val output = ocr.resultsText;
-
-        output?.let { Log.d("OCR", it) }
-        // TODO: handle creation of image
-    }
-
-    private fun handleImageURL(url: String) {
-        val ocr = OCRAzureREST()
+        }
 
     }
 

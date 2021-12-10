@@ -10,23 +10,25 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.lang.IllegalStateException
 import java.lang.StringBuilder
+import java.nio.file.Files
 import java.util.*
 import java.util.function.Consumer
 
 class OCRAzureREST {
-    private var results: ReadOperationResult? = null
+    var results: ReadOperationResult? = null
     var resultsText: String? = null
 
         private set
 
-    private fun postFile(file: File, callback: Callback): Call {
+    private fun postFile(data: ByteArray, callback: Callback): Call {
         val request = Request.Builder()
             .addHeader("Content-Type", "application/octet-stream")
             .addHeader("Ocp-Apim-Subscription-Key", subscriptionKey)
             .url(POST_URLBase)
-            .post(file.asRequestBody(MEDIA_TYPE_FILE))
+            .post(data.toRequestBody(MEDIA_TYPE_FILE))
             .build()
         val call = client.newCall(request)
         call.enqueue(callback)
@@ -35,13 +37,13 @@ class OCRAzureREST {
 
     /**
      * Reads text from raw file data using the Azure API.
-     * @param file File to be received.
+     * @param data ByteArray to be received.
      * Supported image formats: JPEG, PNG, BMP, PDF and TIFF.
      * For the free tier, only the first 2 pages are processed. File size less than 50MB (4MB for the free tier).
      * After that, get the ReadOperationResults results variable in order to process it.
      */
-    fun getImageTextData(file: File, callback: Consumer<String?>) {
-        postFile(file, object : Callback {
+    fun getImageTextData(data: ByteArray, callback: Consumer<String?>) {
+        postFile(data, object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
             }
@@ -126,7 +128,7 @@ class OCRAzureREST {
         for (pageResult in results!!.analyzeResult().readResults()) {
             for (line in pageResult.lines()) {
                 builder.append(line.text())
-                builder.append("\n")
+                builder.append(" \n ")
             }
         }
         resultsText = builder.toString()
@@ -159,7 +161,7 @@ class OCRAzureREST {
             val file = File("C:\\Users\\matey\\Downloads\\image.jpg")
             val url = "https://i.imgur.com/FEiKUeh.jpg"
             val ocrClient = OCRAzureREST()
-            ocrClient.getImageTextData(file) { x: String? -> println(x) }
+            ocrClient.getImageTextData(Files.readAllBytes(file.toPath())) { x: String? -> println(x) }
 
             ocrClient.getImageTextDataFromURL(url) { x: String? -> println(x)}
 
