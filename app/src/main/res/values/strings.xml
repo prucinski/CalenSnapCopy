@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OCRHotel</string>
+    <string name="app_name">CalenSnap</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="main_menu_label">Main Menu</string>
