@@ -25,6 +25,7 @@ class SecondFragment : Fragment() {
     class EventDataViewModel : ViewModel() {
         var eventData: MutableLiveData<Algorithm.Result?> = MutableLiveData(null)
         var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+        var errorOccured: MutableLiveData<Boolean> = MutableLiveData(false)
 
     }
 
@@ -61,8 +62,21 @@ class SecondFragment : Fragment() {
         binding.camera.setOnClickListener {
             imageProvider.useCamera()
         }
+
         algorithmModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
             binding.loadingSpinner.visibility = if (isLoading) View.VISIBLE else View.GONE
+        })
+
+        algorithmModel.errorOccured.observe(viewLifecycleOwner, { isError ->
+            if (isError) {
+                Toast.makeText(
+                    context,
+                    "Sorry, there has been an error while processing your image.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                algorithmModel.errorOccured.postValue(false)
+                Log.w("OCR", "there has been an error!")
+            }
         })
 
         algorithmModel.eventData.observe(viewLifecycleOwner, { res ->
@@ -70,6 +84,8 @@ class SecondFragment : Fragment() {
                 // Reset the model for the next time
                 algorithmModel.eventData.postValue(null)
                 algorithmModel.isLoading.postValue(false)
+                algorithmModel.errorOccured.postValue(false)
+
 
                 // Prepare data to be passed to ModifyEvent
                 val bundle =
@@ -88,19 +104,29 @@ class SecondFragment : Fragment() {
     }
 
     private fun handleImage(uri: Uri) {
+        fun handleError() {
+
+            algorithmModel.errorOccured.postValue(true)
+            algorithmModel.isLoading.postValue(false)
+        }
+
         activity?.let { a ->
             a.contentResolver.openInputStream(uri)?.let { inputStream ->
                 val bytes = inputStream.readBytes();
                 val ocr = OCRAzureREST()
                 val algo = Algorithm()
                 algorithmModel.isLoading.postValue(true) // Tell the loading spinner that it can stop
-                ocr.getImageTextData(bytes) { s ->
+                ocr.getImageTextData(bytes, { s ->
                     s?.let { result ->
                         Log.d("OCR", result)
-                        val data = algo.execute(ocr.resultsText, ocr.results)
-                        algorithmModel.eventData.postValue(data)
+                        try {
+                            val data = algo.execute(ocr.resultsText, ocr.results)
+                            algorithmModel.eventData.postValue(data)
+                        } catch (e: Exception) {
+                            handleError()
+                        }
                     }
-                }
+                }) { e -> handleError() }
             }
 
         }
