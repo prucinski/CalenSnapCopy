@@ -42,14 +42,19 @@ class OCRAzureREST {
      * For the free tier, only the first 2 pages are processed. File size less than 50MB (4MB for the free tier).
      * After that, get the ReadOperationResults results variable in order to process it.
      */
-    fun getImageTextData(data: ByteArray, callback: Consumer<String?>) {
+    fun getImageTextData(data: ByteArray, callback: Consumer<String?>, failureCallback: Consumer<IOException>) {
         postFile(data, object : Callback {
             override fun onFailure(call: Call, e: IOException) {
+                failureCallback.accept(e)
                 e.printStackTrace()
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                if (!response.isSuccessful) {
+                    val e = IOException("Unexpected code $response")
+                    failureCallback.accept(e)
+                    throw e
+                }
                 val operationId = extractOperationIdFromOpLocation(response.headers["operation-location"])
                 val vision = compVisClient.computerVision() as ComputerVisionImpl
                 var pollForResult = true
@@ -161,7 +166,7 @@ class OCRAzureREST {
             val file = File("C:\\Users\\matey\\Downloads\\image.jpg")
             val url = "https://i.imgur.com/FEiKUeh.jpg"
             val ocrClient = OCRAzureREST()
-            ocrClient.getImageTextData(Files.readAllBytes(file.toPath())) { x: String? -> println(x) }
+            ocrClient.getImageTextData(Files.readAllBytes(file.toPath()), { x: String? -> println(x) }, ::println)
 
             ocrClient.getImageTextDataFromURL(url) { x: String? -> println(x)}
 
