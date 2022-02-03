@@ -17,11 +17,11 @@ if (DATABASE_URL is None):
 
 app.logger.info(f'Trying to connect to database at {DATABASE_URL}')
 
-# Establish a connection to the postgres server using the environment variable "DATABASE_URL"
-connection = psycopg2.connect(DATABASE_URL)
 
 @app.route('/')
 def index():
+    # Establish a connection to the postgres server using the environment variable "DATABASE_URL"
+    connection = psycopg2.connect(DATABASE_URL)
     # For now, retrieve the postgres version and send it on the "/" route
     cursor = connection.cursor()
     cursor.execute('SELECT version()')
