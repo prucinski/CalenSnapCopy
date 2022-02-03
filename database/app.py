@@ -28,7 +28,7 @@ def index():
     version = cursor.fetchone()
 
     # This is sent as a JSON Object
-    return {'version': version}
+    return {'test': "Hello World!", 'version': version}
 
 if __name__ == '__main__':
     app.run()
