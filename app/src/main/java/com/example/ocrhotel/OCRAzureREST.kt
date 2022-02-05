@@ -1,5 +1,6 @@
 package com.example.ocrhotel
 
+import android.util.Log
 import com.microsoft.azure.cognitiveservices.vision.computervision.ComputerVisionManager
 import com.microsoft.azure.cognitiveservices.vision.computervision.implementation.ComputerVisionImpl
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.OperationStatusCodes
@@ -16,6 +17,7 @@ import java.lang.StringBuilder
 import java.nio.file.Files
 import java.util.*
 import java.util.function.Consumer
+
 
 class OCRAzureREST {
     var results: ReadOperationResult? = null
@@ -45,13 +47,15 @@ class OCRAzureREST {
     fun getImageTextData(data: ByteArray, callback: Consumer<String?>, failureCallback: Consumer<IOException>) {
         postFile(data, object : Callback {
             override fun onFailure(call: Call, e: IOException) {
+                Log.w("OCRAzureREST", "Callback in onFailure() failed.")
                 failureCallback.accept(e)
                 e.printStackTrace()
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful) {
-                    val e = IOException("Unexpected code $response")
+                    Log.w("OCRAzureREST", "Callback in onResponse() failed.")
+                    val e = IOException("Unexpected code $response ,${response.message}")
                     failureCallback.accept(e)
                     throw e
                 }
@@ -71,7 +75,9 @@ class OCRAzureREST {
                     }
                 }
                 extractText()
+                Log.w("OCRAzureRest", "text extracted. Attempting to callback...")
                 callback.accept(resultsText)
+                Log.w("OCRAzureRest", "callback accepted.")
             }
         })
     }

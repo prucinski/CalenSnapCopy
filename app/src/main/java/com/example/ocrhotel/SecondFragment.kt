@@ -75,7 +75,7 @@ class SecondFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
                 algorithmModel.errorOccured.postValue(false)
-                Log.w("OCR", "there has been an error!")
+                Log.w("OCRSecondFragment", "there has been an error!")
             }
         })
 
