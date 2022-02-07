@@ -166,7 +166,7 @@ class OCRAzureREST {
             }
             throw IllegalStateException("Something went wrong: Couldn't extract the operation id from the operation location")
         }
-
+        /*
         @JvmStatic
         fun main(args: Array<String>) {
             val file = File("C:\\Users\\matey\\Downloads\\image.jpg")
@@ -177,5 +177,6 @@ class OCRAzureREST {
             ocrClient.getImageTextDataFromURL(url) { x: String? -> println(x)}
 
         }
+        */
     }
 }
