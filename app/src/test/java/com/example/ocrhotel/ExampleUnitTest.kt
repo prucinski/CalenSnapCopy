@@ -23,13 +23,13 @@ class OCRUnitTest{
     }
 
     // Needs to have the file be present.
-    @Test
-    fun ocrWorksWithFile() {
-        val file = File("C:\\Users\\matey\\Downloads\\event.jpg")
-        client.getImageTextData(file.readBytes()){
-                it -> it?.let {
-                    assertEquals("09.11",it.contains("09.11"))
-                }
-        }
-    }
+//    @Test
+//    fun ocrWorksWithFile() {
+//        val file = File("C:\\Users\\matey\\Downloads\\event.jpg")
+//        client.getImageTextData(file.readBytes()){
+//                it -> it?.let {
+//                    assertEquals("09.11",it.contains("09.11"))
+//                }
+//        }
+//    }
 }
