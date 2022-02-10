@@ -16,5 +16,5 @@ VALUES (
 INSERT INTO event (event_time, event_location)
 VALUES (
         CURRENT_TIMESTAMP,
-        POINT(57.1648, 2.1015),
+        POINT(57.1648, 2.1015)
     );

@@ -13,5 +13,5 @@ CREATE TABLE profile (
 CREATE TABLE event (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     event_time TIMESTAMP NOT NULL,
-    event_location POINT,
+    event_location POINT
 );
