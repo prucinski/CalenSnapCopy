@@ -1,5 +1,4 @@
 INSERT INTO profile (
-        id,
         username,
         password,
         name,
@@ -7,7 +6,6 @@ INSERT INTO profile (
         remaining_free_uses
     )
 VALUES (
-        0,
         'erik_user',
         'password',
         'Erik',
@@ -15,9 +13,8 @@ VALUES (
         10
     );
 
-INSERT INTO event (event_time, event_location, profile_id)
+INSERT INTO event (event_time, event_location)
 VALUES (
         CURRENT_TIMESTAMP,
         POINT(57.1648, 2.1015),
-        0
     );

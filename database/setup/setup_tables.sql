@@ -1,8 +1,8 @@
 -- Note: "user" is a reserved name in postgresql, therefore the name "profile" was chosen as a name for the table.
 CREATE TABLE profile (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR NOT NULL,
-    password VARCHAR NOT NULL,
+    PASSWORD VARCHAR NOT NULL,
     name VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
     premium BOOLEAN NOT NULL DEFAULT FALSE,
@@ -11,9 +11,7 @@ CREATE TABLE profile (
 );
 
 CREATE TABLE event (
-    id SERIAL PRIMARY KEY,
-    profile_id SERIAL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     event_time TIMESTAMP NOT NULL,
     event_location POINT,
-    CONSTRAINT fk_profile_id FOREIGN KEY(profile_id) REFERENCES profile(id)
 );

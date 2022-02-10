@@ -1,3 +1,4 @@
+import uuid
 from flask import Flask
 from flask_cors import CORS
 import os
@@ -18,18 +19,30 @@ if (DATABASE_URL is None):
 app.logger.info(f'Trying to connect to database at {DATABASE_URL}')
 
 
-@app.route('/')
-def index():
+def get_cursor():
     # Establish a connection to the postgres server using the environment variable "DATABASE_URL"
     connection = psycopg2.connect(DATABASE_URL)
-    # For now, retrieve the postgres version and send it on the "/" route
+    # Get and return the cursor
     cursor = connection.cursor()
+    return cursor
+
+
+@app.route('/')
+def index():
+    cursor = get_cursor()
     cursor.execute('SELECT version()')
     version = cursor.fetchone()
 
     # This is sent as a JSON Object
-    return {'test': "Hello World!", 'version': version}
+    return {'health': 'ok'}
 
+
+@app.route('/profile/<uuid:profile_id>')
+def profile(profile_id):
+    
+    return {"profile_id": profile_id}
+
+
+# This is for locally testing the application
 if __name__ == '__main__':
     app.run()
-    
