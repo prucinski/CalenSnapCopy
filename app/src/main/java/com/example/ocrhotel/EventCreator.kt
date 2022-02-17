@@ -28,7 +28,7 @@ class EventCreator(eventName: String, eventDate: String, eventTime: String, even
         private val month = eventDate.slice(3..4)
         private val day = eventDate.slice(0..1)
         private val hour = eventTime.slice(0..1)
-        private val minute = eventTime.slice(3..4)
+        private  val minute = eventTime.slice(3..4)
         private val hourEnd = (hour.toInt() + eventDuration).toString()
 
 
