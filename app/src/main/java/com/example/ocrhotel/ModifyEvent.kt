@@ -96,9 +96,6 @@ class ModifyEvent : Fragment() {
                         findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
                     }
                 }
-
-
-
             }
         }
 
@@ -108,8 +105,6 @@ class ModifyEvent : Fragment() {
             eventHour = binding.EventHour.text.toString()
             var printEventDetails= Toast.makeText(context, eventDate, Toast.LENGTH_SHORT)
             printEventDetails.show()
-
-
         }
     }
     private fun checkIfHasPermission() :Boolean{
