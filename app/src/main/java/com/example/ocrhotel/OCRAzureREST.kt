@@ -1,10 +1,14 @@
 package com.example.ocrhotel
 
+import android.content.Context
 import android.util.Log
+
 import com.microsoft.azure.cognitiveservices.vision.computervision.ComputerVisionManager
 import com.microsoft.azure.cognitiveservices.vision.computervision.implementation.ComputerVisionImpl
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.OperationStatusCodes
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
+import id.zelory.compressor.Compressor
+import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -138,8 +142,7 @@ class OCRAzureREST {
         val builder = StringBuilder()
         for (pageResult in results!!.analyzeResult().readResults()) {
             for (line in pageResult.lines()) {
-                builder.append(line.text())
-                builder.append(" \n ")
+                builder.append(line.text()+" ")
             }
         }
         resultsText = builder.toString()
@@ -166,15 +169,15 @@ class OCRAzureREST {
             }
             throw IllegalStateException("Something went wrong: Couldn't extract the operation id from the operation location")
         }
-        /*
+
         @JvmStatic
         fun main(args: Array<String>) {
-            val file = File("C:\\Users\\matey\\Downloads\\image.jpg")
-            val url = "https://i.imgur.com/FEiKUeh.jpg"
+            val file = File("C:\\MEGA\\Images\\78994948_p0.png")
+            val url = "https://th.bing.com/th/id/R.89c5a2342fea6af0fa9927eefd992526?rik=JfRVauzSZvXkQA&pid=ImgRaw&r=0"
             val ocrClient = OCRAzureREST()
-            ocrClient.getImageTextData(Files.readAllBytes(file.toPath()), { x: String? -> println(x) }, ::println)
 
-            ocrClient.getImageTextDataFromURL(url) { x: String? -> println(x)}
+
+//            ocrClient.getImageTextDataFromURL(url) { x: String? -> println(x)}
 
         }
         */
