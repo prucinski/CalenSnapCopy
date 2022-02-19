@@ -60,7 +60,7 @@ class Algorithm {
     // Regex groups are the following: DD.MM.YYYY || MM.DD.YYYY
     private val sep = " ./\\-"
 
-    private val dateRegex = Regex("""(\d{1,2})(?:st|nd|rd|th)?[$sep]($monthsString|\d{1,2})(?:[$sep](\d{2,4}))?|($monthsString|\d{1,2})[$sep](\d{1,2})(?:st|nd|rd|th)?(?:[$sep](\d{2,4}))?""".trimMargin(),option=RegexOption.LITERAL)
+    private val dateRegex = Regex("""(\d{1,2})(?:st|nd|rd|th)?[$sep]($monthsString|\d{1,2})(?:[$sep](\d{2,4}))?|($monthsString|\d{1,2})[$sep](\d{1,2})(?:st|nd|rd|th)?(?:[$sep](\d{2,4}))?""".trimMargin())
 
     private val timeRegex = Regex("""(\d{1,2})[.:,](\d{1,2})\s?(am|pm)?|(\d{1,2})(am|pm)""")
 
