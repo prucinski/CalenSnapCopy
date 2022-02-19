@@ -180,6 +180,5 @@ class OCRAzureREST {
 //            ocrClient.getImageTextDataFromURL(url) { x: String? -> println(x)}
 
         }
-        */
     }
 }
