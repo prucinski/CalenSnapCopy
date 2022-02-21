@@ -1,15 +1,27 @@
 package com.example.ocrhotel
 
 import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.sql.Timestamp
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.util.*
 
-private val baseUrl = HttpUrl.Builder().scheme("https").host("calensnap-api.herokuapp.com")
+/**
+ * Helper Functions
+ * */
 
-private fun path(path: String): HttpUrl {
-    return baseUrl.addPathSegment(path).build()
+private val client = OkHttpClient()
+
+private fun path(vararg paths: String): HttpUrl {
+    val baseUrl = HttpUrl.Builder().scheme("https").host("calensnap-api.herokuapp.com")
+    for (path in paths) {
+        baseUrl.addPathSegment(path)
+    }
+    return baseUrl.build()
 }
 
 private fun baseRequest(url: HttpUrl): Request.Builder {
@@ -32,14 +44,14 @@ private fun get(url: HttpUrl, callback: Callback): Call {
     return makeCall(request, callback)
 }
 
-private fun post(url: HttpUrl, data: ByteArray, callback: Callback): Call {
+private fun post(url: HttpUrl, data: String, callback: Callback): Call {
     val request = baseRequest(url)
         .post(data.toRequestBody())
         .build()
     return makeCall(request, callback)
 }
 
-private fun put(url: HttpUrl, data: ByteArray, callback: Callback): Call {
+private fun put(url: HttpUrl, data: String, callback: Callback): Call {
     val request = baseRequest(url)
         .put(data.toRequestBody())
         .build()
@@ -53,19 +65,49 @@ private fun delete(url: HttpUrl, callback: Callback): Call {
     return makeCall(request, callback)
 }
 
-private val client = OkHttpClient()
-private val MEDIA_TYPE_URL = "application/json".toMediaType()
 
+/**
+ * API functions
+ * */
+
+fun createEvent(
+    profileId: UUID,
+    eventTime: LocalDateTime,
+    latitude: Double,
+    longitude: Double,
+    callback: Callback
+) {
+    val time = Timestamp.from(eventTime.toInstant(ZoneOffset.UTC)).toString()
+    val data: String = """
+    {
+        "event_location": {
+            "N": ${latitude},
+            "W": ${longitude}
+        },
+        "event_time": "$time"
+    }
+    """
+
+    post(path("events", profileId.toString()), data, callback)
+}
+
+/**
+ * Testing
+ * */
 
 fun main(args: Array<String>) {
 
-    get(path("/"), object : Callback {
+    val printCallback = object : Callback {
         override fun onFailure(call: Call, e: IOException) {
             e.printStackTrace()
         }
 
         override fun onResponse(call: Call, response: Response) {
             println(response);
-        };
-    })
+        }
+    }
+    createEvent(UUID.randomUUID(), LocalDateTime.now(), 0.0, 0.0, printCallback)
+
+    get(path(""), printCallback)
+    post(path(""), "", printCallback)
 }
