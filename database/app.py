@@ -72,7 +72,7 @@ def get_events(profile_id):
         cursor.execute(""" SELECT * FROM event; """)
         events = cursor.fetchall()
 
-        return {'events': map(lambda x: {'event_id': x[0], 'event_time': x[1], 'event_location': x[2]}, events)}, 200
+        return {'events': list(map(lambda x: {'event_id': x[0], 'event_time': x[1], 'event_location': x[2]}, events))}, 200
 
     except:
         return {'success': False}, 400
