@@ -79,7 +79,9 @@ def get_events(profile_id):
 
         return {'events': list(map(lambda x: {'event_id': x[0], 'event_time': x[1], 'event_location': to_point(x[2])}, events))}, 200
 
-    except:
+    except Exception as e:
+        app.logger.warning("Error: ", e)
+
         return {'success': False}, 400
 
 
