@@ -70,6 +70,7 @@ private fun delete(url: HttpUrl, callback: Callback): Call {
  * API functions
  * */
 
+// Create a new event for the user with profileId.
 fun createEvent(
     profileId: UUID,
     eventTime: LocalDateTime,
@@ -90,6 +91,12 @@ fun createEvent(
 
     post(path("events", profileId.toString()), data, callback)
 }
+
+// Read all past events for the user with profile.
+fun readEvents(profileId: UUID) {
+    get(path(""))
+}
+
 
 /**
  * Testing
