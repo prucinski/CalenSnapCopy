@@ -67,7 +67,7 @@ def get_events(profile_id):
 
     def to_point(point_string):
         parts = point_string.split(',')
-        parts = map(lambda x: float(x.strip(')').strip('(')), parts)
+        parts = list(map(lambda x: float(x.strip(')').strip('(')), parts))
         return {'N': parts[0], 'W': parts[1]}
 
     try:
