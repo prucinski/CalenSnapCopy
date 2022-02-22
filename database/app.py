@@ -65,6 +65,11 @@ def delete_profile(profile_id):
 def get_events(profile_id):
     """ Retrieve all events that were created by the user with 'profile_id'. """
 
+    def to_point(point_string):
+        parts = point_string.split(',')
+        parts = map(lambda x: float(x.strip(')').strip('(')), parts)
+        return {'N': parts[0], 'W': parts[1]}
+
     try:
         connection = connect()
         cursor = connection.cursor()
@@ -72,7 +77,7 @@ def get_events(profile_id):
         cursor.execute(""" SELECT * FROM event; """)
         events = cursor.fetchall()
 
-        return {'events': list(map(lambda x: {'event_id': x[0], 'event_time': x[1], 'event_location': x[2]}, events))}, 200
+        return {'events': list(map(lambda x: {'event_id': x[0], 'event_time': x[1], 'event_location': to_point(x[2])}, events))}, 200
 
     except:
         return {'success': False}, 400
