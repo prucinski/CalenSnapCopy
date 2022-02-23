@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_MainMenu_to_modifyEvent"
             app:destination="@id/modifyEvent" />
+        <action
+            android:id="@+id/action_MainMenu_to_eventHistoryFragment"
+            app:destination="@id/eventHistoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -63,4 +66,9 @@
             android:name="date"
             app:argType="java.time.LocalDateTime" />
     </fragment>
+    <fragment
+        android:id="@+id/eventHistoryFragment"
+        android:name="com.example.ocrhotel.EventHistoryFragment"
+        android:label="fragment_event_history"
+        tools:layout="@layout/fragment_event_history" />
 </navigation>

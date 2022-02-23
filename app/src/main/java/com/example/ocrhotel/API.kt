@@ -1,15 +1,11 @@
 package com.example.ocrhotel
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
 import java.io.IOException
 import java.sql.Timestamp
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.*
 
@@ -98,16 +94,24 @@ fun createEvent(
 class APICoordinates {
     val N: Double = 0.0
     val W: Double = 0.0
+
+    override fun toString(): String {
+        return "${N}N, ${W}W"
+    }
 }
 
 class APIEvent {
     val event_id: UUID = UUID(0, 0)
-    val event_time: Timestamp = Timestamp(0L)
+    val event_time: String = ""
     val event_location: APICoordinates = APICoordinates()
+    override fun toString(): String {
+        return "(ID: $event_id) $event_time $event_location"
+    }
 }
 
 class APIEvents {
     val events: Array<APIEvent> = arrayOf()
+
 }
 
 // Read all past events for the user with profile.
@@ -115,32 +119,31 @@ fun readEvents(profileId: UUID, callback: Callback) {
     get(path("events", profileId.toString()), callback)
 }
 
-
-/**
- * Testing
- * */
-
-fun main(args: Array<String>) {
-
-    val printCallback = object : Callback {
+fun <T> decodeCallback(type: Class<T>, callback: (T) -> Unit): Callback {
+    return object : Callback {
         override fun onFailure(call: Call, e: IOException) {
             e.printStackTrace()
         }
 
         override fun onResponse(call: Call, response: Response) {
             println(response)
-            val builder = GsonBuilder()
-            builder.setDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSX")
-            val gson = builder.create()
+            val gson = Gson()
             val data = response.body?.string()
-            val result = gson.fromJson(data, APIEvents::class.java)
-            for (event in result.events) {
-                println("${event.event_id}, ${event.event_location}, ${event.event_time}")
-            }
+            val result = gson.fromJson(data, type)
+            callback(result)
         }
     }
-//    createEvent(UUID.randomUUID(), LocalDateTime.now(), 0.0, 0.0, printCallback)
-    readEvents(UUID.randomUUID(), printCallback)
+}
+
+/**
+ * Testing
+ * */
 
 
+fun main(args: Array<String>) {
+    readEvents(UUID.randomUUID(), decodeCallback(APIEvents::class.java) { result ->
+        for (event in result.events) {
+            println("${event.event_id}, ${event.event_location}, ${event.event_time}")
+        }
+    })
 }

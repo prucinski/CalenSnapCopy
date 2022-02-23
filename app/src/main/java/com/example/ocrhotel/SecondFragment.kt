@@ -30,7 +30,6 @@ class SecondFragment : Fragment() {
         var eventData: MutableLiveData<Algorithm.Result?> = MutableLiveData(null)
         var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
         var errorOccurred: MutableLiveData<Boolean> = MutableLiveData(false)
-
     }
 
     private var _binding: FragmentSecondBinding? = null
