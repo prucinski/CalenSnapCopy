@@ -1,7 +1,10 @@
 package com.example.ocrhotel
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.io.IOException
 import java.sql.Timestamp
 import java.time.Instant
@@ -92,9 +95,24 @@ fun createEvent(
     post(path("events", profileId.toString()), data, callback)
 }
 
+class APICoordinates {
+    val N: Double = 0.0
+    val W: Double = 0.0
+}
+
+class APIEvent {
+    val event_id: UUID = UUID(0, 0)
+    val event_time: Timestamp = Timestamp(0L)
+    val event_location: APICoordinates = APICoordinates()
+}
+
+class APIEvents {
+    val events: Array<APIEvent> = arrayOf()
+}
+
 // Read all past events for the user with profile.
-fun readEvents(profileId: UUID) {
-    get(path(""))
+fun readEvents(profileId: UUID, callback: Callback) {
+    get(path("events", profileId.toString()), callback)
 }
 
 
@@ -110,11 +128,19 @@ fun main(args: Array<String>) {
         }
 
         override fun onResponse(call: Call, response: Response) {
-            println(response);
+            println(response)
+            val builder = GsonBuilder()
+            builder.setDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSX")
+            val gson = builder.create()
+            val data = response.body?.string()
+            val result = gson.fromJson(data, APIEvents::class.java)
+            for (event in result.events) {
+                println("${event.event_id}, ${event.event_location}, ${event.event_time}")
+            }
         }
     }
-    createEvent(UUID.randomUUID(), LocalDateTime.now(), 0.0, 0.0, printCallback)
+//    createEvent(UUID.randomUUID(), LocalDateTime.now(), 0.0, 0.0, printCallback)
+    readEvents(UUID.randomUUID(), printCallback)
 
-    get(path(""), printCallback)
-    post(path(""), "", printCallback)
+
 }
