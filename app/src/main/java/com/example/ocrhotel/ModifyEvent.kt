@@ -66,8 +66,8 @@ class ModifyEvent : Fragment() {
 
         //TODO: GET THAT EVENT ARRAY - change key
         //receive the event list from SecondFragment.
-        //eventsList = arguments?.getSerializable("dat") as List<Event>
-        //numberOfEvents = eventsList.size
+        eventsList = arguments?.getSerializable("dat") as List<Event>
+        numberOfEvents = eventsList.size
         Log.e("List size", " in ModifyEvent on creation: $numberOfEvents")
         val fillEvents = getResources().getStringArray(R.array.events)
         super.onViewCreated(view, savedInstanceState)
@@ -77,7 +77,6 @@ class ModifyEvent : Fragment() {
             .also{adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter}
 
-        //set the name with the first event's information. This is I think unnecessary
 
         //button "Continue".
         binding.continued.setOnClickListener {
