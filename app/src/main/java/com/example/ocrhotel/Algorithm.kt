@@ -89,8 +89,7 @@ class Algorithm {
             val flag = match.groups[4]?.value == null || match.groups[5]?.value==null
 
             // Declare the variables at the start.
-            var day = currentDate.dayOfMonth;
-            var month: Int; var year: Int
+            var day : Int; var month: Int; var year: Int
 
             // group at index 1/5 is day; Elvis operator "?:" applies if it evaluates to Null, somehow
             // day = match.groups[if(flag) 1 else 5]?.value?.toIntOrNull() ?: currentDate.dayOfMonth
@@ -155,7 +154,7 @@ class Algorithm {
             // Handles US date format.
             // TODO: Handle US format for real.
             //  (Preferably through a setting, although it should be working rn. This check is honestly unnecessary.)
-            // if (month > 12) {month=day.also{day=month}}
+            if (month > 12) {month=day.also{day=month}}
 
             // Some checks to remove invalid dates.
             // Those could be more sophisticated, e.g. checking for day based on the month (no 29th in Feb except for leap years etc.)
@@ -186,6 +185,8 @@ class Algorithm {
 
             return@map Pair(hour,minute)
         }
+
+        val dateObjects = mutableListOf<Event>()
 
         // Maps the dates with the times.
         // TODO: This doesn't seem right.
@@ -227,11 +228,13 @@ class Algorithm {
         return maxvalueText
     }
 
-    fun execute(rawText: String?, results: ReadOperationResult?): Result {
+    fun execute(rawText: String?, results: ReadOperationResult?): List<Event> {
         // This is just a stub so far.
-        val date = extractDates(rawText!!)
+        val dates = extractDates(rawText!!)
         val name = extractTitleFromReadOperationResult(results)
-        return Result(date, name)
+        return dates.map {date->
+            Event(eventName=name, eventDateTime = date)
+        }
     }
 }
 
