@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Adapter
+import android.widget.AdapterView
 import android.widget.ArrayAdapter;
 import android.widget.Spinner
 import android.widget.Toast
@@ -26,7 +28,7 @@ class ModifyEvent : Fragment() {
 
 
     //This will decide how many entries will be generated with the spinner.
-    private var numberOfEvents = 1
+    private var numberOfEvents = 3
     //The events list. It is modifiable.
     private var eventsList: List<Event> = emptyList()
     //Keep track which event we're looking at now. By default we're looking at the first event.
@@ -64,8 +66,8 @@ class ModifyEvent : Fragment() {
 
         //TODO: GET THAT EVENT ARRAY - change key
         //receive the event list from SecondFragment.
-        eventsList = arguments?.getSerializable("date") as List<Event>
-        numberOfEvents = eventsList.size
+        //eventsList = arguments?.getSerializable("dat") as List<Event>
+        //numberOfEvents = eventsList.size
         Log.e("List size", " in ModifyEvent on creation: $numberOfEvents")
         val fillEvents = getResources().getStringArray(R.array.events)
         super.onViewCreated(view, savedInstanceState)
@@ -75,12 +77,9 @@ class ModifyEvent : Fragment() {
             .also{adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter}
 
-        //set the name with the first event's information.
-        binding.EventDate.setText(eventsList[currentEvent].eventDate)
-        binding.EventHour.setText(eventsList[currentEvent].eventHour)
-        binding.EventTitle.setText(eventsList[currentEvent].eventName)
+        //set the name with the first event's information. This is I think unnecessary
 
-
+        //button "Continue".
         binding.continued.setOnClickListener {
             activity?.let { activity ->
                 //request permission from user to access their calendars
@@ -92,22 +91,46 @@ class ModifyEvent : Fragment() {
                         findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
                     }
                     else{
-                        Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG)
+                        Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()
                     }
                 }
             }
         }
+        //spinner choices. Called on view creation at index 0 (as we want it)
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
 
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                // An item was selected. You can retrieve the selected item using
+                Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
+                currentEvent = pos
+                binding.EventDate.setText(eventsList[currentEvent].eventDate)
+                binding.EventHour.setText(eventsList[currentEvent].eventHour)
+                binding.EventTitle.setText(eventsList[currentEvent].eventName)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                //Something will always be selected
+            }
+        }
+
+        //Button "submit".
         binding.submit.setOnClickListener {
             //once the button is pressed, modify the values inside the list.
             eventsList[currentEvent].eventName = binding.EventTitle.text.toString()
-            var hr
-            eventsList[currentEvent].eventDateTime = LocalDateTime.of(binding.event)
+            //spaghetti
+            //TODO - throw this out and fix UI
+            val year = binding.EventDate.text.toString().slice(6..9).toInt()
+            val month = binding.EventDate.text.toString().slice(3..4).toInt()
+            val day = binding.EventDate.text.toString().slice(0..1).toInt()
+            val hr = binding.EventHour.text.toString().slice(0..1).toInt()
+            val min = binding.EventHour.text.toString().slice(2..3).toInt()
+            eventsList[currentEvent].eventDateTime = LocalDateTime.of(year, month, day, hr, min)
             //I'm not sure if the next two lines are necessary, but I think they are since
             //the object has already been constructed.
             eventsList[currentEvent].eventDate = binding.EventDate.text.toString()
             eventsList[currentEvent].eventHour = binding.EventHour.text.toString()
             //printEventDetails.show()
+            //TODO: Automatically move user to next event. Fairly simple but left  it for now
         }
     }
     private fun checkIfHasPermission() :Boolean{
