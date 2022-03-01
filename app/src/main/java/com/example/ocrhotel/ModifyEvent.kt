@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter;
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.core.app.ActivityCompat
@@ -22,16 +24,16 @@ import java.time.format.DateTimeFormatter
 
 class ModifyEvent : Fragment() {
 
-    private var eventName = "null"
-    private var eventDate = "null"
-    private var eventHour = "null"
 
-    private val algo = Algorithm()
-    private var title= ""
-    private var dates = mutableListOf<Long>()
+    //This will decide how many entries will be generated with the spinner.
+    private var numberOfEvents = 1
+    //The events list. It is modifiable.
+    private var eventsList: List<Event> = emptyList()
+    //Keep track which event we're looking at now. By default we're looking at the first event.
+    private var currentEvent = 0;
+
 
     private var _binding: FragmentModifyEventBinding? = null
-
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -59,52 +61,53 @@ class ModifyEvent : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        //TODO: GET THAT EVENT ARRAY - change key
+        //receive the event list from SecondFragment.
+        eventsList = arguments?.getSerializable("date") as List<Event>
+        numberOfEvents = eventsList.size
+        Log.e("List size", " in ModifyEvent on creation: $numberOfEvents")
+        val fillEvents = getResources().getStringArray(R.array.events)
         super.onViewCreated(view, savedInstanceState)
+        //Applying the spinner
+        val spinner: Spinner = binding.spinner
+        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0..numberOfEvents-1))
+            .also{adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter}
 
-        title = arguments?.getString("title") as String
-        val date = arguments?.getSerializable("date") as LocalDateTime
-
-        val currentDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-        val currentHourFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
-        //TODO: if event found, put the values from output of algo
-        if(title != "" && title != null){
-            eventDate = date.format(currentDateFormatter)
-            eventHour = date.format(currentHourFormatter)
-        }
-        //if NO event found, put in dummy values
-        else{
-            val current = LocalDateTime.now()
-            eventDate = current.format(currentDateFormatter)
-            eventHour = current.format(currentHourFormatter)
-        }
-
-        binding.EventDate.setText(eventDate.toString())
-        binding.EventHour.setText(eventHour.toString())
-        binding.EventTitle.setText(title)
+        //set the name with the first event's information.
+        binding.EventDate.setText(eventsList[currentEvent].eventDate)
+        binding.EventHour.setText(eventsList[currentEvent].eventHour)
+        binding.EventTitle.setText(eventsList[currentEvent].eventName)
 
 
         binding.continued.setOnClickListener {
-
             activity?.let { activity ->
                 //request permission from user to access their calendars
                 ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
                 if(checkIfHasPermission()) {
-                    var eventCreator = EventCreator(eventName, eventDate, eventHour, 2, activity)
+                    var eventCreator = EventCreator(eventsList, activity)
                     //this is slightly wonky and has to be pressed twice - but it's a minor bug
                     if (eventCreator.addEvent()) {
                         findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
+                    }
+                    else{
+                        Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG)
                     }
                 }
             }
         }
 
         binding.submit.setOnClickListener {
-            eventName = binding.EventTitle.text.toString()
-            eventDate = binding.EventDate.text.toString()
-            eventHour = binding.EventHour.text.toString()
-            var printEventDetails= Toast.makeText(context, eventDate, Toast.LENGTH_SHORT)
-            printEventDetails.show()
+            //once the button is pressed, modify the values inside the list.
+            eventsList[currentEvent].eventName = binding.EventTitle.text.toString()
+            var hr
+            eventsList[currentEvent].eventDateTime = LocalDateTime.of(binding.event)
+            //I'm not sure if the next two lines are necessary, but I think they are since
+            //the object has already been constructed.
+            eventsList[currentEvent].eventDate = binding.EventDate.text.toString()
+            eventsList[currentEvent].eventHour = binding.EventHour.text.toString()
+            //printEventDetails.show()
         }
     }
     private fun checkIfHasPermission() :Boolean{

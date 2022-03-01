@@ -233,7 +233,6 @@ class Algorithm {
         val name = extractTitleFromReadOperationResult(results)
         return Result(date, name)
     }
-
 }
 
 
