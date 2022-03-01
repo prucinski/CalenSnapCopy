@@ -66,7 +66,7 @@ class ModifyEvent : Fragment() {
 
         //TODO: GET THAT EVENT ARRAY - change key
         //receive the event list from SecondFragment.
-        eventsList = arguments?.getSerializable("dat") as List<Event>
+        eventsList = arguments?.getSerializable("data") as List<Event>
         numberOfEvents = eventsList.size
         Log.e("List size", " in ModifyEvent on creation: $numberOfEvents")
         val fillEvents = getResources().getStringArray(R.array.events)
@@ -122,7 +122,7 @@ class ModifyEvent : Fragment() {
             val month = binding.EventDate.text.toString().slice(3..4).toInt()
             val day = binding.EventDate.text.toString().slice(0..1).toInt()
             val hr = binding.EventHour.text.toString().slice(0..1).toInt()
-            val min = binding.EventHour.text.toString().slice(2..3).toInt()
+            val min = binding.EventHour.text.toString().slice(3..4).toInt()
             eventsList[currentEvent].eventDateTime = LocalDateTime.of(year, month, day, hr, min)
             //I'm not sure if the next two lines are necessary, but I think they are since
             //the object has already been constructed.

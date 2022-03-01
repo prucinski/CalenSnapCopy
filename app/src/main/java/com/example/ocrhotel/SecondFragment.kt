@@ -94,8 +94,9 @@ class SecondFragment : Fragment() {
                 // Prepare data to be passed to ModifyEvent
                 val bundle =
                     bundleOf(
-                        "date" to res[0].eventDateTime,
-                        "title" to algorithmModel.eventData.value!![0]
+                        "data" to res!!
+                        //"date" to res[0].eventDateTime,
+                        //"title" to algorithmModel.eventData.value!![0]
                     )
 
                 // Proceed to the ModifyEvent fragment
