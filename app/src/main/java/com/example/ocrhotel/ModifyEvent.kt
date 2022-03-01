@@ -89,8 +89,8 @@ class ModifyEvent : Fragment() {
             eventHour = current.format(currentHourFormatter)
         }
 
-        binding.EventDate.setText(eventDate.toString())
-        binding.EventHour.setText(eventHour.toString())
+        binding.EventDate.setText(eventDate)
+        binding.EventHour.setText(eventHour)
         binding.EventTitle.setText(title)
 
 
