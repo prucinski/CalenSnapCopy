@@ -139,10 +139,10 @@ class Algorithm {
 
                     year = currentDate.year
 
-                    day = splitDates?.elementAt(if (flag) 0 else 1)?.toIntOrNull()
+                    day = splitDates?.elementAt(if (flag) 0 else 1).toIntOrNull()
                         ?: currentDate.dayOfMonth
 
-                    month = splitDates?.elementAt(if (flag) 1 else 0)?.toIntOrNull()
+                    month = splitDates.elementAt(if (flag) 1 else 0).toIntOrNull()
                         ?: currentDate.monthValue
 
                     return@mapNotNull Triple(year, month, day)
@@ -165,7 +165,7 @@ class Algorithm {
 
             return@mapNotNull Triple(year,month,day)
         }
-        additionalDates.addAll(dates);
+        additionalDates.addAll(dates)
 
         // Constructs the pairs of hour and minute.
         val times: List<Pair<Int,Int>> = matchesTimes.map { match ->
@@ -185,8 +185,6 @@ class Algorithm {
 
             return@map Pair(hour,minute)
         }
-
-        val dateObjects = mutableListOf<Event>()
 
         // Maps the dates with the times.
         // TODO: This doesn't seem right.

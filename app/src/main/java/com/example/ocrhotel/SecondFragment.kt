@@ -27,7 +27,7 @@ import java.io.File
 class SecondFragment : Fragment() {
 
     class EventDataViewModel : ViewModel() {
-        var eventData: MutableLiveData<Algorithm.Result?> = MutableLiveData(null)
+        var eventData: MutableLiveData<List<Event>> = MutableLiveData(null)
         var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
         var errorOccurred: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -94,8 +94,8 @@ class SecondFragment : Fragment() {
                 // Prepare data to be passed to ModifyEvent
                 val bundle =
                     bundleOf(
-                        "date" to res.dateTime,
-                        "title" to algorithmModel.eventData.value!!.name
+                        "date" to res[0].eventDateTime,
+                        "title" to algorithmModel.eventData.value!![0]
                     )
 
                 // Proceed to the ModifyEvent fragment
