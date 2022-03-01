@@ -7,5 +7,4 @@ data class Event(var eventName: String = "Event", var eventDateTime: LocalDateTi
     //strings - used only to display the data.
     var eventDate = eventDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
     var eventHour = eventDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-
 }

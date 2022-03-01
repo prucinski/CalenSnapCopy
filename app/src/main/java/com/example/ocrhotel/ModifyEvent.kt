@@ -32,9 +32,9 @@ class ModifyEvent : Fragment() {
     private var title= ""
     private var dates = mutableListOf<Long>()
 
+    //This will decide how many entries will be generated with the spinner.
+    private var numberOfEvents = 1;
     private var _binding: FragmentModifyEventBinding? = null
-
-
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -64,12 +64,14 @@ class ModifyEvent : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        var fillEvents = getResources().getStringArray(R.array.events)
         super.onViewCreated(view, savedInstanceState)
         //Applying the spinner. Will need reworking to accomodate variable numbers of events
         val spinner: Spinner = binding.spinner
-        ArrayAdapter.createFromResource(context!!, R.array.events, android.R.layout.simple_spinner_item)
+        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0..numberOfEvents-1))
             .also{adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter}
+
 
         title = arguments?.getString("title") as String
         val date = arguments?.getSerializable("date") as LocalDateTime
@@ -92,10 +94,7 @@ class ModifyEvent : Fragment() {
         binding.EventDate.setText(eventDate)
         binding.EventHour.setText(eventHour)
         binding.EventTitle.setText(title)
-
-
         binding.continued.setOnClickListener {
-
             activity?.let { activity ->
                 //request permission from user to access their calendars
                 ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
