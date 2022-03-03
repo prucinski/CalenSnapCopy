@@ -6,32 +6,67 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.OCRHotel.AppBarOverlay"/>
+<!--    <include-->
+<!--        android:id="@+id/include2"-->
+<!--        layout="@layout/content_main"-->
+<!--        app:layout_anchor="@+id/include2"-->
+<!--        app:layout_anchorGravity="center" />-->
 
-    <include layout="@layout/content_main" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="16dp"
-        app:backgroundTint="@color/dark_blue"
-        app:rippleColor="@color/white"
-        app:srcCompat="@android:drawable/ic_dialog_info"
-        tools:visibility="visible" />
-    
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_gravity="top"
         app:adSize="BANNER"
-        app:adUnitId="ca-app-pub-3940256099942544/6300978111"></com.google.android.gms.ads.AdView>
+        app:adUnitId="ca-app-pub-3940256099942544/6300978111">
+
+    </com.google.android.gms.ads.AdView>
+
+
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="65dp"
+        app:layout_anchor="@id/adView"
+        app:layout_anchorGravity="center_vertical">
+
+    </FrameLayout>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#5175F6"
+        app:itemIconSize="26dp"
+        android:layout_gravity="bottom">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="@color/white"
+            app:elevation="0dp"
+            app:menu="@menu/bottom_nav_menu" />
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/scan_again"
+        app:backgroundTint="#45B4F6"
+        app:layout_anchor="@id/bottom_bar"
+        app:maxImageSize="32dp"
+        android:elevation="300dp"
+        app:srcCompat="@drawable/cam_icon"
+        tools:ignore="ImageContrastCheck"
+        tools:visibility="visible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

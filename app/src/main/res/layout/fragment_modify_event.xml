@@ -18,7 +18,7 @@
         app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.756" />
+        app:layout_constraintVertical_bias="0.778" />
 
     <Button
         android:id="@+id/continued"
@@ -30,10 +30,10 @@
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/submit"
-        app:layout_constraintVertical_bias="0.206" />
+        app:layout_constraintVertical_bias="0.321" />
 
     <TextView
         android:id="@+id/success"
@@ -44,6 +44,7 @@
         android:textAllCaps="false"
         android:textColor="@color/dark_blue"
         android:textSize="20sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.547"
@@ -109,8 +110,10 @@
         android:text="Time (hh:mm)"
         app:layout_constraintBottom_toBottomOf="@+id/EventHour"
         app:layout_constraintEnd_toEndOf="@+id/DateText"
+        app:layout_constraintHorizontal_bias="0.525"
         app:layout_constraintStart_toStartOf="@+id/DateText"
-        app:layout_constraintTop_toTopOf="@+id/EventHour" />
+        app:layout_constraintTop_toTopOf="@+id/EventHour"
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/EventHour"
