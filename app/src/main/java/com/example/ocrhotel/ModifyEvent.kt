@@ -72,7 +72,7 @@ class ModifyEvent : Fragment() {
         val fillEvents = getResources().getStringArray(R.array.events)
         super.onViewCreated(view, savedInstanceState)
         //Applying the spinner
-        val spinner: Spinner = binding.spinner
+        val spinner: Spinner = binding.foundEventsSelector
         ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0..numberOfEvents-1))
             .also{adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter}
@@ -104,7 +104,7 @@ class ModifyEvent : Fragment() {
                 currentEvent = pos
                 binding.EventDate.setText(eventsList[currentEvent].eventDate)
                 binding.EventHour.setText(eventsList[currentEvent].eventHour)
-                binding.EventTitle.setText(eventsList[currentEvent].eventName)
+                binding.eventTitle.setText(eventsList[currentEvent].eventName)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -115,7 +115,7 @@ class ModifyEvent : Fragment() {
         //Button "submit".
         binding.submit.setOnClickListener {
             //once the button is pressed, modify the values inside the list.
-            eventsList[currentEvent].eventName = binding.EventTitle.text.toString()
+            eventsList[currentEvent].eventName = binding.eventTitle.text.toString()
             //spaghetti
             //TODO - throw this out and fix UI
             val year = binding.EventDate.text.toString().slice(6..9).toInt()

@@ -6,11 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<!--    <include-->
-<!--        android:id="@+id/include2"-->
-<!--        layout="@layout/content_main"-->
-<!--        app:layout_anchor="@+id/include2"-->
-<!--        app:layout_anchorGravity="center" />-->
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
@@ -31,7 +26,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="65dp"
-        app:layout_anchor="@id/adView"
+        app:layout_anchor="@id/main_content"
         app:layout_anchorGravity="center_vertical">
 
     </FrameLayout>

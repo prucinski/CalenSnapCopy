@@ -5,41 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/submit"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_shape"
-        android:text="@string/submit"
-        android:textColor="@color/dark_blue"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.522"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.778" />
 
-    <Button
-        android:id="@+id/continued"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/eventTitleBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_shape"
-        android:text="@string/continued"
-        android:textColor="@color/dark_blue"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:hint="Title"
+        app:helperText="Please confirm the title of the event."
+        app:helperTextEnabled="true"
+        app:hintAnimationEnabled="true"
+        app:hintEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/EventDate"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/submit"
-        app:layout_constraintVertical_bias="0.321" />
+        app:layout_constraintTop_toBottomOf="@+id/foundEventsSelector">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/eventTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/success"
         android:layout_width="294dp"
         android:layout_height="wrap_content"
-        android:text="@string/found_this_event"
+        android:text=""
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@color/dark_blue"
@@ -51,6 +45,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.09" />
+
+    <Spinner
+        android:id="@+id/foundEventsSelector"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toTopOf="@+id/eventTitleBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/success" />
 
     <EditText
         android:id="@+id/EventDate"
@@ -77,31 +80,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/EventDate" />
 
-    <EditText
-        android:id="@+id/EventTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:text="AM Concert"
-        app:layout_constraintBottom_toTopOf="@+id/EventDate"
-        app:layout_constraintEnd_toEndOf="@+id/EventDate"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/EventDate"
-        app:layout_constraintTop_toBottomOf="@+id/success"
-        app:layout_constraintVertical_bias="0.717" />
 
-    <TextView
-        android:id="@+id/EventTitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Title"
-        app:layout_constraintBottom_toBottomOf="@+id/EventTitle"
-        app:layout_constraintEnd_toEndOf="@+id/DateText"
-        app:layout_constraintStart_toStartOf="@+id/DateText"
-        app:layout_constraintTop_toTopOf="@+id/EventTitle"
-        app:layout_constraintVertical_bias="0.692" />
+
 
     <TextView
         android:id="@+id/TimeText"
@@ -130,13 +110,36 @@
         app:layout_constraintTop_toBottomOf="@+id/EventDate"
         app:layout_constraintVertical_bias="0.329" />
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="144dp"
-        android:layout_height="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/EventTitle"
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_shape"
+        android:text="@string/submit"
+        android:textColor="@color/dark_blue"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/success" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.734" />
+
+    <Button
+        android:id="@+id/continued"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_shape"
+        android:text="@string/continued"
+        android:textColor="@color/dark_blue"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.522"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submit"
+        app:layout_constraintVertical_bias="0.127" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
