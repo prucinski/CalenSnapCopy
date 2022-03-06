@@ -3,20 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/MainMenu">
+    app:startDestination="@id/home">
 
     <fragment
-        android:id="@+id/MainMenu"
-        android:name="com.example.ocrhotel.MainMenu"
+        android:id="@+id/home"
+        android:name="com.example.ocrhotel.ui.home.HomeFragment"
         android:label="@string/main_menu_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_home">
 
+<!--        <action-->
+<!--            android:id="@+id/action_FirstFragment_to_SecondFragment"-->
+<!--            app:destination="@id/SecondFragment" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_Home_to_modifyEvent"-->
+<!--            app:destination="@id/modifyEvent" />-->
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            android:id="@+id/action_home_to_settingsMenu"
+            app:destination="@id/settingsMenu" />
+        <action
+            android:id="@+id/action_home_to_SecondFragment"
             app:destination="@id/SecondFragment" />
         <action
-            android:id="@+id/action_MainMenu_to_modifyEvent"
-            app:destination="@id/modifyEvent" />
+            android:id="@+id/action_home_self"
+            app:destination="@id/home" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -24,12 +33,15 @@
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
 
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/MainMenu" />
+<!--        <action-->
+<!--            android:id="@+id/action_SecondFragment_to_FirstFragment"-->
+<!--            app:destination="@id/home" />-->
         <action
             android:id="@+id/action_SecondFragment_to_modifyEvent"
             app:destination="@id/modifyEvent" />
+        <action
+            android:id="@+id/action_SecondFragment_to_home"
+            app:destination="@id/home" />
     </fragment>
     <fragment
         android:id="@+id/settingsMenu"
@@ -40,23 +52,25 @@
         android:id="@+id/action_global_settingsMenu"
         app:destination="@id/settingsMenu" />
     <fragment
-        android:id="@+id/succesfulScan"
+        android:id="@+id/successfulScan"
         android:name="com.example.ocrhotel.SuccessfulScan"
-        android:label="SuccesfulScan" >
+        android:label="SuccessfulScan"
+        tools:layout="@layout/fragment_successful_scan">
         <action
-            android:id="@+id/action_succesfulScan_to_MainMenu"
-            app:destination="@id/MainMenu" />
+            android:id="@+id/action_successfulScan_to_Home"
+            app:destination="@id/home" />
         <action
-            android:id="@+id/action_succesfulScan_to_SecondFragment"
+            android:id="@+id/action_successfulScan_to_SecondFragment"
             app:destination="@id/SecondFragment" />
     </fragment>
     <fragment
         android:id="@+id/modifyEvent"
         android:name="com.example.ocrhotel.ModifyEvent"
-        android:label="ModifyEvent" >
+        android:label="ModifyEvent"
+        tools:layout="@layout/fragment_modify_event">
         <action
-            android:id="@+id/action_modifyEvent_to_succesfulScan"
-            app:destination="@id/succesfulScan" />
+            android:id="@+id/action_modifyEvent_to_successfulScan"
+            app:destination="@id/successfulScan" />
         <argument android:name="title"
             app:argType="string" />
         <argument

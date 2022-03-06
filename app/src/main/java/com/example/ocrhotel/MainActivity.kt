@@ -12,13 +12,14 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.ocrhotel.databinding.ActivityMainBinding
+import com.example.ocrhotel.ui.home.HomeFragment
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val adRequest = AdRequest.Builder().build()
         mAdView.loadAd(adRequest)
 
-        val firstFragment = MainMenu()
+        val firstFragment = HomeFragment()
         val secondFragment = SecondFragment()
 
         binding.fab.setOnClickListener {
@@ -50,13 +51,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home -> setCurrentFragment(firstFragment)
 
                 // Go to tutorial / help page
-                R.id.navigation_help -> Toast.makeText(baseContext, "This will lead to a tutorial!", Toast.LENGTH_SHORT).show()
+                R.id.navigation_help -> Toast.makeText(peekAvailableContext(), "This will lead to a tutorial!", Toast.LENGTH_SHORT).show()
 
                 // Go to the history page
-                R.id.navigation_history -> Toast.makeText(baseContext , "This will to the history!", Toast.LENGTH_SHORT).show()
+                R.id.navigation_history -> Toast.makeText(peekAvailableContext() , "This will to the history!", Toast.LENGTH_SHORT).show()
 
                 // Go to the settings page
-                R.id.navigation_settings -> Toast.makeText(baseContext, "This will lead to the settings menu!", Toast.LENGTH_SHORT).show()
+                R.id.navigation_settings -> Toast.makeText(peekAvailableContext(), "This will lead to the settings menu!", Toast.LENGTH_SHORT).show()
 
             }
             return@setOnItemSelectedListener true
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setCurrentFragment(fragment: Fragment){
+        // findNavController(R.id.main_content).navigate()
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.main_content,fragment)
             commit()

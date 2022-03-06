@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
 
-    <style name="Theme.OCRHotel" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.OCRHotel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Adding so that the Action bar is not visible -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -21,6 +21,10 @@
 
         <!-- I believe app crashes without this. -->
         <item name="colorSurface" >@android:color/transparent</item>
+
+        <item name="textFillColor">@color/white</item>
+
+        <item name="iconTint">@color/white</item>
 
 
     </style>

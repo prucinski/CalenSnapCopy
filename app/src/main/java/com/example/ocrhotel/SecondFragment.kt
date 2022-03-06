@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentSecondBinding
 import id.zelory.compressor.Compressor
@@ -24,7 +25,7 @@ import java.io.File
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
-class SecondFragment : Fragment() {
+class SecondFragment : Fragment(R.layout.fragment_second) {
 
     class EventDataViewModel : ViewModel() {
         var eventData: MutableLiveData<List<Event>> = MutableLiveData(null)
@@ -99,11 +100,17 @@ class SecondFragment : Fragment() {
                         //"title" to algorithmModel.eventData.value!![0]
                     )
 
-                // Proceed to the ModifyEvent fragment
-                findNavController().navigate(
-                    R.id.action_SecondFragment_to_modifyEvent,
-                    bundle
-                )
+                // Proceed to the ModifyEvent fragment - gives Fragment cannot be cast to androidx.navigation.fragment.NavHostFragment
+                // GitHub and every sane website tells me supportFragmentManager but it's not in the library??? that's why parentFM is used.
+                val navHostFragment = parentFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+                val navController = navHostFragment.navController
+
+                navController.navigate(R.id.modifyEvent,bundle)
+
+                // findNavController().navigate(
+                //     R.id.modifyEvent,
+                //     bundle
+                // )
             }
         }
     }

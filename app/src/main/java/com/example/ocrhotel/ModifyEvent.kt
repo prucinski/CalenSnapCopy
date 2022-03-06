@@ -24,7 +24,7 @@ import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOp
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class ModifyEvent : Fragment() {
+class ModifyEvent : Fragment(R.layout.fragment_modify_event) {
 
 
     //This will decide how many entries will be generated with the spinner.
@@ -87,7 +87,7 @@ class ModifyEvent : Fragment() {
                     var eventCreator = EventCreator(eventsList, activity)
                     //this is slightly wonky and has to be pressed twice - but it's a minor bug
                     if (eventCreator.addEvent()) {
-                        findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
+                        findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
                     }
                     else{
                         Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()

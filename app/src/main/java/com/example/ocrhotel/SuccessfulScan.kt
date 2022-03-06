@@ -7,15 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
-import com.example.ocrhotel.databinding.FragmentFirstBinding
-import com.example.ocrhotel.databinding.FragmentSuccsefulScanBinding
+import com.example.ocrhotel.databinding.FragmentSuccessfulScanBinding
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class SuccessfulScan: Fragment() {
 
-    private var _binding: FragmentSuccsefulScanBinding? = null
+    private var _binding: FragmentSuccessfulScanBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -26,7 +25,7 @@ class SuccessfulScan: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentSuccsefulScanBinding.inflate(inflater, container, false)
+        _binding = FragmentSuccessfulScanBinding.inflate(inflater, container, false)
         return binding.root
 
     }
@@ -37,11 +36,11 @@ class SuccessfulScan: Fragment() {
 
 
         binding.scanAgain.setOnClickListener {
-            findNavController().navigate(R.id.action_succesfulScan_to_SecondFragment)
+            findNavController().navigate(R.id.action_successfulScan_to_SecondFragment)
         }
 
         binding.navigateHome.setOnClickListener {
-            findNavController().navigate(R.id.action_succesfulScan_to_MainMenu)
+            findNavController().navigate(R.id.action_successfulScan_to_Home)
         }
     }
 
