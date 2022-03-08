@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter;
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.core.app.ActivityCompat
@@ -31,6 +33,8 @@ class ModifyEvent : Fragment() {
     private var dates = mutableListOf<Long>()
 
     private var _binding: FragmentModifyEventBinding? = null
+
+
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -59,7 +63,13 @@ class ModifyEvent : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
+        //Applying the spinner. Will need reworking to accomodate variable numbers of events
+        val spinner: Spinner = binding.spinner
+        ArrayAdapter.createFromResource(context!!, R.array.events, android.R.layout.simple_spinner_item)
+            .also{adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter}
 
         title = arguments?.getString("title") as String
         val date = arguments?.getSerializable("date") as LocalDateTime
@@ -79,8 +89,8 @@ class ModifyEvent : Fragment() {
             eventHour = current.format(currentHourFormatter)
         }
 
-        binding.EventDate.setText(eventDate.toString())
-        binding.EventHour.setText(eventHour.toString())
+        binding.EventDate.setText(eventDate)
+        binding.EventHour.setText(eventHour)
         binding.EventTitle.setText(title)
 
 

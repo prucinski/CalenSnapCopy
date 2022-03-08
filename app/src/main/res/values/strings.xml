@@ -1,4 +1,15 @@
 <resources>
+
+    <string-array name="events">
+        <item>Event 1</item>
+        <item>Event 2</item>
+        <item>Event 3</item>
+        <item>Event 4</item>
+        <item>Event 5</item>
+        <item>Event 6</item>
+        <item>Event 7</item>
+        <item>Event 8</item>
+    </string-array>
     <string name="app_name">CalenSnap</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
@@ -15,11 +26,12 @@
     <string name="camera">Camera</string>
     <string name="upload_image">Upload Image</string>
     <string name="scan_again">scan again</string>
-    <string name="found_this_event">The following event has been found. Please modify the values if necessary and press "submit", then "continue".</string>
+    <string name="found_this_event">The following event has been found. Please modify the values if necessary and press "add", then "continue".</string>
+    <string name="found_multiple_event">Multiple events found. Please modify the events if necessary and press "add" on each, then "continue".</string>
     <string name="home">Home</string>
     <string name="success">The event was created successfully!</string>
     <string name="continued">continue</string>
-    <string name="submit">submit</string>
+    <string name="submit">add</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">This page will contain: settings/buy premium/scan history. Buttons for those will be added in second term.</string>
     <string name="continue_label">Continue</string>

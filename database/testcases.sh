@@ -1,0 +1,2 @@
+curl 'localhost:5000/events/1de8d8ef-a688-4c86-89fd-34e1a954956e' -X POST -H "Content-Type: application/json" \
+    -d '{"event_location": {"N": 57.164984, "W": 2.105614}, "event_time": "2022-02-10 18:36:51.398722"}'
