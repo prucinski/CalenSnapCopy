@@ -38,27 +38,58 @@ def index():
 @app.route('/profile/<uuid:profile_id>', methods=['GET'])
 def get_profile(profile_id):
     """ Return information about the profile at the given ID. """
-    # TODO: decide what information should be returned, add SQL query
     # TODO: add authentication? maybe this route is actually not needed
+    # TODO: need to add password matching and hashing later
+    
+    try:
+        connection = connect()
+        cursor = connection.cursor()
 
-    return {"profile_id": profile_id}
+        cursor.execute(""" SELECT * FROM profile WHERE id = profile_id; """)
+        profile = cursor.fetchall()
+
+        return {'profile': list(map(lambda x: {'id': x[0], 'username': x[1], 'remaining_free_uses': x[2], 'premium_user': x[3], 'business_user': x[4], 'duration_in_mins': x[5], 'mm_dd': x[6], 'darkmode': x[7]}, profile))}, 200
+
+    except Exception as e:
+        app.logger.warning("Error: ", e)
+
+        return {'success': False}, 400
 
 
 @app.route('/profile', methods=['POST'])
-def create_profile():
+def create_profile(profName):
     """  """
-    # TODO: write sql query to create new account
-    # TODO: find a way to link the account to the google login
+    try:
+        connection = connect()
+        cursor = connection.cursor()
 
-    return 'not implemented', 501
+        cursor.execute(""" INSERT INTO profile(username) values(profName); """)
+
+        return {'success': True}, 200
+
+    except Exception as e:
+        app.logger.warning("Error: ", e)
+
+        return {'success': False}, 400
 
 
 @app.route('/profile/<uuid:profile_id>', methods=['DELETE'])
 def delete_profile(profile_id):
     """ Delete the specified profile. """
-    # TODO: implement
     # TODO: add authentication
-    return 'not implemented', 501
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+        
+        cursor.execute(""" DELETE * FROM userevent WHERE userid = profile_id; """)
+        cursor.execute(""" DELETE * FROM profile WHERE id = profile_id; """)
+        # TODO add rollback in case either statement fails
+        return {'success': True}, 200
+
+    except Exception as e:
+        app.logger.warning("Error: ", e)
+        
+        return {'success': False}, 400
 
 
 @app.route('/events/<uuid:profile_id>', methods=['GET'])
@@ -125,9 +156,20 @@ def create_event(profile_id):
 @app.route('/events/<uuid:event_id>', methods=['DELETE'])
 def delete_event(event_id):
     """ Delete the specified event. """
-    # TODO: implement
-    return 'not implemented', 501
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+        
+        cursor.execute(""" DELETE * FROM userevent WHERE id = event_id; """)
+        # TODO add authentication
+        return {'success': True}, 200
+
+    except Exception as e:
+        app.logger.warning("Error: ", e)
+        
+        return {'success': False}, 400
 
     # This is for locally testing the application
 if __name__ == '__main__':
     app.run()
+    
