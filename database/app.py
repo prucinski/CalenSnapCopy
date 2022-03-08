@@ -91,9 +91,9 @@ def delete_profile(profile_id):
         cursor = connection.cursor()
 
         cursor.execute(
-            """ DELETE * FROM userevent WHERE userid = %s; """, (profile_id, ))
+            """ DELETE FROM userevent WHERE userid = %s; """, (profile_id, ))
         cursor.execute(
-            """ DELETE * FROM profile WHERE id = %s; """, (profile_id, ))
+            """ DELETE FROM profile WHERE id = %s; """, (profile_id, ))
 
         connection.commit()
 
@@ -179,7 +179,7 @@ def delete_event(event_id):
         cursor = connection.cursor()
 
         cursor.execute(
-            """ DELETE * FROM userevent WHERE id = %s; """, (event_id, ))
+            """ DELETE FROM userevent WHERE id = %s; """, (event_id, ))
         # TODO add authentication
         return {'success': True}, 200
 
