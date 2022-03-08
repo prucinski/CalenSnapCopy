@@ -95,6 +95,7 @@ def delete_profile(profile_id):
 @app.route('/events/<uuid:profile_id>', methods=['GET'])
 def get_events(profile_id):
     """ Retrieve all events that were created by the user with 'profile_id'. """
+    # TODO: I've left this as is for now but this needs to be switched to the user data not the business data
 
     def to_point(point_string):
         parts = point_string.split(',')
@@ -108,7 +109,7 @@ def get_events(profile_id):
         cursor.execute(""" SELECT * FROM event; """)
         events = cursor.fetchall()
 
-        return {'events': list(map(lambda x: {'event_id': x[0], 'event_time': x[1], 'event_location': to_point(x[2])}, events))}, 200
+        return {'events': list(map(lambda x: {'id': x[0], 'snap_time': x[1], 'snap_location': to_point(x[2])}, events))}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
@@ -119,6 +120,7 @@ def get_events(profile_id):
 @app.route('/events/<uuid:profile_id>', methods=['POST'])
 def create_event(profile_id):
     """ Create a new event for user with 'profile_id'. """
+    # TODO: Add insertion for user event data not just business data
 
     try:
         connection = connect()
@@ -137,7 +139,7 @@ def create_event(profile_id):
 
         # Run insertion query.
         cursor.execute(
-            """INSERT INTO event (event_time, event_location) 
+            """INSERT INTO event (snap_time, snap_location) 
                VALUES (%s, POINT(%s, %s)) RETURNING id;
             """,
             (event_time, event_location['N'], event_location['W']))
