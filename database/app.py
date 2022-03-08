@@ -40,13 +40,16 @@ def get_profile(profile_id):
     """ Return information about the profile at the given ID. """
     # TODO: add authentication? maybe this route is actually not needed
     # TODO: need to add password matching and hashing later
-    
+
     try:
         connection = connect()
         cursor = connection.cursor()
 
-        cursor.execute(""" SELECT * FROM profile WHERE id = profile_id; """)
-        profile = cursor.fetchall()
+        cursor.execute(
+            """ SELECT * FROM profile WHERE id = %s; """, profile_id)
+
+        # since profile_id is the primary key, we can use fetchone
+        profile = cursor.fetchone()
 
         return {'profile': list(map(lambda x: {'id': x[0], 'username': x[1], 'remaining_free_uses': x[2], 'premium_user': x[3], 'business_user': x[4], 'duration_in_mins': x[5], 'mm_dd': x[6], 'darkmode': x[7]}, profile))}, 200
 
@@ -56,14 +59,15 @@ def get_profile(profile_id):
         return {'success': False}, 400
 
 
-@app.route('/profile', methods=['POST'])
-def create_profile(profName):
+@app.route('/profile/<string:username>', methods=['POST'])
+def create_profile(username):
     """  """
     try:
         connection = connect()
         cursor = connection.cursor()
 
-        cursor.execute(""" INSERT INTO profile(username) values(profName); """)
+        cursor.execute(
+            """ INSERT INTO profile(username) values(%s); """, username)
 
         return {'success': True}, 200
 
@@ -80,15 +84,16 @@ def delete_profile(profile_id):
     try:
         connection = connect()
         cursor = connection.cursor()
-        
-        cursor.execute(""" DELETE * FROM userevent WHERE userid = profile_id; """)
-        cursor.execute(""" DELETE * FROM profile WHERE id = profile_id; """)
+
+        cursor.execute(
+            """ DELETE * FROM userevent WHERE userid = %s; """, (profile_id, ))
+        cursor.execute(""" DELETE * FROM profile WHERE id = %s; """, (profile_id, ))
         # TODO add rollback in case either statement fails
         return {'success': True}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
-        
+
         return {'success': False}, 400
 
 
@@ -98,6 +103,7 @@ def get_events(profile_id):
     # TODO: I've left this as is for now but this needs to be switched to the user data not the business data
 
     def to_point(point_string):
+        # Somewhat crude way to extract the point as it is stored in the database
         parts = point_string.split(',')
         parts = list(map(lambda x: float(x.strip(')').strip('(')), parts))
         return {'N': parts[0], 'W': parts[1]}
@@ -106,9 +112,11 @@ def get_events(profile_id):
         connection = connect()
         cursor = connection.cursor()
 
+        # Get all events
         cursor.execute(""" SELECT * FROM event; """)
         events = cursor.fetchall()
 
+        # Convert points into JSON format and send them back.
         return {'events': list(map(lambda x: {'id': x[0], 'snap_time': x[1], 'snap_location': to_point(x[2])}, events))}, 200
 
     except Exception as e:
@@ -161,17 +169,17 @@ def delete_event(event_id):
     try:
         connection = connect()
         cursor = connection.cursor()
-        
-        cursor.execute(""" DELETE * FROM userevent WHERE id = event_id; """)
+
+        cursor.execute(""" DELETE * FROM userevent WHERE id = %s; """, (event_id, ))
         # TODO add authentication
         return {'success': True}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
-        
+
         return {'success': False}, 400
+
 
     # This is for locally testing the application
 if __name__ == '__main__':
     app.run()
-    
