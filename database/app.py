@@ -28,6 +28,13 @@ def connect():
     return psycopg2.connect(DATABASE_URL)
 
 
+def extract_point(point_string):
+    """ Helper function to convert a Postgres point (string) into a dictionary representation ready to be sent as JSON. """
+    parts = point_string.split(',')
+    parts = list(map(lambda x: float(x.strip(')').strip('(')), parts))
+    return {'N': parts[0], 'W': parts[1]}
+
+
 @app.route('/')
 def index():
     """ This route can be used to verify if the API is running. """
@@ -36,7 +43,7 @@ def index():
 
 
 @app.route('/profile/<uuid:profile_id>', methods=['GET'])
-def get_profile(profile_id):
+def get_profile(profile_id: uuid.UUID):
     """ Return information about the profile at the given ID. """
     # TODO: add authentication? maybe this route is actually not needed
     # TODO: need to add password matching and hashing later
@@ -62,7 +69,7 @@ def get_profile(profile_id):
 
 
 @app.route('/profile/<string:username>', methods=['POST'])
-def create_profile(username):
+def create_profile(username: str):
     """  """
     try:
         connection = connect()
@@ -83,7 +90,7 @@ def create_profile(username):
 
 
 @app.route('/profile/<uuid:profile_id>', methods=['DELETE'])
-def delete_profile(profile_id):
+def delete_profile(profile_id: uuid.UUID):
     """ Delete the specified profile. """
     # TODO: add authentication
     try:
@@ -105,36 +112,8 @@ def delete_profile(profile_id):
         return {'success': False}, 400
 
 
-@app.route('/events/<uuid:profile_id>', methods=['GET'])
-def get_events(profile_id):
-    """ Retrieve all events that were created by the user with 'profile_id'. """
-    # TODO: I've left this as is for now but this needs to be switched to the user data not the business data
-
-    def to_point(point_string):
-        # Somewhat crude way to extract the point as it is stored in the database
-        parts = point_string.split(',')
-        parts = list(map(lambda x: float(x.strip(')').strip('(')), parts))
-        return {'N': parts[0], 'W': parts[1]}
-
-    try:
-        connection = connect()
-        cursor = connection.cursor()
-
-        # Get all events
-        cursor.execute(""" SELECT * FROM event; """)
-        events = cursor.fetchall()
-
-        # Convert points into JSON format and send them back.
-        return {'events': list(map(lambda x: {'id': x[0], 'snap_time': x[1], 'snap_location': to_point(x[2])}, events))}, 200
-
-    except Exception as e:
-        app.logger.warning("Error: ", e)
-
-        return {'success': False}, 400
-
-
 @app.route('/events/<uuid:profile_id>', methods=['POST'])
-def create_event(profile_id):
+def create_event(profile_id: uuid.UUID):
     """ Create a new event for user with 'profile_id'. """
     # TODO: Add insertion for user event data not just business data
 
@@ -172,7 +151,7 @@ def create_event(profile_id):
 
 
 @app.route('/events/<uuid:event_id>', methods=['DELETE'])
-def delete_event(event_id):
+def delete_event(event_id: uuid.UUID):
     """ Delete the specified event. """
     try:
         connection = connect()
@@ -191,6 +170,51 @@ def delete_event(event_id):
         return {'success': False}, 400
 
 
-    # This is for locally testing the application
+@app.route('/events/<uuid:profile_id>', methods=['GET'])
+def get_events(profile_id: uuid.UUID):
+    """ Return all userevents for a given profile.  """
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """ SELECT * FROM userevent WHERE userid = %s; """, (profile_id,))
+        events = cursor.fetchall()
+
+        return {'events': list(map(lambda e: {
+            'id': e[0], 'title': e[1], 'event_time': e[2], 'profile_id': e[3]
+        }))}
+
+    except Exception as e:
+        app.logger.warning("Error: ", e)
+
+        return {'success': False}, 400
+
+
+# /metadata/ urls are for paying business customers who want to retrieve anonymised information about geolocation data
+
+
+@app.route('/metadata/events/', methods=['GET'])
+def get_events_metadata():
+    """ Retrieve all events that were created by the user with 'profile_id'. """
+    # TODO: I've left this as is for now but this needs to be switched to the user data not the business data
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+
+        # Get all events
+        cursor.execute(""" SELECT * FROM event; """)
+        events = cursor.fetchall()
+
+        # Convert points into JSON format and send them back.
+        return {'events': list(map(lambda x: {'id': x[0], 'snap_time': x[1], 'snap_location': extract_point(x[2])}, events))}, 200
+
+    except Exception as e:
+        app.logger.warning("Error: ", e)
+
+        return {'success': False}, 400
+
+
+# This is for locally testing the application
 if __name__ == '__main__':
     app.run()
