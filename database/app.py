@@ -46,7 +46,7 @@ def get_profile(profile_id):
         cursor = connection.cursor()
 
         cursor.execute(
-            """ SELECT * FROM profile WHERE id = %s; """, profile_id)
+            """ SELECT * FROM profile WHERE id = %s; """, (profile_id,))
 
         # since profile_id is the primary key, we can use fetchone
         profile = cursor.fetchone()
@@ -67,7 +67,7 @@ def create_profile(username):
         cursor = connection.cursor()
 
         cursor.execute(
-            """ INSERT INTO profile(username) values(%s); """, username)
+            """ INSERT INTO profile(username) values(%s); """, (username,))
 
         return {'success': True}, 200
 
@@ -87,7 +87,8 @@ def delete_profile(profile_id):
 
         cursor.execute(
             """ DELETE * FROM userevent WHERE userid = %s; """, (profile_id, ))
-        cursor.execute(""" DELETE * FROM profile WHERE id = %s; """, (profile_id, ))
+        cursor.execute(
+            """ DELETE * FROM profile WHERE id = %s; """, (profile_id, ))
         # TODO add rollback in case either statement fails
         return {'success': True}, 200
 
@@ -170,7 +171,8 @@ def delete_event(event_id):
         connection = connect()
         cursor = connection.cursor()
 
-        cursor.execute(""" DELETE * FROM userevent WHERE id = %s; """, (event_id, ))
+        cursor.execute(
+            """ DELETE * FROM userevent WHERE id = %s; """, (event_id, ))
         # TODO add authentication
         return {'success': True}, 200
 
@@ -178,7 +180,6 @@ def delete_event(event_id):
         app.logger.warning("Error: ", e)
 
         return {'success': False}, 400
-
 
     # This is for locally testing the application
 if __name__ == '__main__':
