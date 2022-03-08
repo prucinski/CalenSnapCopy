@@ -51,6 +51,8 @@ def get_profile(profile_id):
         # since profile_id is the primary key, we can use fetchone
         profile = cursor.fetchone()
 
+        app.logger.info(profile)
+
         return {'profile': list(map(lambda x: {'id': x[0], 'username': x[1], 'remaining_free_uses': x[2], 'premium_user': x[3], 'business_user': x[4], 'duration_in_mins': x[5], 'mm_dd': x[6], 'darkmode': x[7]}, profile))}, 200
 
     except Exception as e:
