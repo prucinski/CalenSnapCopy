@@ -53,7 +53,7 @@ def get_profile(profile_id):
 
         app.logger.info(profile)
 
-        return {'profile': list(map(lambda x: {'id': x[0], 'username': x[1], 'remaining_free_uses': x[2], 'premium_user': x[3], 'business_user': x[4], 'duration_in_mins': x[5], 'mm_dd': x[6], 'darkmode': x[7]}, profile))}, 200
+        return {'profile': {'id': profile[0], 'username': profile[1], 'remaining_free_uses':    profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
