@@ -7,7 +7,7 @@ import psycopg2.extras
 
 
 # Flask housekeeping
-app = Flask(__name__, template_folder='static')
+app = Flask(__name__)
 CORS(app)
 
 # This is the url used for connecting to postgres, it should include the password and username to log into the database.
@@ -53,7 +53,7 @@ def get_profile(profile_id):
 
         app.logger.info(profile)
 
-        return {'profile': {'id': profile[0], 'username': profile[1], 'remaining_free_uses':    profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}}, 200
+        return {'profile': {'id': profile[0], 'username': profile[1], 'remaining_free_uses': profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
@@ -69,9 +69,12 @@ def create_profile(username):
         cursor = connection.cursor()
 
         cursor.execute(
-            """ INSERT INTO profile(username) values(%s); """, (username,))
+            """ INSERT INTO profile(username) values(%s) RETURNING id; """, (username,))
 
-        return {'success': True}, 200
+        profile_id = cursor.fetchone()[0]
+        connection.commit()
+
+        return {'success': True, 'profile_id': profile_id}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
@@ -91,7 +94,9 @@ def delete_profile(profile_id):
             """ DELETE * FROM userevent WHERE userid = %s; """, (profile_id, ))
         cursor.execute(
             """ DELETE * FROM profile WHERE id = %s; """, (profile_id, ))
-        # TODO add rollback in case either statement fails
+
+        connection.commit()
+
         return {'success': True}, 200
 
     except Exception as e:
@@ -182,6 +187,7 @@ def delete_event(event_id):
         app.logger.warning("Error: ", e)
 
         return {'success': False}, 400
+
 
     # This is for locally testing the application
 if __name__ == '__main__':
