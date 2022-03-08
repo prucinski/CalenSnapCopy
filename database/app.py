@@ -180,6 +180,8 @@ def delete_event(event_id):
 
         cursor.execute(
             """ DELETE FROM userevent WHERE id = %s; """, (event_id, ))
+
+        connection.commit()
         # TODO add authentication
         return {'success': True}, 200
 
