@@ -183,7 +183,7 @@ def get_events(profile_id: uuid.UUID):
 
         return {'events': list(map(lambda e: {
             'id': e[0], 'title': e[1], 'event_time': e[2], 'profile_id': e[3]
-        }))}
+        }, events))}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
