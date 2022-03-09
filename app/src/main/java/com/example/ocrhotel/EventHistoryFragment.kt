@@ -10,8 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.ocrhotel.databinding.FragmentEventHistoryBinding
-import com.example.ocrhotel.databinding.FragmentFirstBinding
-import com.example.ocrhotel.databinding.FragmentSecondBinding
 import java.util.*
 
 class EventHistoryFragment : Fragment() {
@@ -52,7 +50,7 @@ class EventHistoryFragment : Fragment() {
             }
         }
 
-        readEvents(UUID.randomUUID(), decodeCallback(APIEvents::class.java) {
+        readUserEvents(UUID.randomUUID(), decodeCallback(APIEvents::class.java) {
             model.events.postValue(it)
         })
 

@@ -100,22 +100,34 @@ class APICoordinates {
     }
 }
 
-class APIEvent {
-    val event_id: UUID = UUID(0, 0)
+class APIUserEvent {
+    val id: UUID = UUID(0, 0)
+    val title: String = ""
     val event_time: String = ""
-    val event_location: APICoordinates = APICoordinates()
+    val userid: UUID = UUID(0, 0)
+}
+
+class APIUserEvents {
+    val events: Array<APIUserEvent> = arrayOf()
+}
+
+class APIEvent {
+    val id: UUID = UUID(0, 0)
+    val snap_time: String = ""
+    val snap_location: APICoordinates = APICoordinates()
     override fun toString(): String {
-        return "(ID: $event_id) $event_time $event_location"
+        return "(ID: $id) $snap_time $snap_location"
     }
 }
 
 class APIEvents {
     val events: Array<APIEvent> = arrayOf()
-
 }
 
+
+
 // Read all past events for the user with profile.
-fun readEvents(profileId: UUID, callback: Callback) {
+fun readUserEvents(profileId: UUID, callback: Callback) {
     get(path("events", profileId.toString()), callback)
 }
 
@@ -141,9 +153,9 @@ fun <T> decodeCallback(type: Class<T>, callback: (T) -> Unit): Callback {
 
 
 fun main(args: Array<String>) {
-    readEvents(UUID.randomUUID(), decodeCallback(APIEvents::class.java) { result ->
+    readUserEvents(UUID.randomUUID(), decodeCallback(APIEvents::class.java) { result ->
         for (event in result.events) {
-            println("${event.event_id}, ${event.event_location}, ${event.event_time}")
+            println("${event.id}, ${event.snap_location}, ${event.snap_time}")
         }
     })
 }
