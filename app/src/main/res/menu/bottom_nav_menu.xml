@@ -2,17 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_history"
-        android:icon="@drawable/ic_baseline_history_24"
-        android:title="History" />
-
-    <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/home"
-        android:title="Home"/>
+        android:title="Home"
+        android:label="@id/home"/>
 
-<!--    Hidden item to pad in the camera fab (floating action button) -->
     <item
+        android:id="@+id/navigation_history"
+        android:icon="@drawable/ic_baseline_history_24"
+        android:title="History"
+        android:label=""/>
+
+
+    <!--    Hidden item to pad in the camera fab (floating action button) -->
+    <item
+        android:id="@+id/placeholder_fab"
         android:enabled="false"
         android:title=""/>
 

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/home">
+    app:startDestination="@+id/home">
 
     <fragment
         android:id="@+id/home"
@@ -11,12 +11,6 @@
         android:label="@string/main_menu_label"
         tools:layout="@layout/fragment_home">
 
-<!--        <action-->
-<!--            android:id="@+id/action_FirstFragment_to_SecondFragment"-->
-<!--            app:destination="@id/SecondFragment" />-->
-<!--        <action-->
-<!--            android:id="@+id/action_Home_to_modifyEvent"-->
-<!--            app:destination="@id/modifyEvent" />-->
         <action
             android:id="@+id/action_home_to_settingsMenu"
             app:destination="@id/settingsMenu" />
@@ -33,21 +27,25 @@
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
 
-<!--        <action-->
-<!--            android:id="@+id/action_SecondFragment_to_FirstFragment"-->
-<!--            app:destination="@id/home" />-->
         <action
             android:id="@+id/action_SecondFragment_to_modifyEvent"
             app:destination="@id/modifyEvent" />
         <action
             android:id="@+id/action_SecondFragment_to_home"
             app:destination="@id/home" />
+        <action
+            android:id="@+id/action_SecondFragment_self"
+            app:destination="@id/SecondFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsMenu"
         android:name="com.example.ocrhotel.SettingsMenu"
         android:label="fragment_settings_menu"
-        tools:layout="@layout/fragment_settings_menu" />
+        tools:layout="@layout/fragment_settings_menu" >
+        <action
+            android:id="@+id/action_settingsMenu_to_home"
+            app:destination="@id/home" />
+    </fragment>
     <action
         android:id="@+id/action_global_settingsMenu"
         app:destination="@id/settingsMenu" />
@@ -62,6 +60,9 @@
         <action
             android:id="@+id/action_successfulScan_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_successfulScan_to_settingsMenu"
+            app:destination="@id/settingsMenu" />
     </fragment>
     <fragment
         android:id="@+id/modifyEvent"
@@ -76,5 +77,11 @@
         <argument
             android:name="date"
             app:argType="java.time.LocalDateTime" />
+        <action
+            android:id="@+id/action_modifyEvent_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_modifyEvent_to_home"
+            app:destination="@id/home" />
     </fragment>
 </navigation>
