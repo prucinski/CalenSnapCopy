@@ -1,37 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/activity_main"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.OCRHotel.AppBarOverlay"/>
 
-    <include layout="@layout/content_main" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="16dp"
-        app:backgroundTint="@color/dark_blue"
-        app:rippleColor="@color/white"
-        app:srcCompat="@android:drawable/ic_dialog_info"
-        tools:visibility="visible" />
-    
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        app:layout_constraintTop_toTopOf="parent"
         app:adSize="BANNER"
-        app:adUnitId="ca-app-pub-3940256099942544/6300978111"></com.google.android.gms.ads.AdView>
+        app:adUnitId="ca-app-pub-3940256099942544/6300978111">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </com.google.android.gms.ads.AdView>
+
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:layout_constraintBottom_toTopOf="@id/appBar_layout"
+        app:layout_constraintTop_toBottomOf="@id/adView"
+        app:layout_anchorGravity="center_vertical"
+        app:navGraph="@navigation/nav_graph"
+        app:defaultNavHost="true">
+    </androidx.fragment.app.FragmentContainerView>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/appBar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+<!--        To enable color theming for menu items you will also need
+ to set the materialThemeOverlay attribute to a ThemeOverlay which
+  sets the colorControlNormal attribute to the correct color.
+  For example, if the background of the BottomAppBar is colorSurface,
+   as it is in the default style, you should set materialThemeOverlay
+    to @style/ThemeOverlay.MaterialComponents.BottomAppBar.Surface.-->
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:itemIconSize="26dp">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottom_navigation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:elevation="0dp"
+                android:background="@android:color/transparent"
+                app:menu="@menu/bottom_nav_menu" />
+
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTintMode="add"
+            android:contentDescription="@string/scan"
+            app:layout_anchor="@id/bottom_bar"
+            app:maxImageSize="32dp"
+            app:srcCompat="@drawable/cam_icon"
+            tools:ignore="ImageContrastCheck"
+            tools:visibility="visible" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

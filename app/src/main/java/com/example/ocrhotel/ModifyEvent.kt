@@ -2,40 +2,43 @@ package com.example.ocrhotel
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.fragment.app.setFragmentResultListener
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
-import com.example.ocrhotel.databinding.FragmentSecondBinding
-import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
-import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOptionalParameter
+import com.google.android.material.datepicker.MaterialDatePicker
+import org.joda.time.LocalTime
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class ModifyEvent : Fragment() {
 
-    private var eventName = "null"
-    private var eventDate = "null"
-    private var eventHour = "null"
 
-    private val algo = Algorithm()
-    private var title= ""
-    private var dates = mutableListOf<Long>()
+
+    // The events list. It is modifiable.
+    private var eventsList: List<Event> = emptyList()
+
+    // Keep track which event we're looking at now. By default we're looking at the first event.
+    private var currentEvent = 0
+
+    // This will decide how many entries will be generated with the spinner.
+    private var numberOfEvents = 0
+
+    // Custom date format that we may use while displaying the date to clients.
+    private val dateFormatter : DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-uuuu")
 
     private var _binding: FragmentModifyEventBinding? = null
-
-
-
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -64,72 +67,100 @@ class ModifyEvent : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        // TODO: GET THAT EVENT ARRAY - change key
+        // Receive the event list from SecondFragment.
+        eventsList = arguments?.getSerializable("data") as List<Event>
+        numberOfEvents = eventsList.size
+        Log.d("List size", " in ModifyEvent on creation: $numberOfEvents")
+
+        val fillEvents = resources.getStringArray(R.array.events)
         super.onViewCreated(view, savedInstanceState)
-        //Applying the spinner. Will need reworking to accomodate variable numbers of events
-        val spinner: Spinner = binding.spinner
-        ArrayAdapter.createFromResource(context!!, R.array.events, android.R.layout.simple_spinner_item)
+
+        //Applying the spinner
+        val spinner: Spinner = binding.foundEventsSelector
+        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until numberOfEvents))
             .also{adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter}
 
-        title = arguments?.getString("title") as String
-        val date = arguments?.getSerializable("date") as LocalDateTime
+        binding.EventDate.setOnClickListener{
+            val currentDate = LocalDate.parse(binding.EventDate.text.toString(), dateFormatter)
+            val datePicker =
+                MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select date")
+                    .setTheme(R.style.ThemeOverlay_App_MaterialCalendar)
+                    .setSelection(currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000)
+                    .build()
+            datePicker.show(parentFragmentManager,"")
 
-        val currentDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-        val currentHourFormatter = DateTimeFormatter.ofPattern("HH:mm")
+            datePicker.addOnPositiveButtonClickListener {
+                binding.EventDate.text = LocalDateTime.ofEpochSecond(
+                    datePicker.selection!!/1000,0, ZoneOffset.UTC)
+                    .format(dateFormatter)
+            }
 
-        //TODO: if event found, put the values from output of algo
-        if(title != "" && title != null){
-            eventDate = date.format(currentDateFormatter)
-            eventHour = date.format(currentHourFormatter)
         }
-        //if NO event found, put in dummy values
-        else{
-            val current = LocalDateTime.now()
-            eventDate = current.format(currentDateFormatter)
-            eventHour = current.format(currentHourFormatter)
-        }
-
-        binding.EventDate.setText(eventDate)
-        binding.EventHour.setText(eventHour)
-        binding.EventTitle.setText(title)
 
 
+        //button "Continue".
         binding.continued.setOnClickListener {
-
             activity?.let { activity ->
                 //request permission from user to access their calendars
                 ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
                 if(checkIfHasPermission()) {
-                    var eventCreator = EventCreator(eventName, eventDate, eventHour, 2, activity)
+                    val eventCreator = EventCreator(eventsList, activity)
                     //this is slightly wonky and has to be pressed twice - but it's a minor bug
                     if (eventCreator.addEvent()) {
-                        findNavController().navigate(R.id.action_modifyEvent_to_succesfulScan)
+                        findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
+                    }
+                    else{
+                        Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()
                     }
                 }
             }
         }
+        //spinner choices. Called on view creation at index 0 (as we want it)
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
 
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                // An item was selected. You can retrieve the selected item using
+                Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
+                currentEvent = pos
+                binding.EventDate.text = eventsList[currentEvent].eventDate
+                binding.EventHour.setText(eventsList[currentEvent].eventHour)
+                binding.eventTitle.setText(eventsList[currentEvent].eventName)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                //Something will always be selected
+            }
+        }
+
+        //Button "Submit".
         binding.submit.setOnClickListener {
-            eventName = binding.EventTitle.text.toString()
-            eventDate = binding.EventDate.text.toString()
-            eventHour = binding.EventHour.text.toString()
-            var printEventDetails= Toast.makeText(context, eventDate, Toast.LENGTH_SHORT)
-            printEventDetails.show()
+            // Once the button is pressed, modify the values inside the list.
+            eventsList[currentEvent].eventName = binding.eventTitle.text.toString()
+
+            val date: LocalDate = LocalDate.parse(binding.EventDate.text, dateFormatter)
+            val time: LocalTime = LocalTime.parse(binding.EventHour.text.toString())
+            eventsList[currentEvent].eventDateTime = LocalDateTime.of(
+                date.year, date.monthValue, date.dayOfMonth, time.hourOfDay, time.minuteOfHour)
+
+            // I'm not sure if the next two lines are necessary, but I think they are since
+            // the object has already been constructed.
+            eventsList[currentEvent].eventDate = binding.EventDate.text.toString()
+            eventsList[currentEvent].eventHour = binding.EventHour.text.toString()
+
+            //TODO: Automatically move user to next event. Fairly simple but left  it for now
         }
     }
     private fun checkIfHasPermission() :Boolean{
-        var result = context?.let { ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR) }
+        val result = context?.let { ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR) }
         Log.e("PERMISSION", "$result" )
         return result == PackageManager.PERMISSION_GRANTED
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
-
-
 }

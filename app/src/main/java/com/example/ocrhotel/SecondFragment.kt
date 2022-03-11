@@ -1,7 +1,9 @@
 package com.example.ocrhotel
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,6 +15,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentSecondBinding
 import id.zelory.compressor.Compressor
@@ -20,14 +24,13 @@ import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.launch
 import java.io.File
 
-
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class SecondFragment : Fragment() {
 
     class EventDataViewModel : ViewModel() {
-        var eventData: MutableLiveData<Algorithm.Result?> = MutableLiveData(null)
+        var eventData: MutableLiveData<List<Event>> = MutableLiveData(null)
         var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
         var errorOccurred: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -50,13 +53,46 @@ class SecondFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.e("SECFRAGMENT","onCreateView")
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
 
         return binding.root
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.e("SECFRAGMENT","On attach")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.e("SECFRAGMENT","On detach")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("SECFRAGMENT","On pause")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.e("SECFRAGMENT","On start")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("SECFRAGMENT","OnDestroy")
+    }
+
+    override fun onInflate(context: Context, attrs: AttributeSet, savedInstanceState: Bundle?) {
+        super.onInflate(context, attrs, savedInstanceState)
+        Log.e("SECFRAGMENT","onInflate")
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.e("SECFRAGMENT","onViewCreated")
 
         imageProvider = ImageProvider(this, activity, this::handleImage)
         binding.uploadImage.setOnClickListener {
@@ -94,15 +130,14 @@ class SecondFragment : Fragment() {
                 // Prepare data to be passed to ModifyEvent
                 val bundle =
                     bundleOf(
-                        "date" to res.dateTime,
-                        "title" to algorithmModel.eventData.value!!.name
+                        "data" to res!!
+                        //"date" to res[0].eventDateTime,
+                        //"title" to algorithmModel.eventData.value!![0]
                     )
 
-                // Proceed to the ModifyEvent fragment
-                findNavController().navigate(
-                    R.id.action_SecondFragment_to_modifyEvent,
-                    bundle
-                )
+                val navController = NavHostFragment.findNavController(this)
+                navController.navigate(R.id.modifyEvent,bundle)
+
             }
         }
     }
