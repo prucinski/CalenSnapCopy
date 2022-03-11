@@ -17,18 +17,56 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var navController: NavController
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        Log.e("ACT","onAttached")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.e("ACT","onRestart")
+    }
+
+    override fun onContentChanged() {
+        super.onContentChanged()
+        Log.e("ACT","onContentChanged")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.e("ACT","onStart")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("ACT","onPause")
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        Log.e("ACT","onDetached")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("ACT","onResume")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.e("ACT","onCreate")
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
 
         // Initialize the navigation host
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
@@ -46,7 +84,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         binding.fab.setOnClickListener {
             // Go to scanning
-            // setCurrentFragment(secondFragment)
             binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
             navController.navigate(R.id.SecondFragment)
         }
@@ -55,13 +92,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             when(it.itemId){
                 // Go to home
                 R.id.navigation_home -> navController.navigate(R.id.home)
-                // R.id.navigation_home -> setCurrentFragment(firstFragment)
 
                 // Go to tutorial / help page
                 R.id.navigation_help -> Toast.makeText(peekAvailableContext(), "This will lead to a tutorial!", Toast.LENGTH_SHORT).show()
 
                 // Go to the history page
-                R.id.navigation_history -> Toast.makeText(peekAvailableContext() , "This will to the history!", Toast.LENGTH_SHORT).show()
+                R.id.navigation_history -> Toast.makeText(peekAvailableContext() , "This will lead to the history!", Toast.LENGTH_SHORT).show()
 
                 // Go to the settings page
                 R.id.navigation_settings -> Toast.makeText(peekAvailableContext(), "This will lead to the settings menu!", Toast.LENGTH_SHORT).show()
@@ -69,6 +105,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
             return@setOnItemSelectedListener true
         }
+
+
     }
 
     // private fun setCurrentFragment(fragment: Fragment){
