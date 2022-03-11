@@ -24,41 +24,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        Log.e("ACT","onAttached")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Log.e("ACT","onRestart")
-    }
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-        Log.e("ACT","onContentChanged")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.e("ACT","onStart")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.e("ACT","onPause")
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        Log.e("ACT","onDetached")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.e("ACT","onResume")
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -135,17 +135,7 @@ class SecondFragment : Fragment() {
                         //"title" to algorithmModel.eventData.value!![0]
                     )
 
-                // val modEvent = ModifyEvent()
-                // modEvent.arguments = bundle
-                // parentFragmentManager.beginTransaction().apply {
-                //     replace(this@SecondFragment.id, modEvent)
-                //     commit()
-                // }
-
                 val navController = NavHostFragment.findNavController(this)
-
-                // val navHostFragment = parentFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
-                // val navController = navHostFragment.navController
                 navController.navigate(R.id.modifyEvent,bundle)
 
             }

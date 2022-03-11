@@ -17,22 +17,33 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- The background of the application. -->
-        <item name="android:windowBackground">#FFFFFF</item>
-
-        <!-- I believe app crashes without this. -->
-<!--        <item name="colorSurface" >@android:color/transparent</item>-->
+        <item name="android:windowBackground">#EEEEEE</item>
 
         <item name="textFillColor">@color/white</item>
 
+        <item name="bottomAppBarStyle">@style/Widget.App.BottomAppBar</item>
+        <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
 
     </style>
 
-    <style name="ThemeOverlay.OCRHotel.BottomAppBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:iconTint">@color/white</item>
-        <item name="android:backgroundTint">#5175F6</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
+<!--    BottomAppBar's theme-->
+    <style name="Widget.App.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomAppBar</item>
+    </style>
 
-        <item name="colorAccent">@color/white</item>
+    <style name="Widget.App.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomAppBar" parent="">
+        <item name="android:backgroundTint">#2962FF</item>
+        <item name="colorPrimary">#EEEEEE</item>
+        <item name="colorOnPrimary">#EEEEEE</item>
+    </style>
+
+    <style name="ThemeOverlay.App.FloatingActionButton" parent="">
+        <item name="colorSecondary">#45B4F6</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
     </style>
 
     <style name="Theme.OCRHotel.NoActionBar">

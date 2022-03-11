@@ -22,7 +22,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class ModifyEvent : Fragment(R.layout.fragment_modify_event) {
+class ModifyEvent : Fragment() {
 
 
 
