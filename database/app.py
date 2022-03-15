@@ -61,7 +61,7 @@ def get_profile(profile_id: uuid.UUID): #TODO: change function variable to inclu
         if bcrypt.checkpw(password, profile[8]): 
             app.logger.info(profile)
             return { 'id': profile[0], 'username': profile[1], 'remaining_free_uses': profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}, 200
-        else
+        else:
             return {'success':False}, 403 # Access denied
 
     except Exception as e:
