@@ -12,10 +12,11 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.ocrhotel.databinding.ActivityMainBinding
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +24,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var navController: NavController
+
+    private val adRequest = AdRequest.Builder().build()
+    private var mRewardedAd: RewardedAd? = null
+    private var TAG = "MainActivity"
+
+    var scans = 0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,16 +48,25 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
 
-        //Code for the banner ads
+        //Code for ads
         MobileAds.initialize(this) {}
+
+        //Banner ad
         val mAdView = findViewById<AdView>(R.id.adView)
-        val adRequest = AdRequest.Builder().build()
         mAdView.loadAd(adRequest)
 
+        //Load reward ad
+        loadRewardedAd()
+
         binding.fab.setOnClickListener {
-            // Go to scanning
-            binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
-            navController.navigate(R.id.SecondFragment)
+            //Go to scanning
+            if(scans > 0) {
+                binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
+                navController.navigate(R.id.SecondFragment)
+            }
+            else{
+              noScanDialog()
+            }
         }
 
         binding.bottomNavigation.setOnItemSelectedListener {
@@ -73,5 +89,76 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+    fun scanCountSub() {    //Used in Modify Event to subtract the amount of scans
+        scans--
+    }
+    private fun scanCountAdd() {
+        scans++
+    }
+
+    //Dialog for when there is no leftover scans
+    fun noScanDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.alert_dialog_title))
+            .setMessage(resources.getString(R.string.alert_dialog_message))
+            .setNegativeButton(resources.getString(R.string.decline)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(resources.getString(R.string.watch_ad)) { _, _ ->
+                showRewardedVideo()
+                Log.d(TAG,"You watched the ad")
+            }
+            .show()
+    }
+
+    //Function for loading the reward ad
+    private fun loadRewardedAd() {
+        RewardedAd.load(this,getString(R.string.ad_id_reward), adRequest, object : RewardedAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.d(TAG, adError?.message)
+                mRewardedAd = null
+            }
+            override fun onAdLoaded(rewardedAd: RewardedAd) {
+                Log.d(TAG, "Reward Ad was loaded.")
+                mRewardedAd = rewardedAd
+            }
+        })
+    }
+
+    //Function for showing the reward video and handling callbacks
+    private fun showRewardedVideo() {
+        if (mRewardedAd != null) {
+            mRewardedAd?.show(this) {
+                scanCountAdd() //reward
+                Log.d("Reward AD", "User earned the reward.")
+            }
+
+            mRewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    Log.d("Reward AD", "Ad was dismissed.")
+                    mRewardedAd = null
+                    loadRewardedAd()
+                }
+
+                override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                    Log.d("Reward AD", "Ad failed to show.")
+                    mRewardedAd = null
+                }
+
+                override fun onAdShowedFullScreenContent() {
+                    Log.d("Reward AD", "Ad showed fullscreen content.")
+                    // Called when ad is dismissed.
+                }
+            }
+        }
+    }
+
+    // private fun setCurrentFragment(fragment: Fragment){
+    //     supportFragmentManager.beginTransaction().apply {
+    //         replace(R.id.main_content,fragment)
+    //         commit()
+    //     }
+    // }
 
 }

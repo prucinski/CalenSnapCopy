@@ -16,6 +16,12 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -26,8 +32,6 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class ModifyEvent : Fragment() {
-
-
 
     // The events list. It is modifiable.
     private var eventsList: List<Event> = emptyList()
@@ -45,6 +49,10 @@ class ModifyEvent : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    
+    private val adRequest = AdRequest.Builder().build()
+    private var mInterstitialAd: InterstitialAd? = null
+    private var TAG = "Interstitial Ad"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +71,9 @@ class ModifyEvent : Fragment() {
 //            dates = algo.extractDates(textResults) as MutableList<Long>
 //            // Do something with the result
 //        }
+        
+        //Interstitial Add code
+        loadInterAd()
 
         _binding = FragmentModifyEventBinding.inflate(inflater, container, false)
         return binding.root
@@ -131,6 +142,8 @@ class ModifyEvent : Fragment() {
                     val eventCreator = EventCreator(eventsList, activity)
                     //this is slightly wonky and has to be pressed twice - but it's a minor bug
                     if (eventCreator.addEvent()) {
+                        (getActivity() as MainActivity?)?.scanCountSub() //removes a scan
+                        showInterAd()
                         findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
                     }
                     else{
@@ -184,4 +197,40 @@ class ModifyEvent : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    
+   //Function for loading the interstitial ad 
+   private fun loadInterAd(){
+        InterstitialAd.load(getActivity(),getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                mInterstitialAd = interstitialAd
+            }
+        })
+    }
+    
+    //Function for showing the interstitial ad
+    private fun showInterAd(){
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.show(getActivity())
+            mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    Log.d(TAG, "Ad was dismissed.")
+                    mInterstitialAd = null
+                    loadInterAd()
+                }
+
+                override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                    Log.d(TAG, "Ad failed to show.")
+                    mInterstitialAd = null
+                }
+
+                override fun onAdShowedFullScreenContent() {
+                    Log.d(TAG, "Ad showed fullscreen content.")
+                }
+            }
+        }
+    } 
 }
