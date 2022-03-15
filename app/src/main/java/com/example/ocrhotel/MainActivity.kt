@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_help -> Toast.makeText(peekAvailableContext(), "This will lead to a tutorial!", Toast.LENGTH_SHORT).show()
 
                 // Go to the history page
-                R.id.navigation_history -> Toast.makeText(peekAvailableContext() , "This will lead to the history!", Toast.LENGTH_SHORT).show()
+                R.id.navigation_history -> navController.navigate(R.id.eventsHistoryFragment)
 
                 // Go to the settings page
                 R.id.navigation_settings -> Toast.makeText(peekAvailableContext(), "This will lead to the settings menu!", Toast.LENGTH_SHORT).show()

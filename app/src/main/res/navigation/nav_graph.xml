@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_home_self"
             app:destination="@id/home" />
+        <action
+            android:id="@+id/action_home_to_eventsHistoryFragment"
+            app:destination="@id/eventsHistoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -36,6 +39,9 @@
         <action
             android:id="@+id/action_SecondFragment_self"
             app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_eventsHistoryFragment"
+            app:destination="@id/eventsHistoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsMenu"
@@ -45,6 +51,9 @@
         <action
             android:id="@+id/action_settingsMenu_to_home"
             app:destination="@id/home" />
+        <action
+            android:id="@+id/action_settingsMenu_to_eventsHistoryFragment"
+            app:destination="@id/eventsHistoryFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_settingsMenu"
@@ -63,6 +72,9 @@
         <action
             android:id="@+id/action_successfulScan_to_settingsMenu"
             app:destination="@id/settingsMenu" />
+        <action
+            android:id="@+id/action_successfulScan_to_eventsHistoryFragment"
+            app:destination="@id/eventsHistoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/modifyEvent"
@@ -83,5 +95,13 @@
         <action
             android:id="@+id/action_modifyEvent_to_home"
             app:destination="@id/home" />
+        <action
+            android:id="@+id/action_modifyEvent_to_eventsHistoryFragment"
+            app:destination="@id/eventsHistoryFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/eventsHistoryFragment"
+        android:name="com.example.ocrhotel.EventsHistoryFragment"
+        android:label="fragment_events_history_list"
+        tools:layout="@layout/fragment_events_history_list" />
 </navigation>
