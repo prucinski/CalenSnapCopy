@@ -202,7 +202,7 @@ def get_events(profile_id: uuid.UUID):
 
 @app.route('/metadata/events/', methods=['GET'])
 def get_events_metadata():
-       """ Retrieve all events logged anonymously. """
+    """ Retrieve all events logged anonymously. """
     try:
         connection = connect()
         cursor = connection.cursor()
