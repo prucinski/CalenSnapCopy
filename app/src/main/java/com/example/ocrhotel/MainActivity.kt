@@ -74,11 +74,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    // private fun setCurrentFragment(fragment: Fragment){
-    //     supportFragmentManager.beginTransaction().apply {
-    //         replace(R.id.main_content,fragment)
-    //         commit()
-    //     }
-    // }
-
 }

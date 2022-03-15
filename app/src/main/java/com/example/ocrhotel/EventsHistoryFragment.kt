@@ -10,8 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.ocrhotel.placeholder.PlaceholderContent
 
+
 /**
- * A fragment representing a list of Items.
+ * Fragment representing the events history.
  */
 class EventsHistoryFragment : Fragment() {
 

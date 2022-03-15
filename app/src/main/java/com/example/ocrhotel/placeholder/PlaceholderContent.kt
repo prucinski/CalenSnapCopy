@@ -1,5 +1,6 @@
 package com.example.ocrhotel.placeholder
 
+import com.example.ocrhotel.Event
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -14,30 +15,29 @@ object PlaceholderContent {
     /**
      * An array of sample (placeholder) items.
      */
-    val ITEMS: MutableList<PlaceholderItem> = ArrayList()
-
+    val ITEMS: MutableList<Event> = mutableListOf()
     /**
      * A map of sample (placeholder) items, by ID.
      */
-    val ITEM_MAP: MutableMap<String, PlaceholderItem> = HashMap()
+    val ITEM_MAP: MutableMap<String, Event> = HashMap()
 
     private val COUNT = 25
 
     init {
         // Add some sample items.
         for (i in 1..COUNT) {
-            addItem(createPlaceholderItem(i))
+            addItem(i.toString(),Event())
         }
     }
 
-    private fun addItem(item: PlaceholderItem) {
+    private fun addItem(position: String, item: Event) {
         ITEMS.add(item)
-        ITEM_MAP.put(item.id, item)
+        ITEM_MAP.put(position, item)
     }
 
-    private fun createPlaceholderItem(position: Int): PlaceholderItem {
-        return PlaceholderItem(position.toString(), "Item " + position, makeDetails(position))
-    }
+    // private fun createPlaceholderItem(position: Int): PlaceholderItem {
+    //     return PlaceholderItem(position.toString(), "Item " + position, makeDetails(position))
+    // }
 
     private fun makeDetails(position: Int): String {
         val builder = StringBuilder()
