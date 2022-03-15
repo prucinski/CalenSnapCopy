@@ -3,6 +3,7 @@ package com.example.ocrhotel
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.format.DateFormat.is24HourFormat
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,9 +17,11 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
 import com.google.android.material.datepicker.MaterialDatePicker
-import org.joda.time.LocalTime
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
@@ -90,14 +93,32 @@ class ModifyEvent : Fragment() {
                     .setTheme(R.style.ThemeOverlay_App_MaterialCalendar)
                     .setSelection(currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000)
                     .build()
-            datePicker.show(parentFragmentManager,"")
+
+            datePicker.show(parentFragmentManager,"DATE")
 
             datePicker.addOnPositiveButtonClickListener {
                 binding.EventDate.text = LocalDateTime.ofEpochSecond(
                     datePicker.selection!!/1000,0, ZoneOffset.UTC)
                     .format(dateFormatter)
             }
+        }
 
+        binding.EventHour.setOnClickListener {
+            val clockFormat = if (is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+            val currentTime = LocalTime.parse(binding.EventHour.text.toString())
+            val timePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(clockFormat)
+                .setHour(currentTime.hour)
+                .setMinute(currentTime.minute)
+                .setTitleText("Select time")
+                .build()
+
+            timePicker.show(parentFragmentManager,"TIME")
+
+            timePicker.addOnPositiveButtonClickListener{
+                binding.EventHour.text = LocalTime.of(timePicker.hour,timePicker.minute)
+                    .toString()
+            }
         }
 
 
@@ -143,7 +164,7 @@ class ModifyEvent : Fragment() {
             val date: LocalDate = LocalDate.parse(binding.EventDate.text, dateFormatter)
             val time: LocalTime = LocalTime.parse(binding.EventHour.text.toString())
             eventsList[currentEvent].eventDateTime = LocalDateTime.of(
-                date.year, date.monthValue, date.dayOfMonth, time.hourOfDay, time.minuteOfHour)
+                date.year, date.monthValue, date.dayOfMonth, time.hour, time.minute)
 
             // I'm not sure if the next two lines are necessary, but I think they are since
             // the object has already been constructed.

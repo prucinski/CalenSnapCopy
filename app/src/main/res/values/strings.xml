@@ -54,4 +54,5 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="scan">Scan</string>
+    <string name="select_events_from_the_list_of_found">Select events from the list of found:</string>
 </resources>
