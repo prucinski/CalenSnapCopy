@@ -4,6 +4,8 @@ from flask_cors import CORS
 import os
 import psycopg2
 import psycopg2.extras
+import bcrypt
+
 
 
 # Flask housekeeping
@@ -41,13 +43,10 @@ def index():
     # This is sent as a JSON Object
     return {'health': 'ok'}
 
-
+# changed get_profile to include login since it doesn't make sense to do two separate calls
 @app.route('/profile/<uuid:profile_id>', methods=['GET'])
-def get_profile(profile_id: uuid.UUID):
+def get_profile(profile_id: uuid.UUID): #TODO: change function variable to include username and password
     """ Return information about the profile at the given ID. """
-    # TODO: add authentication? maybe this route is actually not needed
-    # TODO: need to add password matching and hashing later
-
     try:
         connection = connect()
         cursor = connection.cursor()
@@ -55,12 +54,25 @@ def get_profile(profile_id: uuid.UUID):
         cursor.execute(
             """ SELECT * FROM profile WHERE id = %s; """, (profile_id,))
 
-        # since profile_id is the primary key, we can use fetchone
+        password = request.json['password']
+
+         # since username is theoretically unique, we can use fetchone
         profile = cursor.fetchone()
+        if bcrypt.checkpw(password, profile[8]):
+ 
+            app.logger.info(profile)
+            return {
+                'id': profile[0],
+                'username': profile[1], 
+                'remaining_free_uses': profile[2], 
+                'premium_user': profile[3], 
+                'business_user': profile[4], 
+                'duration_in_mins': profile[5], 
+                'mm_dd': profile[6], 
+                'darkmode': profile[7]}, 200
 
-        app.logger.info(profile)
-
-        return  {'id': profile[0], 'username': profile[1], 'remaining_free_uses': profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}, 200
+        else
+            return {'success':False}, 403 # Access denied
 
     except Exception as e:
         app.logger.warning("Error: ", e)
@@ -75,8 +87,12 @@ def create_profile(username: str):
         connection = connect()
         cursor = connection.cursor()
 
+        password = request.json['password']
+        hashed_pass = bcrypt.hashpw(password, bcrypt.gensalt())
+
+
         cursor.execute(
-            """ INSERT INTO profile(username) values(%s) RETURNING id; """, (username,))
+            """ INSERT INTO profile(username, password) values(%s, %s) RETURNING id; """, (username, hashed_pass))
 
         profile_id = cursor.fetchone()[0]
         connection.commit()
@@ -196,8 +212,7 @@ def get_events(profile_id: uuid.UUID):
 
 @app.route('/metadata/events/', methods=['GET'])
 def get_events_metadata():
-    """ Retrieve all events that were created by the user with 'profile_id'. """
-    # TODO: I've left this as is for now but this needs to be switched to the user data not the business data
+       """ Retrieve all events logged anonymously. """
     try:
         connection = connect()
         cursor = connection.cursor()
