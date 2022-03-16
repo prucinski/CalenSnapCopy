@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
 
     var scans = 1
-    private val premiumAccount = false
+    private val premiumAccount = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
