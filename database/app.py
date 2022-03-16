@@ -43,6 +43,10 @@ def index():
     # This is sent as a JSON Object
     return {'health': 'ok'}
 
+@app.route ('/login', methods=['POST'])
+def login(): 
+    pass
+
 # changed get_profile to include login since it doesn't make sense to do two separate calls
 @app.route('/profile/<uuid:profile_id>', methods=['GET'])
 def get_profile(profile_id: uuid.UUID): #TODO: change function variable to include username and password
@@ -54,15 +58,14 @@ def get_profile(profile_id: uuid.UUID): #TODO: change function variable to inclu
         cursor.execute(
             """ SELECT * FROM profile WHERE id = %s; """, (profile_id,))
 
-        password = request.json['password'].encode('utf-8')
+        # password = request.json['password'].encode('utf-8')
 
-         # since username is theoretically unique, we can use fetchone
+        # since username is theoretically unique, we can use fetchone
         profile = cursor.fetchone()
-        if bcrypt.checkpw(password, profile[8]): 
-            app.logger.info(profile)
-            return { 'id': profile[0], 'username': profile[1], 'remaining_free_uses': profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}, 200
-        else:
-            return {'success':False}, 403 # Access denied
+        # if bcrypt.checkpw(password, profile[8]): 
+        return { 'id': profile[0], 'username': profile[1], 'remaining_free_uses': profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}, 200
+        # else:
+        #     return {'success':False}, 403 # Access denied
 
     except Exception as e:
         app.logger.warning("Error: ", e)
