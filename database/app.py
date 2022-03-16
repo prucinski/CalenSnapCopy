@@ -54,7 +54,7 @@ def get_profile(profile_id: uuid.UUID): #TODO: change function variable to inclu
         cursor.execute(
             """ SELECT * FROM profile WHERE id = %s; """, (profile_id,))
 
-        password = request.json['password']
+        password = request.json['password'].encode('utf-8')
 
          # since username is theoretically unique, we can use fetchone
         profile = cursor.fetchone()
