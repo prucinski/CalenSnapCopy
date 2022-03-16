@@ -77,7 +77,7 @@ def create_profile(username: str):
         connection = connect()
         cursor = connection.cursor()
 
-        password = request.json['password']
+        password = request.json['password'].encode('utf-8')
         hashed_pass = bcrypt.hashpw(password, bcrypt.gensalt())
 
 
