@@ -29,7 +29,8 @@ class MainActivity : AppCompatActivity() {
     private var mRewardedAd: RewardedAd? = null
     private var TAG = "MainActivity"
 
-    var scans = 0;
+    var scans = 1
+    private val premiumAccount = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,24 +49,31 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
 
-        //Code for ads
-        MobileAds.initialize(this) {}
+        if(!premiumAccount){
+            //Code for ads
+            MobileAds.initialize(this) {}
 
-        //Banner ad
-        val mAdView = findViewById<AdView>(R.id.adView)
-        mAdView.loadAd(adRequest)
+            //Banner ad
+            val mAdView = findViewById<AdView>(R.id.adView)
+            mAdView.loadAd(adRequest)
 
-        //Load reward ad
-        loadRewardedAd()
+            //Load reward ad
+            loadRewardedAd()
+        }
 
         binding.fab.setOnClickListener {
-            //Go to scanning
-            if(scans > 0) {
+            // Go to scanning
+            if(!premiumAccount)
+                if(scans > 0) {
+                    binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
+                    navController.navigate(R.id.SecondFragment)
+                }
+                else{
+                  noScanDialog()
+                }
+            else {
                 binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
                 navController.navigate(R.id.SecondFragment)
-            }
-            else{
-              noScanDialog()
             }
         }
 
@@ -87,17 +95,17 @@ class MainActivity : AppCompatActivity() {
             return@setOnItemSelectedListener true
         }
 
-
     }
 
-    fun scanCountSub() {    //Used in Modify Event to subtract the amount of scans
+    // Used in Modify Event to subtract the amount of scans
+    fun scanCountSub() {
         scans--
     }
     private fun scanCountAdd() {
         scans++
     }
 
-    //Dialog for when there is no leftover scans
+    // Dialog for when there is no leftover scans
     fun noScanDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.alert_dialog_title))
@@ -112,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    //Function for loading the reward ad
+    // Function for loading the reward ad
     private fun loadRewardedAd() {
         RewardedAd.load(this,getString(R.string.ad_id_reward), adRequest, object : RewardedAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -126,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    //Function for showing the reward video and handling callbacks
+    // Function for showing the reward video and handling callbacks
     private fun showRewardedVideo() {
         if (mRewardedAd != null) {
             mRewardedAd?.show(this) {
@@ -153,12 +161,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    // private fun setCurrentFragment(fragment: Fragment){
-    //     supportFragmentManager.beginTransaction().apply {
-    //         replace(R.id.main_content,fragment)
-    //         commit()
-    //     }
-    // }
 
 }
