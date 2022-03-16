@@ -149,7 +149,7 @@ def create_event(profile_id: uuid.UUID):
             """INSERT INTO event (snap_time, snap_location) 
                VALUES (%s, POINT(%s, %s)) RETURNING id;
             """,
-            (event_time, event_location['N'], event_location['W']))
+            (event_time, snap_location['N'], snap_location['W']))
         (event_id, ) = cursor.fetchone()
 
         cursor = connection.cursor()
