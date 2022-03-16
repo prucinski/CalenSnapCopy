@@ -56,7 +56,6 @@ fun EventTile(
 ){
     // val event : Event = Event()
     return ListItem(
-        text={Text(event.eventName)},
-        secondaryText={Text(event.eventDate)}
+        text={Text(event.eventName)}
     )
 }

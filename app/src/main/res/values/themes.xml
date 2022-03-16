@@ -18,9 +18,6 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- The background of the application. -->
         <item name="android:windowBackground">#EEEEEE</item>
-        <item name="android:background">#EEEEEE</item>
-
-        <item name="android:backgroundTint">#FFFFFF</item>
 
         <item name="textFillColor">@color/white</item>
 
@@ -29,7 +26,7 @@
 
     </style>
 
-    <!--    BottomAppBar's theme-->
+<!--    BottomAppBar's theme-->
     <style name="Widget.App.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomAppBar</item>
     </style>
@@ -45,7 +42,6 @@
     </style>
 
     <style name="ThemeOverlay.App.FloatingActionButton" parent="">
-        <item name="android:backgroundTint">#45B4F6</item>
         <item name="colorSecondary">#45B4F6</item>
         <item name="colorOnSecondary">#FFFFFF</item>
     </style>
