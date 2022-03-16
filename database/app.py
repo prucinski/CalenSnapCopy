@@ -83,7 +83,6 @@ def create_profile(username: str):
         password = request.json['password'].encode('utf-8')
         hashed_pass = bcrypt.hashpw(password, bcrypt.gensalt())
 
-
         cursor.execute(
             """ INSERT INTO profile(username, password) values(%s, %s) RETURNING id; """, (username, hashed_pass))
 
@@ -138,8 +137,12 @@ def create_event(profile_id: uuid.UUID):
         cursor.fetchone()
 
         # Extract JSON data from HTTP request to put it into the database.
+        title = request.json['title']
         event_time = request.json['event_time']
-        event_location = request.json['event_location']
+        userid = request.json['userid']
+
+        snap_location = request.json['snap_location']
+        snap_time = request.json['snap_time']
 
         # Run insertion query.
         cursor.execute(
@@ -147,11 +150,20 @@ def create_event(profile_id: uuid.UUID):
                VALUES (%s, POINT(%s, %s)) RETURNING id;
             """,
             (event_time, event_location['N'], event_location['W']))
-
         (event_id, ) = cursor.fetchone()
+
+        cursor = connection.cursor()
+        cursor.execute (
+            """ INSERT INTO userevent(title, event_time, userid)
+                VALUES (%s, %s, %s) RETURNING id;
+            """,
+            (title, event_time, userid)
+        )
+        (userevent_id, ) = cursor.fetchone()
+
         connection.commit()  # write changes
         app.logger.warning(event_id)
-        return {'event_id': event_id}, 200
+        return {'event_id': event_id, 'userevent_id': userevent_id}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
