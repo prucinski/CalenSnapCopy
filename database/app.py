@@ -6,11 +6,18 @@ import psycopg2
 import psycopg2.extras
 import bcrypt
 
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
 
 
 # Flask housekeeping
 app = Flask(__name__)
 CORS(app)
+app.config['JWT_SECRET_KEY'] = os.environ.get('CALENSNAP_JWT_SECRET_KEY')
+jwt = JWTManager(app)
+
 
 # This is the url used for connecting to postgres, it should include the password and username to log into the database.
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -23,6 +30,7 @@ psycopg2.extras.register_uuid()
 if (DATABASE_URL is None):
     app.logger.error(
         'The environment variable "DATABASE_URL" is not set.')
+    exit()
 
 
 def connect():
@@ -43,13 +51,40 @@ def index():
     # This is sent as a JSON Object
     return {'health': 'ok'}
 
-@app.route ('/login', methods=['POST'])
-def login(): 
-    pass
+
+@app.route('/login', methods=['POST'])
+def login():
+    """ This route takes a password and username and sends back a JWT token """
+
+    # TODO: we need to make sure that username is unique, because we use it to login and we can't really use the profile id as that would be hard to memorise for the user.
+    username = request.json.get('username')
+    plain_password = request.json.get('password')
+
+    try:  # try connecting to the database and verify the
+        connection = connect()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """ SELECT (password) FROM profile WHERE username = %s; """, username)
+        (hashed_password,) = cursor.fetchone()
+
+        if not bcrypt.checkpw(plain_password, hashed_password):
+            return {'success': False}, 401
+
+    except Exception as e:
+        app.logger.warn(e)
+        return {'success': False}, 400
+
+    token = create_access_token(identity=username)
+    return {'success': True, 'token': token}, 200
+
 
 # changed get_profile to include login since it doesn't make sense to do two separate calls
+
+
 @app.route('/profile/<uuid:profile_id>', methods=['GET'])
-def get_profile(profile_id: uuid.UUID): #TODO: change function variable to include username and password
+# TODO: change function variable to include username and password
+def get_profile(profile_id: uuid.UUID):
     """ Return information about the profile at the given ID. """
     try:
         connection = connect()
@@ -62,8 +97,8 @@ def get_profile(profile_id: uuid.UUID): #TODO: change function variable to inclu
 
         # since username is theoretically unique, we can use fetchone
         profile = cursor.fetchone()
-        # if bcrypt.checkpw(password, profile[8]): 
-        return { 'id': profile[0], 'username': profile[1], 'remaining_free_uses': profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}, 200
+        # if bcrypt.checkpw(password, profile[8]):
+        return {'id': profile[0], 'username': profile[1], 'remaining_free_uses': profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}, 200
         # else:
         #     return {'success':False}, 403 # Access denied
 
@@ -73,15 +108,25 @@ def get_profile(profile_id: uuid.UUID): #TODO: change function variable to inclu
         return {'success': False}, 400
 
 
-@app.route('/profile/<string:username>', methods=['POST'])
-def create_profile(username: str):
-    """  """
+@app.route('/profile', methods=['POST'])
+def signup():
+    """ Sign up a new user, given a username and a password, given via JSON """
     try:
+
+        username = request.json.get('username')
+
         connection = connect()
         cursor = connection.cursor()
 
-        password = request.json['password'].encode('utf-8')
+        cursor.execute("SELECT * FROM profile WHERE username = %s;", username)
+        if cursor.fetchone() is not None:
+            return {'success': False, 'error': 'username_exists'}, 400
+
+        password = request.json.get('password').encode('utf-8')
         hashed_pass = bcrypt.hashpw(password, bcrypt.gensalt())
+
+        connection = connect()
+        cursor = connection.cursor()
 
         cursor.execute(
             """ INSERT INTO profile(username, password) values(%s, %s) RETURNING id; """, (username, hashed_pass))
@@ -93,7 +138,6 @@ def create_profile(username: str):
 
     except Exception as e:
         app.logger.warning("Error: ", e)
-
         return {'success': False}, 400
 
 
@@ -153,7 +197,7 @@ def create_event(profile_id: uuid.UUID):
         (event_id, ) = cursor.fetchone()
 
         cursor = connection.cursor()
-        cursor.execute (
+        cursor.execute(
             """ INSERT INTO userevent(title, event_time, userid)
                 VALUES (%s, %s, %s) RETURNING id;
             """,
