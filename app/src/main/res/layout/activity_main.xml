@@ -16,6 +16,7 @@
         android:layout_centerHorizontal="true"
         app:layout_constraintTop_toTopOf="parent"
         app:adSize="BANNER"
+        android:elevation="100dp"
         app:adUnitId="@string/ad_id_banner">
 
     </com.google.android.gms.ads.AdView>
