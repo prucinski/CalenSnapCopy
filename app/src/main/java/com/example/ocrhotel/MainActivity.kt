@@ -1,15 +1,17 @@
 package com.example.ocrhotel
 
+import android.Manifest
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.util.Log
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.ocrhotel.databinding.ActivityMainBinding
 import com.google.android.gms.ads.*
@@ -17,6 +19,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,11 +32,85 @@ class MainActivity : AppCompatActivity() {
     private var mRewardedAd: RewardedAd? = null
     private var TAG = "MainActivity"
 
+    //init to random values
+    var premiumAccount = false
     var scans = 1
-    private val premiumAccount = false
+
+    //TODO: MOVE THIS INTO SETTINGS. AFTER MOVING, IMPLEMENT CHOOSING
+    //TODO: maybe keep a stub to choose a default calendar upon launch
+    fun getCalendarId() : Long? {
+        //via https://stackoverflow.com/questions/16242472/retrieve-the-default-calendar-id-in-android
+        val projection = arrayOf(CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
+        var calCursor = contentResolver.query(
+            CalendarContract.Calendars.CONTENT_URI,
+            projection,
+            CalendarContract.Calendars.VISIBLE + " = 1 AND " + CalendarContract.Calendars.IS_PRIMARY + "=1",
+            null,
+            CalendarContract.Calendars._ID + " ASC"
+        )
+        if (calCursor != null && calCursor.count <= 0) {
+            calCursor = contentResolver.query(
+                CalendarContract.Calendars.CONTENT_URI,
+                projection,
+                CalendarContract.Calendars.VISIBLE + " = 1",
+                null,
+                CalendarContract.Calendars._ID + " ASC"
+            )
+        }
+        if (calCursor != null) {
+            if (calCursor.moveToFirst()) {
+                val calName: String
+                val calID: String
+                val nameCol = calCursor.getColumnIndex(projection[1])
+                val idCol = calCursor.getColumnIndex(projection[0])
+                calName = calCursor.getString(nameCol)
+                calID = calCursor.getString(idCol)
+                Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
+                val helloTutorial = Toast.makeText(applicationContext, "Event is created at this calendar: $calName", Toast.LENGTH_SHORT)
+                helloTutorial.show()
+                calCursor.close()
+                return calID.toLong()
+            }
+        }
+        return null
+    }
+    private fun setupSharedPrefs(){
+        // Storing data into SharedPreferences
+        //Initialization on first app launch.
+        //This file is present only on the device and not in this project.
+        var sh = getSharedPreferences("CalenSnapSharedPreferences", MODE_PRIVATE)
+        //check if file already present. if not, create it
+        val filePresent = sh.getBoolean("fileExists", false)
+        if(!filePresent) {
+            val myEdit = sh.edit()
+            //VALUES INITIALIZED DURING LAUNCH.
+            myEdit.putBoolean("isPremiumUser", false)
+            myEdit.putBoolean("filePresent", true)
+            myEdit.putInt("numberOfScans", 1)
+            //check if there is a calendar permission. This is kind of dead code right now.
+            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+                if(sh.getLong("calendarID", -1) == -1L){
+                    myEdit.putLong("calendarID", getCalendarId()!!)
+                }
+            }
+            myEdit.commit()
+        }
+    }
+    //MOVED HERE from EventCreator() as we want to choose the calendar somewhere else.
+    fun findCalendarID(){
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setupSharedPrefs()
+        //retrieve values that we want.
+        var sh = getSharedPreferences("CalenSnapSharedPreferences", MODE_PRIVATE)
+        premiumAccount = sh.getBoolean("isPremiumUser", false)
+        scans = sh.getInt("numberOfScans", 1)
+
+
 
         Log.e("ACT","onCreate")
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -96,13 +173,24 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+    fun updateScanNumber(){
+        var sh = getSharedPreferences("CalenSnapSharedPreferences", MODE_PRIVATE)
+        val myEdit = sh.edit()
+        myEdit.putInt("numberOfScans", scans)
+        myEdit.apply()
+    }
 
     // Used in Modify Event to subtract the amount of scans
     fun scanCountSub() {
-        scans--
+        if(!premiumAccount){
+            scans--
+            updateScanNumber()
+        }
+
     }
     private fun scanCountAdd() {
-        scans++
+        scans+=3
+        updateScanNumber()
     }
 
     // Dialog for when there is no leftover scans
@@ -161,5 +249,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
+
 
 }

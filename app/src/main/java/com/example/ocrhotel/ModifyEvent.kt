@@ -150,6 +150,9 @@ class ModifyEvent : Fragment() {
                         Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()
                     }
                 }
+                else{
+                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         //spinner choices. Called on view creation at index 0 (as we want it)
