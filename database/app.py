@@ -7,8 +7,6 @@ import os
 import psycopg2
 import psycopg2.extras
 import bcrypt
-from dotenv import load_dotenv
-load_dotenv()
 
 
 # Flask housekeeping

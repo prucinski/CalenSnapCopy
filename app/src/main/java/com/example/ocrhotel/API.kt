@@ -29,10 +29,15 @@ private fun path(vararg paths: String): HttpUrl {
 }
 
 // Constructs a basic HTTP request
-private fun baseRequest(url: HttpUrl): Request.Builder {
-    return Request.Builder()
+private fun baseRequest(url: HttpUrl, jwt: String?): Request.Builder {
+    var builder = Request.Builder()
         .addHeader("Content-Type", "application/json")
-        .url(url)
+
+    if (jwt != null) {
+        builder = builder.addHeader("Authorization", "Bearer $jwt")
+    }
+
+    return builder.url(url)
 }
 
 private fun toPasswordPayload(password: String): String {
@@ -51,31 +56,23 @@ private fun makeCall(req: Request, callback: Callback): Call {
 }
 
 // Get from the specified http url
-private fun get(url: HttpUrl, callback: Callback): Call {
-    val request = baseRequest(url)
+private fun get(url: HttpUrl, callback: Callback, jwt: String? = null): Call {
+    val request = baseRequest(url, jwt)
         .build()
     return makeCall(request, callback)
 }
 
 // Post to the specified http url
-private fun post(url: HttpUrl, data: String, callback: Callback): Call {
-    val request = baseRequest(url)
+private fun post(url: HttpUrl, data: String, callback: Callback, jwt: String? = null): Call {
+    val request = baseRequest(url, jwt)
         .post(data.toRequestBody())
         .build()
     return makeCall(request, callback)
 }
 
-private fun put(url: HttpUrl, data: String, callback: Callback): Call {
-    val request = baseRequest(url)
-        .put(data.toRequestBody())
-        .build()
-    return makeCall(request, callback)
-}
-
-
 // Delete at the specified http url
-private fun delete(url: HttpUrl, callback: Callback): Call {
-    val request = baseRequest(url)
+private fun delete(url: HttpUrl, callback: Callback, jwt: String? = null): Call {
+    val request = baseRequest(url, jwt)
         .delete()
         .build()
     return makeCall(request, callback)
@@ -134,10 +131,25 @@ class APIUserID : APIValue() {
     val profile_id: UUID = UUID(0, 0)
 }
 
+class APIJWTToken : APIValue() {
+    val token = ""
+}
+
 /**
  * API functions
  * */
 
+fun login(username: String, password: String, callback: (token: String?) -> Unit) {
+    val gson = Gson()
+    post(path("login"),
+    gson.toJson(object {
+        val password = password
+        val username = username
+    }),
+    decodeCallback(APIJWTToken::class.java) { result ->
+        callback(result?.token)
+    })
+}
 
 fun createProfile(username: String, password: String, callback: (profileId: UUID?) -> Unit) {
     val gson = Gson()
@@ -153,12 +165,13 @@ fun createProfile(username: String, password: String, callback: (profileId: UUID
         })
 }
 
-fun readProfile(profileId: UUID, password: String, callback: (APIProfile?) -> Unit) {
+fun readProfile(profileId: UUID, password: String, callback: (APIProfile?) -> Unit, jwt: String) {
     get(
         path("profile", profileId.toString()),
         decodeCallback(APIProfile::class.java) { result ->
             callback(result)
-        })
+        }, jwt
+    )
 }
 
 fun deleteProfile(profileId: UUID, callback: (Boolean) -> Unit) {
@@ -269,26 +282,31 @@ private fun <T> decodeCallback(
 
 fun main(args: Array<String>) {
     val password = "password1234"
-    createProfile("Erik2", password) {
-        if (it != null) {
-            readProfile(it, password) { profile ->
-                println(profile?.username)
-            }
-            val time = LocalDateTime.now()
-            createEvent(it, "Test Event", time, time.plusDays(20), 0.0, 0.0) { success ->
-                println(success)
-                readUserEvents(it) { events ->
-                    events?.events?.forEach { event ->
-                        println(event.title)
-                    }
-                }
-            }
-        }
+
+    login("Erik2", password) { token ->
+        println(token)
     }
 
-    readEvents {
-        it?.events?.forEach { event ->
-            println(event.snap_time)
-        }
-    }
+//    createProfile("Erik2", password) {
+//        if (it != null) {
+//            readProfile(it, password) { profile ->
+//                println(profile?.username)
+//            }
+//            val time = LocalDateTime.now()
+//            createEvent(it, "Test Event", time, time.plusDays(20), 0.0, 0.0) { success ->
+//                readUserEvents(it) { events ->
+//                    events?.events?.forEach { event ->
+//                        println(event.title)
+//                    }
+//                }
+//            }
+//
+//        }
+//    }
+//
+//    readEvents {
+//        it?.events?.forEach { event ->
+//            println(event.snap_time)
+//        }
+//    }
 }
