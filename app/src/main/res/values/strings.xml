@@ -39,7 +39,7 @@
     <string name="found_this_event">The following event has been found. Please modify the values if necessary and press "add", then "continue".</string>
     <string name="found_multiple_event">Multiple events found. Please modify the events if necessary and press "add" on each, then "continue".</string>
     <string name="home">Home</string>
-    <string name="success">The event was created successfully!</string>
+    <string name="success">Event Created Successfully!</string>
     <string name="continued">continue</string>
     <string name="submit">add</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -50,12 +50,14 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="account_header">Account</string>
+    <string name="more_header">More</string>
 
     <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
+    <string name="signature_title">Edit Details</string>
+    <string name="privacy_title">Privacy</string>
+    <string name="calendar_title">Default Calendar</string>
+
 
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>

@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_history -> navController.navigate(R.id.eventsHistoryFragment)
 
                 // Go to the settings page
-                R.id.navigation_settings -> Toast.makeText(peekAvailableContext(), "This will lead to the settings menu!", Toast.LENGTH_SHORT).show()
+                R.id.navigation_settings -> navController.navigate(R.id.settingsMenu)
 
             }
             return@setOnItemSelectedListener true
