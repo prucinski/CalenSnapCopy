@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <Button
         android:id="@+id/scanAgain"
@@ -11,44 +12,49 @@
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
         android:text="@string/scan_again"
-        android:textColor="@color/dark_blue"
+        android:textColor="@color/secondaryColor"
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.63" />
+        app:layout_constraintVertical_bias="0.682" />
 
     <Button
         android:id="@+id/navigateHome"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
-        android:text="@string/home"
-        android:textColor="@color/dark_blue"
+        android:text="Done"
+        android:textAlignment="center"
+        android:textColor="@color/secondaryColor"
         android:textSize="40sp"
+        app:iconTint="@color/secondaryDarkColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scanAgain"
-        app:layout_constraintVertical_bias="0.25" />
+        app:layout_constraintVertical_bias="0.396"
+        app:rippleColor="@color/secondaryDarkColor" />
 
     <TextView
         android:id="@+id/success"
-        android:layout_width="294dp"
-        android:layout_height="255dp"
+        android:layout_width="321dp"
+        android:layout_height="139dp"
         android:text="@string/success"
-        android:textColor="@color/dark_blue"
         android:textAlignment="center"
         android:textAllCaps="false"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toTopOf="@+id/scanAgain"
+        android:textColor="@color/secondaryDarkColor"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/navigateHome"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.774" />
+        app:layout_constraintVertical_bias="0.329" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
