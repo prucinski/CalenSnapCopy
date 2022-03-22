@@ -52,6 +52,8 @@
     <!-- Preference Titles -->
     <string name="account_header">Account</string>
     <string name="more_header">More</string>
+    <!-- I think this might cause some issues in the future. -->
+    <string name="preferences_address">com.example.ocrhotel_preferences</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Edit Details</string>

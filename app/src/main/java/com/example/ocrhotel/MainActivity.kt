@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     var premiumAccount = false
     var scans = 1
 
-    //TODO: MOVE THIS INTO SETTINGS. AFTER MOVING, IMPLEMENT CHOOSING
+    //TODO: MOVE THIS INTO SETTINGS?
     //TODO: maybe keep a stub to choose a default calendar upon launch
     fun getCalendarId() : Long? {
         //via https://stackoverflow.com/questions/16242472/retrieve-the-default-calendar-id-in-android
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         // Storing data into SharedPreferences
         //Initialization on first app launch.
         //This file is present only on the device and not in this project.
-        var sh = getSharedPreferences("CalenSnapSharedPreferences", MODE_PRIVATE)
+        var sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         //check if file already present. if not, create it
         val filePresent = sh.getBoolean("fileExists", false)
         if(!filePresent) {
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
             //check if there is a calendar permission. This is kind of dead code right now.
             if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
                 if(sh.getLong("calendarID", -1) == -1L){
-                    myEdit.putLong("calendarID", getCalendarId()!!)
+                    myEdit.putString("calendarID", getCalendarId()!!.toString())
                 }
             }
             myEdit.commit()
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
         setupSharedPrefs()
         //retrieve values that we want.
-        var sh = getSharedPreferences("CalenSnapSharedPreferences", MODE_PRIVATE)
+        var sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         premiumAccount = sh.getBoolean("isPremiumUser", false)
         scans = sh.getInt("numberOfScans", 1)
 
@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
 
     }
     fun updateScanNumber(){
-        var sh = getSharedPreferences("CalenSnapSharedPreferences", MODE_PRIVATE)
+        var sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         val myEdit = sh.edit()
         myEdit.putInt("numberOfScans", scans)
         myEdit.apply()

@@ -15,6 +15,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.CalendarContract
+import android.provider.Settings.Global.getString
+import com.google.common.io.Resources
 import java.time.ZoneId
 
 
@@ -32,14 +34,16 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
             val endMillis = events.eventDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() + events.duration*60*60*1000;
 
             //retrieve the calendar ID from shared preferences.
-            var sh = activity?.getSharedPreferences("CalenSnapSharedPreferences", Context.MODE_PRIVATE)
-            var calID = sh.getLong("calendarID", -1L)
+            var sh = activity?.getSharedPreferences("com.example.ocrhotel_preferences.xml", Context.MODE_PRIVATE)
+            var calIDstr = sh.getString("calendarID", "-1")
+            var calID = calIDstr!!.toLong()
             //Calendar not found in shared prefs, try again. To get to this screen, permissions must have been granted.
             //TODO: BAD COUPLING, THINK OF A FIX.
             if(calID == -1L){
                 calID = (activity as MainActivity).getCalendarId()!!
                 val editor = sh.edit()
-                editor.putLong("calendarID", calID)
+                //sadly these have to be as strings (see SettingsFragment.kt)
+                editor.putString("calendarID", calIDstr)
                 editor.commit()
 
             }

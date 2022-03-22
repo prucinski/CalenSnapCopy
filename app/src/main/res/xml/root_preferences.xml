@@ -9,15 +9,17 @@
 
 
         <ListPreference
-            app:key="d_calendar"
+            app:key="calendarID"
             app:title="@string/calendar_title"
             app:useSimpleSummaryProvider="true" />
 
-        <SwitchPreference
-            android:clickable="false"
-            android:defaultValue="false"
-            android:key="premium"
-            android:title="Premium Account" />
+        <Preference
+            app:key="premium"
+            app:title="Premium Account" />
+        <Preference
+            app:key="feedback"
+            app:title="Send feedback" />
+
 
         <ListPreference
             app:defaultValue="reply"
