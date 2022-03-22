@@ -14,7 +14,7 @@ import java.util.*
 
 class EventHistoryFragment : Fragment() {
     class EventHistoryViewModel : ViewModel() {
-        val events: MutableLiveData<APIEvents?> = MutableLiveData(null)
+        val events: MutableLiveData<APIUserEvents?> = MutableLiveData(null)
     }
 
     private val model: EventHistoryViewModel by activityViewModels()
@@ -26,7 +26,7 @@ class EventHistoryFragment : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
-    private lateinit var adapter: ArrayAdapter<APIEvent>
+    private lateinit var adapter: ArrayAdapter<APIUserEvent>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +36,7 @@ class EventHistoryFragment : Fragment() {
 
         _binding = FragmentEventHistoryBinding.inflate(inflater, container, false)
 
-        adapter = ArrayAdapter<APIEvent>(
+        adapter = ArrayAdapter<APIUserEvent>(
             requireContext(),
             R.layout.fragment_event_history,
             R.id.eventTextView
@@ -50,9 +50,9 @@ class EventHistoryFragment : Fragment() {
             }
         }
 
-        readUserEvents(UUID.randomUUID(), decodeCallback(APIEvents::class.java) {
+        readUserEvents(UUID.randomUUID()) {
             model.events.postValue(it)
-        })
+        }
 
         return binding.root
     }

@@ -18,6 +18,7 @@ import java.util.*
 const val ENDPOINT = "calensnap-api.herokuapp.com"
 private val client = OkHttpClient()
 
+
 // Assembles a url path out of an arbitrary number of string fragments, joined together with '/'. The Endpoint is set as specified above.
 private fun path(vararg paths: String): HttpUrl {
     val baseUrl = HttpUrl.Builder().scheme("https").host(ENDPOINT)
@@ -81,7 +82,11 @@ private fun delete(url: HttpUrl, callback: Callback): Call {
 }
 
 
-class APIProfile {
+open class APIValue {
+    val success: Boolean = true
+}
+
+class APIProfile : APIValue() {
     val id: UUID = UUID(0, 0)
     val username: String = ""
     val remaining_free_uses: Int = 0
@@ -92,7 +97,7 @@ class APIProfile {
     val darkmode: Boolean = false
 }
 
-class APICoordinates {
+class APICoordinates : APIValue() {
     val N: Double = 0.0
     val W: Double = 0.0
 
@@ -101,18 +106,18 @@ class APICoordinates {
     }
 }
 
-class APIUserEvent {
+class APIUserEvent : APIValue() {
     val id: UUID = UUID(0, 0)
     val title: String = ""
     val event_time: String = ""
     val userid: UUID = UUID(0, 0)
 }
 
-class APIUserEvents {
+class APIUserEvents : APIValue() {
     val events: Array<APIUserEvent> = arrayOf()
 }
 
-class APIEvent {
+class APIEvent : APIValue() {
     val id: UUID = UUID(0, 0)
     val snap_time: String = ""
     val snap_location: APICoordinates = APICoordinates()
@@ -121,12 +126,11 @@ class APIEvent {
     }
 }
 
-class APIEvents {
+class APIEvents : APIValue() {
     val events: Array<APIEvent> = arrayOf()
 }
 
-class APIUserID {
-    val success: Boolean = false
+class APIUserID : APIValue() {
     val profile_id: UUID = UUID(0, 0)
 }
 
@@ -136,9 +140,14 @@ class APIUserID {
 
 
 fun createProfile(username: String, password: String, callback: (profileId: UUID?) -> Unit) {
+    val gson = Gson()
+
     post(
-        path("profile", username),
-        toPasswordPayload(password),
+        path("profile"),
+        gson.toJson(object {
+            val password = password
+            val username = username
+        }),
         decodeCallback(APIUserID::class.java) { result ->
             callback(result?.profile_id)
         })
@@ -225,10 +234,14 @@ private fun validateCallback(callback: (Boolean) -> Unit): Callback {
 }
 
 // Decodes the json body of the response
-private fun <T> decodeCallback(type: Class<T>, callback: (T?) -> Unit): Callback {
+private fun <T> decodeCallback(
+    type: Class<T>,
+    callback: (T?) -> Unit
+): Callback where T : APIValue {
     return object : Callback {
         override fun onFailure(call: Call, e: IOException) {
             e.printStackTrace()
+            println("Failure: $call")
             callback(null)
         }
 
@@ -237,7 +250,14 @@ private fun <T> decodeCallback(type: Class<T>, callback: (T?) -> Unit): Callback
             val gson = Gson()
             val data = response.body?.string()
             val result = gson.fromJson(data, type)
-            callback(result)
+            println("success: ${result.success}")
+            println("Response: $result")
+            if (result.success) {
+                callback(result)
+            } else {
+                callback(null)
+            }
+
         }
     }
 }
@@ -249,7 +269,7 @@ private fun <T> decodeCallback(type: Class<T>, callback: (T?) -> Unit): Callback
 
 fun main(args: Array<String>) {
     val password = "password1234"
-    createProfile("Erik", password) {
+    createProfile("Erik2", password) {
         if (it != null) {
             readProfile(it, password) { profile ->
                 println(profile?.username)

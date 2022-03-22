@@ -1,4 +1,5 @@
 import uuid
+import flask
 from flask import Flask, request, Response
 from flask_cors import CORS
 import os
@@ -6,10 +7,7 @@ import psycopg2
 import psycopg2.extras
 import bcrypt
 
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 
 
 # Flask housekeeping
@@ -43,6 +41,11 @@ def extract_point(point_string):
     parts = point_string.split(',')
     parts = list(map(lambda x: float(x.strip(')').strip('(')), parts))
     return {'N': parts[0], 'W': parts[1]}
+
+
+def get_logged_in_user(request: flask.Request):
+    """ Returns the profile of the currently logged in user. Returns 'None' if the user is not currently logged in.  """
+    pass
 
 
 @app.route('/')
@@ -118,8 +121,10 @@ def signup():
         connection = connect()
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM profile WHERE username = %s;", username)
+        cursor.execute("SELECT * FROM profile WHERE username = %s;", (username, ))
         if cursor.fetchone() is not None:
+            app.logger.info(
+                "Attempted to create profile with already existing username. ")
             return {'success': False, 'error': 'username_exists'}, 400
 
         password = request.json.get('password').encode('utf-8')
@@ -160,7 +165,6 @@ def delete_profile(profile_id: uuid.UUID):
 
     except Exception as e:
         app.logger.warning("Error: ", e)
-
         return {'success': False}, 400
 
 
@@ -252,7 +256,6 @@ def get_events(profile_id: uuid.UUID):
 
     except Exception as e:
         app.logger.warning("Error: ", e)
-
         return {'success': False}, 400
 
 
