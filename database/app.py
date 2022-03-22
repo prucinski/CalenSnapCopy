@@ -55,7 +55,7 @@ def login():
 
     # TODO: we need to make sure that username is unique, because we use it to login and we can't really use the profile id as that would be hard to memorise for the user.
     username = request.json.get('username')
-    plain_password = request.json.get('password')
+    plain_password = request.json.get('password').encode('utf-8')
 
     try:  # try connecting to the database and verify the
         connection = connect()
