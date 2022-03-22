@@ -1,3 +1,4 @@
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 import uuid
 import flask
 from flask import Flask, request, Response
@@ -6,8 +7,8 @@ import os
 import psycopg2
 import psycopg2.extras
 import bcrypt
-
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Flask housekeeping
@@ -41,11 +42,6 @@ def extract_point(point_string):
     parts = point_string.split(',')
     parts = list(map(lambda x: float(x.strip(')').strip('(')), parts))
     return {'N': parts[0], 'W': parts[1]}
-
-
-def get_logged_in_user(request: flask.Request):
-    """ Returns the profile of the currently logged in user. Returns 'None' if the user is not currently logged in.  """
-    pass
 
 
 @app.route('/')
@@ -83,20 +79,18 @@ def login():
 
 
 # changed get_profile to include login since it doesn't make sense to do two separate calls
-
-
-@app.route('/profile/<uuid:profile_id>', methods=['GET'])
+@app.route('/profile/', methods=['GET'])
+@jwt_required()
 # TODO: change function variable to include username and password
-def get_profile(profile_id: uuid.UUID):
+def get_profile():
     """ Return information about the profile at the given ID. """
+    username = get_jwt_identity()
     try:
         connection = connect()
         cursor = connection.cursor()
 
         cursor.execute(
-            """ SELECT * FROM profile WHERE id = %s; """, (profile_id,))
-
-        # password = request.json['password'].encode('utf-8')
+            """ SELECT * FROM profile WHERE username = %s; """, (username,))
 
         # since username is theoretically unique, we can use fetchone
         profile = cursor.fetchone()
@@ -121,7 +115,8 @@ def signup():
         connection = connect()
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM profile WHERE username = %s;", (username, ))
+        cursor.execute(
+            "SELECT * FROM profile WHERE username = %s;", (username, ))
         if cursor.fetchone() is not None:
             app.logger.info(
                 "Attempted to create profile with already existing username. ")
