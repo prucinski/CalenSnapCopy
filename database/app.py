@@ -65,7 +65,7 @@ def login():
             """ SELECT (password) FROM profile WHERE username = %s; """, (username, ))
         (hashed_password,) = cursor.fetchone()
 
-        if not bcrypt.checkpw(plain_password, hashed_password):
+        if not bcrypt.checkpw(plain_password, hashed_password.encode('utf-8')):
             return {'success': False}, 401
 
     except Exception as e:
