@@ -45,9 +45,8 @@
     </fragment>
     <fragment
         android:id="@+id/settingsMenu"
-        android:name="com.example.ocrhotel.SettingsMenu"
-        android:label="fragment_settings_menu"
-        tools:layout="@layout/fragment_settings_menu" >
+        android:name="com.example.ocrhotel.SettingsFragment"
+        android:label="fragment_settings_menu">
         <action
             android:id="@+id/action_settingsMenu_to_home"
             app:destination="@id/home" />

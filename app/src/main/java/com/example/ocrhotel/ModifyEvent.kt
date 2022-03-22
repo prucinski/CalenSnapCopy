@@ -49,7 +49,7 @@ class ModifyEvent : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    
+
     private val adRequest = AdRequest.Builder().build()
     private var mInterstitialAd: InterstitialAd? = null
     private var TAG = "Interstitial Ad"
@@ -101,7 +101,6 @@ class ModifyEvent : Fragment() {
             val datePicker =
                 MaterialDatePicker.Builder.datePicker()
                     .setTitleText("Select date")
-                    .setTheme(R.style.ThemeOverlay_App_MaterialCalendar)
                     .setSelection(currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000)
                     .build()
 
@@ -149,6 +148,9 @@ class ModifyEvent : Fragment() {
                     else{
                         Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()
                     }
+                }
+                else{
+                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled.", Toast.LENGTH_SHORT).show()
                 }
             }
         }

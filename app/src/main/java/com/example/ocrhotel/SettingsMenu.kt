@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.ocrhotel.databinding.FragmentSettingsMenuBinding
 
+//TODO: AS OF 22.03, THIS FRAGMENT IS OBSOLETE. Delete
 /**
  * A simple [Fragment] subclass as the destination from the settings icon.
  */

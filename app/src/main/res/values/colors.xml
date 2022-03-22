@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="dark_blue">#0277BD</color>
-    <color name="very_light_teal">#BDE3F2</color>
-    <color name="lightest_teal">#D5EDF2</color>
-    <color name="shadow_colour">#DD80C8EA</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <color name="primaryColor">#011a1e</color>
+    <color name="primaryLightColor">#484848</color>
+    <color name="primaryDarkColor">#000000</color>
+    <color name="secondaryColor">#a2dbfa</color>
+    <color name="secondaryLightColor">#e6ffff</color>
+    <color name="secondaryDarkColor">#39a2db</color>
+
+    <color name="secondaryTextColor">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
