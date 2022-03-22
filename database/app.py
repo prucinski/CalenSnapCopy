@@ -62,7 +62,7 @@ def login():
         cursor = connection.cursor()
 
         cursor.execute(
-            """ SELECT (password) FROM profile WHERE username = %s; """, username)
+            """ SELECT (password) FROM profile WHERE username = %s; """, (username, ))
         (hashed_password,) = cursor.fetchone()
 
         if not bcrypt.checkpw(plain_password, hashed_password):
