@@ -16,6 +16,8 @@ import java.util.*
 
 // API endpoint
 const val ENDPOINT = "calensnap-api.herokuapp.com"
+//const val ENDPOINT = "localhost"
+
 private val client = OkHttpClient()
 
 
@@ -84,7 +86,6 @@ open class APIValue {
 }
 
 class APIProfile : APIValue() {
-    val id: UUID = UUID(0, 0)
     val username: String = ""
     val remaining_free_uses: Int = 0
     val premium_user: Boolean = false
@@ -105,9 +106,9 @@ class APICoordinates : APIValue() {
 
 class APIUserEvent : APIValue() {
     val id: UUID = UUID(0, 0)
-    val title: String = ""
-    val event_time: String = ""
-    val userid: UUID = UUID(0, 0)
+    val title = ""
+    val event_time = ""
+    val username = ""
 }
 
 class APIUserEvents : APIValue() {
@@ -127,10 +128,6 @@ class APIEvents : APIValue() {
     val events: Array<APIEvent> = arrayOf()
 }
 
-class APIUserID : APIValue() {
-    val profile_id: UUID = UUID(0, 0)
-}
-
 class APIJWTToken : APIValue() {
     val token = ""
 }
@@ -142,16 +139,16 @@ class APIJWTToken : APIValue() {
 fun login(username: String, password: String, callback: (token: String?) -> Unit) {
     val gson = Gson()
     post(path("login"),
-    gson.toJson(object {
-        val password = password
-        val username = username
-    }),
-    decodeCallback(APIJWTToken::class.java) { result ->
-        callback(result?.token)
-    })
+        gson.toJson(object {
+            val password = password
+            val username = username
+        }),
+        decodeCallback(APIJWTToken::class.java) { result ->
+            callback(result?.token)
+        })
 }
 
-fun createProfile(username: String, password: String, callback: (profileId: UUID?) -> Unit) {
+fun createProfile(username: String, password: String, callback: (Boolean) -> Unit) {
     val gson = Gson()
 
     post(
@@ -160,28 +157,33 @@ fun createProfile(username: String, password: String, callback: (profileId: UUID
             val password = password
             val username = username
         }),
-        decodeCallback(APIUserID::class.java) { result ->
-            callback(result?.profile_id)
+        decodeCallback(APIValue::class.java) { result ->
+            if (result != null) {
+                callback(result.success)
+
+            } else {
+                callback(false)
+            }
         })
 }
 
-fun readProfile(profileId: UUID, password: String, callback: (APIProfile?) -> Unit, jwt: String) {
+fun readProfile(jwt: String, callback: (APIProfile?) -> Unit) {
     get(
-        path("profile", profileId.toString()),
+        path("profile"),
         decodeCallback(APIProfile::class.java) { result ->
             callback(result)
         }, jwt
     )
 }
 
-fun deleteProfile(profileId: UUID, callback: (Boolean) -> Unit) {
-    delete(path("profile", profileId.toString()), validateCallback(callback))
+fun deleteProfile(jwt: String, callback: (Boolean) -> Unit) {
+    delete(path("profile"), validateCallback(callback), jwt)
 }
 
 
 // Create a new event for the user with profileId. This updates both the userevent and the event table.
 fun createEvent(
-    profileId: UUID,
+    jwt: String,
     title: String,
     eventTime: LocalDateTime,
 
@@ -195,7 +197,6 @@ fun createEvent(
     val data = gson.toJson(object {
         val title = title
         val event_time = eventTime.toString()
-        val userid = profileId.toString()
 
         val snap_location = object {
             val N = latitude
@@ -206,22 +207,39 @@ fun createEvent(
 
     println(data)
 
-    post(path("events", profileId.toString()), data, validateCallback(callback))
+    post(path("events"), data, validateCallback(callback), jwt)
 }
 
 
 // Read all past events for the user with profile.
-fun readUserEvents(profileId: UUID, callback: (events: APIUserEvents?) -> Unit) {
+fun readUserEvents(jwt: String, callback: (events: APIUserEvents?) -> Unit) {
     get(
-        path("events", profileId.toString()),
-        decodeCallback(APIUserEvents::class.java) { callback(it) })
+        path("events"),
+        decodeCallback(APIUserEvents::class.java) { callback(it) },
+        jwt
+    )
 }
 
+fun deleteUserEvent(event_id: UUID, jwt: String, callback: (success: Boolean) -> Unit) {
+    delete(
+        path("events", event_id.toString()),
+        decodeCallback(APIValue::class.java) {
+            if (it != null) {
+                callback(it.success)
+            } else {
+                callback(false)
+            }
+        },
+        jwt
+    )
+}
 
-fun readEvents(callback: (APIEvents?) -> Unit) {
+fun readEvents(jwt: String, callback: (APIEvents?) -> Unit) {
     get(
         path("metadata", "events"),
-        decodeCallback(APIEvents::class.java) { callback(it) })
+        decodeCallback(APIEvents::class.java) { callback(it) },
+        jwt
+    )
 }
 
 private val ignoreCallback = object : Callback {
@@ -263,8 +281,6 @@ private fun <T> decodeCallback(
             val gson = Gson()
             val data = response.body?.string()
             val result = gson.fromJson(data, type)
-            println("success: ${result.success}")
-            println("Response: $result")
             if (result.success) {
                 callback(result)
             } else {
@@ -283,9 +299,51 @@ private fun <T> decodeCallback(
 fun main(args: Array<String>) {
     val password = "password1234"
 
-    login("Erik2", password) { token ->
-        println(token)
+    login("Erik", password) { token ->
+        if (token != null) {
+            readProfile(token) { profile ->
+                println(profile?.username)
+
+                deleteProfile(token) {
+
+                }
+            }
+
+//            readEvents(token) { events ->
+//                if (events != null) {
+//                    for (event in events.events) {
+//                        println(event)
+//                    }
+//
+//                }
+//            }
+
+//            createEvent(token, "TestEvent", LocalDateTime.now(), LocalDateTime.now(), 0.0, 0.0) {
+//                println("Event creation was successful: $it")
+//            }
+//
+//            readUserEvents(token) {
+//                if (it != null) {
+//                    println("Userevents: ")
+//                    for (uevent in it.events) {
+//                        print("(${uevent.title}-${uevent.event_time}), ")
+//                    }
+//                    println()
+//                    deleteUserEvent(it.events[0].id, token) {
+//                        println("Event deleted successfully: $it")
+//                    }
+//
+//                }
+//            }
+
+
+        }
     }
+//
+//    createProfile("Business", password) {
+//        println(it)
+//    }
+
 
 //    createProfile("Erik2", password) {
 //        if (it != null) {

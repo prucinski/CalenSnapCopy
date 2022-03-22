@@ -19,6 +19,7 @@ jwt = JWTManager(app)
 # This is the url used for connecting to postgres, it should include the password and username to log into the database.
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
+
 # Setup needed to work with UUIDs.
 psycopg2.extras.register_uuid()
 
@@ -69,7 +70,7 @@ def login():
             return {'success': False}, 401
 
     except Exception as e:
-        app.logger.warn(e)
+        app.logger.warning(e)
         return {'success': False}, 400
 
     token = create_access_token(identity=username)
@@ -79,7 +80,6 @@ def login():
 # changed get_profile to include login since it doesn't make sense to do two separate calls
 @app.route('/profile/', methods=['GET'])
 @jwt_required()
-# TODO: change function variable to include username and password
 def get_profile():
     """ Return information about the profile at the given ID. """
     username = get_jwt_identity()
@@ -90,16 +90,14 @@ def get_profile():
         cursor.execute(
             """ SELECT * FROM profile WHERE username = %s; """, (username,))
 
-        # since username is theoretically unique, we can use fetchone
         profile = cursor.fetchone()
-        # if bcrypt.checkpw(password, profile[8]):
-        return {'id': profile[0], 'username': profile[1], 'remaining_free_uses': profile[2], 'premium_user': profile[3], 'business_user': profile[4], 'duration_in_mins': profile[5], 'mm_dd': profile[6], 'darkmode': profile[7]}, 200
+
+        return {'username': profile[0], 'remaining_free_uses': profile[1], 'premium_user': profile[2], 'business_user': profile[3], 'duration_in_mins': profile[4], 'mm_dd': profile[5], 'darkmode': profile[6]}, 200
         # else:
         #     return {'success':False}, 403 # Access denied
 
     except Exception as e:
         app.logger.warning("Error: ", e)
-
         return {'success': False}, 400
 
 
@@ -127,30 +125,31 @@ def signup():
         cursor = connection.cursor()
 
         cursor.execute(
-            """ INSERT INTO profile(username, password) values(%s, %s) RETURNING id; """, (username, hashed_pass))
+            """ INSERT INTO profile(username, password) values(%s, %s) RETURNING username; """, (username, hashed_pass.decode('utf-8')))
 
-        profile_id = cursor.fetchone()[0]
+        cursor.fetchone()[0]
         connection.commit()
 
-        return {'success': True, 'profile_id': profile_id}, 200
+        return {'success': True}, 200
 
     except Exception as e:
         app.logger.warning("Error: ", e)
         return {'success': False}, 400
 
 
-@app.route('/profile/<uuid:profile_id>', methods=['DELETE'])
-def delete_profile(profile_id: uuid.UUID):
+@app.route('/profile', methods=['DELETE'])
+@jwt_required()
+def delete_profile():
     """ Delete the specified profile. """
-    # TODO: add authentication
+    username = get_jwt_identity()
     try:
         connection = connect()
         cursor = connection.cursor()
 
         cursor.execute(
-            """ DELETE FROM userevent WHERE userid = %s; """, (profile_id, ))
+            """ DELETE FROM userevent WHERE username = %s; """, (username, ))
         cursor.execute(
-            """ DELETE FROM profile WHERE id = %s; """, (profile_id, ))
+            """ DELETE FROM profile WHERE username = %s; """, (username, ))
 
         connection.commit()
 
@@ -161,18 +160,18 @@ def delete_profile(profile_id: uuid.UUID):
         return {'success': False}, 400
 
 
-@app.route('/events/<uuid:profile_id>', methods=['POST'])
-def create_event(profile_id: uuid.UUID):
+@app.route('/events', methods=['POST'])
+@jwt_required()
+def create_event():
     """ Create a new event for user with 'profile_id'. """
-    # TODO: Add insertion for user event data not just business data
-
+    username = get_jwt_identity()
     try:
         connection = connect()
         cursor = connection.cursor()
 
-        # Find out if the profile id exists
+        # Find out if the username exists
         cursor.execute(
-            """SELECT id FROM profile WHERE id = %s;""", (profile_id,))
+            """ SELECT username FROM profile WHERE username = %s; """, (username,))
 
         # This will fail if there is no profile with that id, which means the try block will exit and the except block will be executed
         cursor.fetchone()
@@ -180,30 +179,28 @@ def create_event(profile_id: uuid.UUID):
         # Extract JSON data from HTTP request to put it into the database.
         title = request.json['title']
         event_time = request.json['event_time']
-        userid = request.json['userid']
 
         snap_location = request.json['snap_location']
         snap_time = request.json['snap_time']
 
         # Run insertion query.
         cursor.execute(
-            """INSERT INTO event (snap_time, snap_location) 
-               VALUES (%s, POINT(%s, %s)) RETURNING id;
+            """ INSERT INTO event (snap_time, snap_location)
+                VALUES (%s, POINT(%s, %s)) RETURNING id;
             """,
             (event_time, snap_location['N'], snap_location['W']))
         (event_id, ) = cursor.fetchone()
 
         cursor = connection.cursor()
         cursor.execute(
-            """ INSERT INTO userevent(title, event_time, userid)
+            """ INSERT INTO userevent(title, event_time, username)
                 VALUES (%s, %s, %s) RETURNING id;
             """,
-            (title, event_time, userid)
+            (title, event_time, username)
         )
         (userevent_id, ) = cursor.fetchone()
 
         connection.commit()  # write changes
-        app.logger.warning(event_id)
         return {'event_id': event_id, 'userevent_id': userevent_id}, 200
 
     except Exception as e:
@@ -213,17 +210,26 @@ def create_event(profile_id: uuid.UUID):
 
 
 @app.route('/events/<uuid:event_id>', methods=['DELETE'])
+@jwt_required()
 def delete_event(event_id: uuid.UUID):
     """ Delete the specified event. """
     try:
         connection = connect()
         cursor = connection.cursor()
 
+        # Check if the user is authorized to delete the event.
+        cursor.execute(
+            """ SELECT (username) FROM userevent WHERE id = %s; """, (event_id, ))
+        (name_to_check, ) = cursor.fetchone()
+        if (name_to_check != get_jwt_identity()):
+            return {'success': False}, 403
+
+        connection = connect()
+        cursor = connection.cursor()
         cursor.execute(
             """ DELETE FROM userevent WHERE id = %s; """, (event_id, ))
 
         connection.commit()
-        # TODO add authentication
         return {'success': True}, 200
 
     except Exception as e:
@@ -232,19 +238,21 @@ def delete_event(event_id: uuid.UUID):
         return {'success': False}, 400
 
 
-@app.route('/events/<uuid:profile_id>', methods=['GET'])
-def get_events(profile_id: uuid.UUID):
+@app.route('/events', methods=['GET'])
+@jwt_required()
+def get_events():
     """ Return all userevents for a given profile.  """
+    username = get_jwt_identity()
     try:
         connection = connect()
         cursor = connection.cursor()
 
         cursor.execute(
-            """ SELECT * FROM userevent WHERE userid = %s; """, (profile_id,))
+            """ SELECT * FROM userevent WHERE username = %s; """, (username,))
         events = cursor.fetchall()
 
         return {'events': list(map(lambda e: {
-            'id': e[0], 'title': e[1], 'event_time': e[2], 'profile_id': e[3]
+            'id': e[0], 'title': e[1], 'event_time': e[2], 'username': e[3]
         }, events))}, 200
 
     except Exception as e:
@@ -256,9 +264,20 @@ def get_events(profile_id: uuid.UUID):
 
 
 @app.route('/metadata/events/', methods=['GET'])
+@jwt_required()
 def get_events_metadata():
     """ Retrieve all events logged anonymously. """
     try:
+        connection = connect()
+        cursor = connection.cursor()
+
+        username = get_jwt_identity()
+        cursor.execute(
+            """ SELECT (business_user) FROM profile WHERE username = %s; """, (username, ))
+        (business_user,) = cursor.fetchone()
+        if not business_user:
+            return {'success': False}, 403
+
         connection = connect()
         cursor = connection.cursor()
 
@@ -277,4 +296,4 @@ def get_events_metadata():
 
 # This is for locally testing the application
 if __name__ == '__main__':
-    app.run()
+    app.run(port=80, host='0.0.0.0')

@@ -50,9 +50,9 @@ class EventHistoryFragment : Fragment() {
             }
         }
 
-        readUserEvents(UUID.randomUUID()) {
-            model.events.postValue(it)
-        }
+//        readUserEvents(UUID.randomUUID()) {
+//            model.events.postValue(it)
+//        }
 
         return binding.root
     }
