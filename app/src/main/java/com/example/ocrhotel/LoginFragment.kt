@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.ocrhotel.databinding.FragmentLoginBinding
-
+import android.util.Log
 
 class LoginFragment : Fragment() {
 
@@ -18,12 +18,31 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+
+        binding.loginButton.setOnClickListener {
+            Log.w("BUTTON", "pressed")
+            onLoginButtonPressed()
+        }
+
         return binding.root
+    }
+
+    fun onLoginButtonPressed() {
+        val username = binding.usernameInput.text.toString()
+        val password = binding.passwordInput.text.toString()
+
+        login(username, password) { jwt ->
+            if (jwt != null) {
+                Log.w("JWT SUCCESS: ", jwt)
+            } else {
+                Log.w("JWT FAILURE: ", jwt)
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
 }

@@ -50,7 +50,8 @@ class MainActivity : AppCompatActivity() {
         binding.fab.setOnClickListener {
             // Go to scanning
             binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
-            navController.navigate(R.id.SecondFragment)
+//            navController.navigate(R.id.SecondFragment)
+            navController.navigate(R.id.loginFragment)
         }
 
         binding.bottomNavigation.setOnItemSelectedListener {
