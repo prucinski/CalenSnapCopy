@@ -1,24 +1,14 @@
 <resources>
 
-    <string-array name="events">
-        <item>Event 1</item>
-        <item>Event 2</item>
-        <item>Event 3</item>
-        <item>Event 4</item>
-        <item>Event 5</item>
-        <item>Event 6</item>
-        <item>Event 7</item>
-        <item>Event 8</item>
-    </string-array>
     <string name="app_name">CalenSnap</string>
     <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
     <string name="main_menu_label">Main Menu</string>
+    <!-- Strings used for fragments for navigation -->
     <string name="second_fragment_label">Second Fragment</string>
     <string name="upload">Upload from gallery</string>
     <string name="previous">Previous</string>
-
     <string name="hello_first_fragment">Hello Team Hotel!</string>
+
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="scan_button_text">Scan</string>
     <string name="tutorial_button_text">Tutorial</string>
@@ -32,26 +22,36 @@
     <string name="success">The event was created successfully!</string>
     <string name="continued">continue</string>
     <string name="submit">add</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">This page will contain: settings/buy premium/scan history. Buttons for those will be added in second term.</string>
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="continue_label">Continue</string>
     <string name="title_activity_bottom_navigation">bottom_navigation</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
+    <!-- Preference Titles -->
     <string name="sync_header">Sync</string>
+    <string name="signature_title">Your signature</string>
 
     <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
     <string name="reply_title">Default reply action</string>
+    <string name="sync_title">Sync email periodically</string>
 
     <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="scan">Scan</string>
+    <string-array name="events">
+        <item>Event 1</item>
+        <item>Event 2</item>
+        <item>Event 3</item>
+        <item>Event 4</item>
+        <item>Event 5</item>
+        <item>Event 6</item>
+        <item>Event 7</item>
+        <item>Event 8</item>
+    </string-array>
 </resources>
