@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SecondFragment">
+    app:navGraph="@navigation/nav_graph"
+    android:name="com.example.ocrhotel.SecondFragment"
+    android:id="@+id/fragment_second"
+    tools:context=".MainActivity">
 
     <!--    <Button-->
     <!--        android:id="@+id/button_second"-->

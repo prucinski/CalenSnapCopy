@@ -3,7 +3,59 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Spinner
+        android:id="@+id/foundEventsSelector"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toTopOf="@+id/eventTitleBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/success" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/eventTitleBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:hint="Title"
+        app:helperText="Please confirm the title of the event."
+        app:helperTextEnabled="true"
+        app:hintAnimationEnabled="true"
+        app:hintEnabled="true"
+        app:layout_constraintBottom_toTopOf="@id/llDateContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/foundEventsSelector">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/eventTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/success"
+        android:layout_width="294dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/dark_blue"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/submit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.547"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.09" />
+
 
     <Button
         android:id="@+id/submit"
@@ -18,7 +70,7 @@
         app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.756" />
+        app:layout_constraintVertical_bias="0.734" />
 
     <Button
         android:id="@+id/continued"
@@ -30,110 +82,43 @@
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/submit"
-        app:layout_constraintVertical_bias="0.206" />
+        app:layout_constraintVertical_bias="0.127" />
 
-    <TextView
-        android:id="@+id/success"
-        android:layout_width="294dp"
+    <LinearLayout
+        android:id="@+id/llDateContainer"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/found_this_event"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/dark_blue"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/submit"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.547"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.09" />
+        app:layout_constraintBottom_toTopOf="@id/submit"
+        app:layout_constraintVertical_bias="1"
+        >
 
-    <EditText
-        android:id="@+id/EventDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="date"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/submit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.81"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/success"
-        app:layout_constraintVertical_bias="0.535" />
 
-    <TextView
-        android:id="@+id/DateText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:text="Date"
-        app:layout_constraintBottom_toBottomOf="@+id/EventDate"
-        app:layout_constraintEnd_toStartOf="@+id/EventDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/EventDate" />
+        <TextView
+            android:id="@+id/EventDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="12"
+            android:inputType="date"
+            android:minHeight="80dp"
+            android:textSize="12sp" />
 
-    <EditText
-        android:id="@+id/EventTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:text="AM Concert"
-        app:layout_constraintBottom_toTopOf="@+id/EventDate"
-        app:layout_constraintEnd_toEndOf="@+id/EventDate"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/EventDate"
-        app:layout_constraintTop_toBottomOf="@+id/success"
-        app:layout_constraintVertical_bias="0.717" />
+        <EditText
+            android:id="@+id/EventHour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="4"
+            android:inputType="textPersonName"
+            android:minHeight="80dp"
+            android:text="16:00" />
 
-    <TextView
-        android:id="@+id/EventTitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Title"
-        app:layout_constraintBottom_toBottomOf="@+id/EventTitle"
-        app:layout_constraintEnd_toEndOf="@+id/DateText"
-        app:layout_constraintStart_toStartOf="@+id/DateText"
-        app:layout_constraintTop_toTopOf="@+id/EventTitle"
-        app:layout_constraintVertical_bias="0.692" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/TimeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Time (hh:mm)"
-        app:layout_constraintBottom_toBottomOf="@+id/EventHour"
-        app:layout_constraintEnd_toEndOf="@+id/DateText"
-        app:layout_constraintStart_toStartOf="@+id/DateText"
-        app:layout_constraintTop_toTopOf="@+id/EventHour" />
-
-    <EditText
-        android:id="@+id/EventHour"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:text="16:00"
-        app:layout_constraintBottom_toTopOf="@+id/submit"
-        app:layout_constraintEnd_toEndOf="@+id/EventDate"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/EventDate"
-        app:layout_constraintTop_toBottomOf="@+id/EventDate"
-        app:layout_constraintVertical_bias="0.329" />
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="144dp"
-        android:layout_height="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/EventTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/success" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
