@@ -2,3 +2,5 @@ flask
 flask-cors
 gunicorn
 psycopg2
+bcrypt
+flask-jwt-extended

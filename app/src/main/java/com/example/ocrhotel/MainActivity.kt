@@ -171,6 +171,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener {
             // Go to scanning
+
             if(!premiumAccount)
                 if(scans > 0) {
                     binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
@@ -183,6 +184,7 @@ class MainActivity : AppCompatActivity() {
                 binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
                 navController.navigate(R.id.SecondFragment)
             }
+
         }
 
         binding.bottomNavigation.setOnItemSelectedListener {

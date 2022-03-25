@@ -99,8 +99,15 @@
             app:destination="@id/eventsHistoryFragment" />
     </fragment>
     <fragment
+
         android:id="@+id/eventsHistoryFragment"
         android:name="com.example.ocrhotel.EventsHistoryFragment"
         android:label="fragment_events_history"
         tools:layout="@layout/fragment_events_history" />
+<fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.ocrhotel.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" />
+
 </navigation>
