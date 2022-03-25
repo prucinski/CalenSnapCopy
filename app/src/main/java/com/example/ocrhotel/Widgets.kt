@@ -9,18 +9,16 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.time.format.DateTimeFormatter
 
-// @Preview
+@Preview
 @ExperimentalMaterialApi
 @Composable
 fun EventTile(
-    event : Event
+   event : Event = Event()
 ){
-    // Test variable because the Preview won't render if it's a function parameter
-    // val event = Event()
-
     var expanded by remember { mutableStateOf(false) }
     var delDialog by remember { mutableStateOf(false) }
     // Here we can also make it a gesture detector,
@@ -28,23 +26,25 @@ fun EventTile(
     return Card(
         content={
             ListItem(
-                icon={
+                icon = {
                     Icon(
                         Icons.Outlined.AccountCircle,
                         contentDescription = null,
-                        modifier= Modifier.size(40.dp))
+                        modifier = Modifier.size(40.dp)
+                    )
                 },
-                text={ Text(event.eventName) },
-                secondaryText={
+                text = { Text(event.eventName) },
+                secondaryText = {
                     val dFormat = DateTimeFormatter.ofPattern("d MMM uuuu")
                     val eventDate = event.eventDateTime.format(dFormat)
                     Text(eventDate + " at " + event.eventHour)
                 },
-                trailing={
-                    IconButton(onClick = {expanded=true}){
+                trailing = {
+                    IconButton(onClick = { expanded = true }) {
                         Icon(
                             Icons.Outlined.Settings,
-                            contentDescription="Reschedule event")
+                            contentDescription = "Reschedule event"
+                        )
                     }
 
                     // TODO: Modify the values to lead to the respective menus
@@ -57,15 +57,16 @@ fun EventTile(
                     ) {
                         DropdownMenuItem(onClick = {
                             expanded = false
-                        }){
+                        }) {
                             Text("Reschedule")
                         }
                         DropdownMenuItem(onClick = {
                             expanded = false
                             delDialog = true
-                        }){
-                            Text("Delete",
-                                color= Color.Red
+                        }) {
+                            Text(
+                                "Delete",
+                                color = Color.Red
                             )
                         }
                     }
