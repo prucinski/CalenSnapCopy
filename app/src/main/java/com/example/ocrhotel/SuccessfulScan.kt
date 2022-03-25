@@ -33,10 +33,13 @@ class SuccessfulScan: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
         binding.scanAgain.setOnClickListener {
-            findNavController().navigate(R.id.action_successfulScan_to_SecondFragment)
+            if((activity as MainActivity?)?.scans!! > 0) {
+                findNavController().navigate(R.id.action_successfulScan_to_SecondFragment)
+            }
+            else{
+                (activity as MainActivity?)?.noScanDialog()
+            }
         }
 
         binding.navigateHome.setOnClickListener {

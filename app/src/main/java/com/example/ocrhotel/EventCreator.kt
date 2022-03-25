@@ -15,55 +15,12 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.CalendarContract
+import android.provider.Settings.Global.getString
+import com.google.common.io.Resources
 import java.time.ZoneId
 
 
 class EventCreator(private val eventArray: List<Event>, private val activity: Activity){
-
-
-    //resolve the primary calendar ID that the user has.
-    private fun getCalendarId() : Long? {
-
-        //via https://stackoverflow.com/questions/16242472/retrieve-the-default-calendar-id-in-android
-
-        val projection = arrayOf(CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
-
-        var calCursor = activity.contentResolver.query(
-            CalendarContract.Calendars.CONTENT_URI,
-            projection,
-            CalendarContract.Calendars.VISIBLE + " = 1 AND " + CalendarContract.Calendars.IS_PRIMARY + "=1",
-            null,
-            CalendarContract.Calendars._ID + " ASC"
-        )
-
-        if (calCursor != null && calCursor.count <= 0) {
-            calCursor = activity.contentResolver.query(
-                CalendarContract.Calendars.CONTENT_URI,
-                projection,
-                CalendarContract.Calendars.VISIBLE + " = 1",
-                null,
-                CalendarContract.Calendars._ID + " ASC"
-            )
-        }
-
-        if (calCursor != null) {
-            if (calCursor.moveToFirst()) {
-                val calName: String
-                val calID: String
-                val nameCol = calCursor.getColumnIndex(projection[1])
-                val idCol = calCursor.getColumnIndex(projection[0])
-                calName = calCursor.getString(nameCol)
-                calID = calCursor.getString(idCol)
-                Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
-                val helloTutorial = Toast.makeText(activity.applicationContext, "Event is created at this calendar: $calName", Toast.LENGTH_SHORT)
-                helloTutorial.show()
-
-                calCursor.close()
-                return calID.toLong()
-            }
-        }
-        return null
-    }
 
     //boolean as I use the success of the adding action as a means to move to next screen
      public fun addEvent(): Boolean {
@@ -76,8 +33,23 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
             //end time of event.
             val endMillis = events.eventDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() + events.duration*60*60*1000;
 
+            //retrieve the calendar ID from shared preferences.
+            var sh = activity?.getSharedPreferences("com.example.ocrhotel_preferences.xml", Context.MODE_PRIVATE)
+            var calIDstr = sh.getString("calendarID", "-1")
+            var calID = calIDstr!!.toLong()
+            //Calendar not found in shared prefs, try again. To get to this screen, permissions must have been granted.
+            //TODO: BAD COUPLING, THINK OF A FIX.
+            if(calID == -1L){
+                calID = (activity as MainActivity).getCalendarId()!!
+                val editor = sh.edit()
+                //sadly these have to be as strings (see SettingsFragment.kt)
+                editor.putString("calendarID", calIDstr)
+                editor.commit()
+
+            }
+            //legacy:
             //try choosing a calendar ID. If null returned, throw exception.
-            val calID: Long = getCalendarId()!!
+            //val calID: Long = getCalendarId()!!
 
 
             val values = ContentValues().apply {

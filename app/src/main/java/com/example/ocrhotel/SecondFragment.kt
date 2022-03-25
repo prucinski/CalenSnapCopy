@@ -53,46 +53,13 @@ class SecondFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.e("SECFRAGMENT","onCreateView")
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
 
         return binding.root
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Log.e("SECFRAGMENT","On attach")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.e("SECFRAGMENT","On detach")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.e("SECFRAGMENT","On pause")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.e("SECFRAGMENT","On start")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("SECFRAGMENT","OnDestroy")
-    }
-
-    override fun onInflate(context: Context, attrs: AttributeSet, savedInstanceState: Bundle?) {
-        super.onInflate(context, attrs, savedInstanceState)
-        Log.e("SECFRAGMENT","onInflate")
-    }
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("SECFRAGMENT","onViewCreated")
 
         imageProvider = ImageProvider(this, activity, this::handleImage)
         binding.uploadImage.setOnClickListener {

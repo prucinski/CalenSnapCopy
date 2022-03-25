@@ -3,6 +3,7 @@ package com.example.ocrhotel
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.format.DateFormat.is24HourFormat
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,16 +16,22 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.datepicker.MaterialDatePicker
-import org.joda.time.LocalTime
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class ModifyEvent : Fragment() {
-
-
 
     // The events list. It is modifiable.
     private var eventsList: List<Event> = emptyList()
@@ -43,6 +50,10 @@ class ModifyEvent : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private val adRequest = AdRequest.Builder().build()
+    private var mInterstitialAd: InterstitialAd? = null
+    private var TAG = "Interstitial Ad"
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,6 +71,9 @@ class ModifyEvent : Fragment() {
 //            dates = algo.extractDates(textResults) as MutableList<Long>
 //            // Do something with the result
 //        }
+        
+        //Interstitial Add code
+        loadInterAd()
 
         _binding = FragmentModifyEventBinding.inflate(inflater, container, false)
         return binding.root
@@ -87,17 +101,34 @@ class ModifyEvent : Fragment() {
             val datePicker =
                 MaterialDatePicker.Builder.datePicker()
                     .setTitleText("Select date")
-                    .setTheme(R.style.ThemeOverlay_App_MaterialCalendar)
                     .setSelection(currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000)
                     .build()
-            datePicker.show(parentFragmentManager,"")
+
+            datePicker.show(parentFragmentManager,"DATE")
 
             datePicker.addOnPositiveButtonClickListener {
                 binding.EventDate.text = LocalDateTime.ofEpochSecond(
                     datePicker.selection!!/1000,0, ZoneOffset.UTC)
                     .format(dateFormatter)
             }
+        }
 
+        binding.EventHour.setOnClickListener {
+            val clockFormat = if (is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+            val currentTime = LocalTime.parse(binding.EventHour.text.toString())
+            val timePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(clockFormat)
+                .setHour(currentTime.hour)
+                .setMinute(currentTime.minute)
+                .setTitleText("Select time")
+                .build()
+
+            timePicker.show(parentFragmentManager,"TIME")
+
+            timePicker.addOnPositiveButtonClickListener{
+                binding.EventHour.text = LocalTime.of(timePicker.hour,timePicker.minute)
+                    .toString()
+            }
         }
 
 
@@ -110,11 +141,16 @@ class ModifyEvent : Fragment() {
                     val eventCreator = EventCreator(eventsList, activity)
                     //this is slightly wonky and has to be pressed twice - but it's a minor bug
                     if (eventCreator.addEvent()) {
+                        (getActivity() as MainActivity?)?.scanCountSub() //removes a scan
+                        showInterAd()
                         findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
                     }
                     else{
                         Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()
                     }
+                }
+                else{
+                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -143,7 +179,7 @@ class ModifyEvent : Fragment() {
             val date: LocalDate = LocalDate.parse(binding.EventDate.text, dateFormatter)
             val time: LocalTime = LocalTime.parse(binding.EventHour.text.toString())
             eventsList[currentEvent].eventDateTime = LocalDateTime.of(
-                date.year, date.monthValue, date.dayOfMonth, time.hourOfDay, time.minuteOfHour)
+                date.year, date.monthValue, date.dayOfMonth, time.hour, time.minute)
 
             // I'm not sure if the next two lines are necessary, but I think they are since
             // the object has already been constructed.
@@ -163,4 +199,40 @@ class ModifyEvent : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    
+   //Function for loading the interstitial ad 
+   private fun loadInterAd(){
+        InterstitialAd.load(getActivity(),getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                mInterstitialAd = interstitialAd
+            }
+        })
+    }
+    
+    //Function for showing the interstitial ad
+    private fun showInterAd(){
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.show(getActivity())
+            mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    Log.d(TAG, "Ad was dismissed.")
+                    mInterstitialAd = null
+                    loadInterAd()
+                }
+
+                override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                    Log.d(TAG, "Ad failed to show.")
+                    mInterstitialAd = null
+                }
+
+                override fun onAdShowedFullScreenContent() {
+                    Log.d(TAG, "Ad showed fullscreen content.")
+                }
+            }
+        }
+    } 
 }

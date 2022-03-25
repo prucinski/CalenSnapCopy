@@ -16,7 +16,8 @@
         android:layout_centerHorizontal="true"
         app:layout_constraintTop_toTopOf="parent"
         app:adSize="BANNER"
-        app:adUnitId="ca-app-pub-3940256099942544/6300978111">
+        android:elevation="100dp"
+        app:adUnitId="@string/ad_id_banner">
 
     </com.google.android.gms.ads.AdView>
 
