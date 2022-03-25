@@ -116,9 +116,16 @@ class MainActivity : AppCompatActivity() {
         else {
             // Directly ask for the permission.
             // The registered ActivityResultCallback gets the result of this request.
-            Toast.makeText(this,explanation,Toast.LENGTH_LONG).show()
 
-            requestPermissionLauncher.launch(permission)
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Requesting permissions")
+                .setMessage(explanation)
+                .setPositiveButton("I understand"){_,_->
+                    requestPermissionLauncher.launch(permission)
+                }
+                .setNegativeButton("I disagree"){_,_->
+                    this.finish()
+                }.show()
         }
     }
 
