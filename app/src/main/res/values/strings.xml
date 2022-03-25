@@ -1,5 +1,16 @@
 <resources>
 
+    <string-array name="events">
+        <item>Event 1</item>
+        <item>Event 2</item>
+        <item>Event 3</item>
+        <item>Event 4</item>
+        <item>Event 5</item>
+        <item>Event 6</item>
+        <item>Event 7</item>
+        <item>Event 8</item>
+    </string-array>
+
     <string name="app_name">CalenSnap</string>
     <string name="action_settings">Settings</string>
     <string name="main_menu_label">Main Menu</string>
