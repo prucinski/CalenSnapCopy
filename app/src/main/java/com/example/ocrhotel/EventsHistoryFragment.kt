@@ -4,12 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.ocrhotel.databinding.FragmentEventsHistoryBinding
 import com.example.ocrhotel.placeholder.PlaceholderContent
+import java.time.LocalDateTime
 
 
 /**
@@ -17,51 +25,50 @@ import com.example.ocrhotel.placeholder.PlaceholderContent
  */
 class EventsHistoryFragment : Fragment() {
 
-    private var columnCount = 1
+    private var _binding: FragmentEventsHistoryBinding? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private val binding get() = _binding!!
 
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
-    }
-
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_events_history_list, container, false)
+                              savedInstanceState: Bundle?): View {
+        _binding = FragmentEventsHistoryBinding.inflate(inflater,container,false)
+        val view = binding.root
 
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
+        val act = activity as MainActivity
+
+        val historyItems = PlaceholderContent.ITEMS
+
+        // TODO: You can do something like this to filter events.
+        // val now = LocalDateTime.now()
+        // historyItems.filter{
+        //     it.eventDateTime.isBefore(now)
+        // }
+
+        binding.composeView.apply{
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent{
+                MaterialTheme{
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.padding(vertical= if(!act.premiumAccount) 55.dp else 0.dp)
+                    ){
+                        items(historyItems){ item ->
+                            EventTile(item)
+                        }
+                    }
+
                 }
-                adapter = MyEventsHistoryRecyclerViewAdapter(PlaceholderContent.ITEMS)
-                // val dividerItemDecoration = DividerItemDecoration(
-                //     this.context,
-                //     1
-                // )
-                // this.addItemDecoration(dividerItemDecoration)
 
             }
+
         }
         return view
     }
 
-    companion object {
-
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-                EventsHistoryFragment().apply {
-                    arguments = Bundle().apply {
-                        putInt(ARG_COLUMN_COUNT, columnCount)
-                    }
-                }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

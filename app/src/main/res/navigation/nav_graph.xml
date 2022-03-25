@@ -101,6 +101,6 @@
     <fragment
         android:id="@+id/eventsHistoryFragment"
         android:name="com.example.ocrhotel.EventsHistoryFragment"
-        android:label="fragment_events_history_list"
-        tools:layout="@layout/fragment_events_history_list" />
+        android:label="fragment_events_history"
+        tools:layout="@layout/fragment_events_history" />
 </navigation>
