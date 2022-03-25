@@ -94,32 +94,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermissions(){
-        val calendarPermission =
+    private fun checkPermissions(permission: String, explanation: String, whenPermissionGranted: ()->Unit){
+        val requestPermissionLauncher =
             registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
                 if (isGranted) {
                     // Permission is granted. Set the shared preferences up.
-                    setupSharedPrefs()
+                    whenPermissionGranted()
                 } else {
-
-                    Toast.makeText(this,"We need permission to access your calendar " +
-                            "in order to fulfill the app's purpose.",Toast.LENGTH_LONG).show()
                     this.finish()
                 }
             }
 
-        if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CALENDAR)
-            == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this,permission)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
             // You can use the API that requires the permission.
-            setupSharedPrefs()
+            whenPermissionGranted()
         }
         else {
             // Directly ask for the permission.
             // The registered ActivityResultCallback gets the result of this request.
-            calendarPermission.launch(
-                Manifest.permission.READ_CALENDAR)
+            Toast.makeText(this,explanation,Toast.LENGTH_LONG).show()
+
+            requestPermissionLauncher.launch(permission)
         }
     }
 
@@ -127,8 +126,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // First check if the necessary permissions have been granted.
-        // The below function also initializes sharedPrefs since there is no way to wait for the callback.
-        checkPermissions()
+        // The below function also initializes sharedPrefs.
+        checkPermissions(Manifest.permission.READ_CALENDAR,
+            "Access to your calendar will be used for adding only those events you scan."){setupSharedPrefs()}
+
+        checkPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
+        "Your location will only be used for finding the location of the photos you take."){}
 
         // Retrieve values that we want.
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
