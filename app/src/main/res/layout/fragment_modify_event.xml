@@ -8,6 +8,7 @@
 
     <Spinner
         android:id="@+id/foundEventsSelector"
+        android:contentDescription="@string/select_events_from_the_list_of_found"
         android:layout_width="300dp"
         android:layout_height="50dp"
         app:layout_constraintBottom_toTopOf="@+id/eventTitleBox"
@@ -21,9 +22,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:hint="Title"
-        app:helperText="Please confirm the title of the event."
-        app:helperTextEnabled="true"
+        app:errorEnabled="false"
         app:hintAnimationEnabled="true"
         app:hintEnabled="true"
         app:layout_constraintBottom_toTopOf="@id/llDateContainer"
@@ -36,6 +35,7 @@
             android:id="@+id/eventTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:duplicateParentState="false"
             android:hint="Title" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,7 +46,7 @@
         android:text=""
         android:textAlignment="center"
         android:textAllCaps="false"
-        android:textColor="@color/dark_blue"
+        android:textColor="@color/primaryColor"
         android:textSize="20sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/submit"
@@ -59,11 +59,12 @@
 
     <Button
         android:id="@+id/submit"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
         android:text="@string/submit"
-        android:textColor="@color/dark_blue"
+        android:textColor="@color/secondaryColor"
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +79,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
         android:text="@string/continued"
-        android:textColor="@color/dark_blue"
+        android:textColor="@color/secondaryColor"
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -104,17 +105,17 @@
             android:id="@+id/EventDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="12"
-            android:inputType="date"
-            android:minHeight="80dp"
-            android:textSize="12sp" />
+            android:fontFamily="sans-serif-medium"
+            android:text="01-08-2020"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="20sp"
+            android:typeface="normal" />
 
-        <EditText
+        <TextView
             android:id="@+id/EventHour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="4"
-            android:inputType="textPersonName"
             android:minHeight="80dp"
             android:text="16:00" />
 

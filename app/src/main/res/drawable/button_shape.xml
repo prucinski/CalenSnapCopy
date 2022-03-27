@@ -3,19 +3,6 @@
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item>
-        <shape  android:shape="rectangle">
-            <gradient
-                android:angle="45"
-                android:startColor="@color/dark_blue"
-                android:centerColor="@color/shadow_colour"
-                android:endColor="@color/lightest_teal"
-                android:type="linear"
-                />
-            <corners android:radius="100dp" />
-        </shape>
-    </item>
-
     <item android:bottom="13px">
         <shape  android:shape="rectangle">
             <padding
@@ -23,9 +10,9 @@
                 android:top="10dp"
                 android:left="20dp"
                 android:right="20dp"/>
-            <corners android:radius="100dp" />
+            <corners android:radius="20dp" />
             <gradient
-                android:startColor="@color/very_light_teal"
+                android:startColor="@color/secondaryColor"
                 android:centerColor="#CEF3FA"
                 android:endColor="#CFF2F8"
                 android:type="linear"
