@@ -19,7 +19,7 @@
             app:summary="Unlimited scans and no ads">
             <intent
                 android:targetPackage="com.example.ocrhotel"
-                android:targetClass="com.example.ocrhotel.PaymentPopup"/>
+                android:targetClass="com.example.ocrhotel.payment.PaymentPopup"/>
         </Preference>
         <Preference
             app:key="login"

@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OCRHotel">
         <activity
-            android:name=".PaymentPopup"
+            android:name=".payment.PaymentPopup"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -11,7 +11,7 @@
     android:windowIsTranslucent="true"
     android:windowNoTitle="true"
     app:cardBackgroundColor="@android:color/transparent"
-    tools:context=".PaymentPopup"
+    tools:context=".payment.PaymentPopup"
     tools:visibility="visible">
 
 
