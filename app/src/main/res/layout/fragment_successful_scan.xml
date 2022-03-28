@@ -4,22 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/secondaryColor">
 
-    <Button
-        android:id="@+id/scanAgain"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_shape"
-        android:text="@string/scan_again"
-        android:textColor="@color/secondaryColor"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.682" />
+    <!--    <Button-->
+    <!--        android:id="@+id/scanAgain"-->
+    <!--        android:layout_width="319dp"-->
+    <!--        android:layout_height="70dp"-->
+    <!--        android:background="@drawable/button_shape"-->
+    <!--        android:text="@string/scan_again"-->
+    <!--        android:textColor="@color/secondaryColor"-->
+    <!--        android:textSize="40sp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.495"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintVertical_bias="0.695" />-->
 
     <Button
         android:id="@+id/navigateHome"
@@ -29,32 +29,42 @@
         android:background="@drawable/button_shape"
         android:text="Done"
         android:textAlignment="center"
-        android:textColor="@color/secondaryColor"
-        android:textSize="40sp"
-        app:iconTint="@color/secondaryDarkColor"
+
+        android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scanAgain"
-        app:layout_constraintVertical_bias="0.396"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.778"
         app:rippleColor="@color/secondaryDarkColor" />
 
     <TextView
         android:id="@+id/success"
-        android:layout_width="321dp"
-        android:layout_height="139dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:text="@string/success"
         android:textAlignment="center"
         android:textAllCaps="false"
-        android:textColor="@color/secondaryDarkColor"
-        android:textSize="48sp"
+        android:textColor="@color/white"
+        android:textSize="45sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/navigateHome"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.329" />
+        app:layout_constraintVertical_bias="0.768" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/success"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.895"
+        app:srcCompat="@drawable/check_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
