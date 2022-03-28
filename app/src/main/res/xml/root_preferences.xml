@@ -21,6 +21,14 @@
                 android:targetPackage="com.example.ocrhotel"
                 android:targetClass="com.example.ocrhotel.PaymentPopup"/>
         </Preference>
+        <Preference
+            app:key="login"
+            app:title="Login"
+            app:summary="Log into an existing account">
+            <intent
+                android:targetPackage="com.example.ocrhotel"
+                android:targetClass="com.example.ocrhotel.LoginFragment"/>
+        </Preference>
 
 
         <Preference
