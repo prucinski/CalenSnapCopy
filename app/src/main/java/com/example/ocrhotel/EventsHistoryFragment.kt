@@ -37,7 +37,16 @@ class EventsHistoryFragment : Fragment() {
 
         val act = activity as MainActivity
 
-        val historyItems = PlaceholderContent.ITEMS
+        var userEvents = readUserEvents( /*jwt */)
+
+        val historyItems: MutableList<Event> = arrayListOf()
+        for (i in 1..userEvents.size)
+        {
+            historyItems.add(Event(userEvents[i][1], userEvents[i][2]))
+        }
+
+
+
 
         // TODO: You can do something like this to filter events.
         // val now = LocalDateTime.now()
