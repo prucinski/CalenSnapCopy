@@ -3,8 +3,10 @@ package com.example.ocrhotel
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
-import androidx.preference.ListPreference
-import androidx.preference.PreferenceFragmentCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.*
+
+
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,9 +17,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         //set the "calendar"
         populateCalendarList()
+        checkAndUpdate()
     }
 
     //TODO: have it not be called every time. Add a preference button "Update calendar list"?
+
     private fun populateCalendarList(){
         //these have to be strings sadly
         val size = 10
@@ -60,6 +64,34 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         cur.close()
     }
+    override fun onResume(){
+        super.onResume()
+        checkAndUpdate()
+
+    }
     //then, upon clicking the list and choosing a value, a sharedPreference "calendarID" will get
     //updated with the desired calendar ID.
+
+    private fun checkAndUpdate(){
+        val premiumPreference : Preference? = findPreference("premium")
+        val businessPreference : Preference? = findPreference("business")
+        val sh = activity?.getSharedPreferences(getString(R.string.preferences_address),
+            AppCompatActivity.MODE_PRIVATE)
+
+        val prem = sh!!.getBoolean("isPremiumUser", false)
+        val bus = sh!!.getBoolean("isBusinessUser", false)
+        if(prem){
+            premiumPreference!!.title = "You are a premium user"
+            //TODO: build a string
+            premiumPreference!!.summary = "Your subscription expires on xxx"
+            premiumPreference.isSelectable = false
+        }
+        if(bus){
+            businessPreference!!.title = "Business features"
+            businessPreference!!.summary = "Press to inspect"
+        }
+
+    }
+
+
 }

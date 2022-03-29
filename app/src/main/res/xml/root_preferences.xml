@@ -22,12 +22,19 @@
                 android:targetClass="com.example.ocrhotel.payment.PaymentPopup"/>
         </Preference>
         <Preference
-            app:key="login"
-            app:title="Login"
-            app:summary="Don't click me">
+            app:key="business"
+            app:title="Buy business access"
+            app:summary="See where to put your posters for highest engagement">
             <intent
                 android:targetPackage="com.example.ocrhotel"
-                android:targetClass="Navigation to a fragment from an intent?"/>
+                android:targetClass="com.example.ocrhotel.payment.PaymentPopup"/>
+        </Preference>
+        <Preference
+            app:key="login"
+            app:title="Login"
+            app:summary="Log in to your account."
+            app:fragment = "com.example.ocrhotel.LoginFragment"
+            app:destination="@+id/LoginFragment">
         </Preference>
 
 

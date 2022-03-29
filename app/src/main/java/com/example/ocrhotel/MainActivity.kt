@@ -32,7 +32,18 @@ class MainActivity : AppCompatActivity() {
 
     //init to random values
     var premiumAccount = false
+    var businessAccount = false
     var scans = 1
+
+    override fun onResume(){
+        super.onResume()
+        //if user left the activity, they might have bought premium. Check if they did.
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        premiumAccount = sh.getBoolean("isPremiumUser", false)
+        businessAccount = sh.getBoolean("isBusinessUser", false)
+        scans = sh.getInt("numberOfScans", 1)
+
+    }
 
     //TODO: MOVE THIS INTO SETTINGS?
     //TODO: maybe keep a stub to choose a default calendar upon launch
@@ -87,6 +98,8 @@ class MainActivity : AppCompatActivity() {
             // VALUES INITIALIZED DURING LAUNCH.
             myEdit.putBoolean("isPremiumUser", false)
             myEdit.putInt("numberOfScans", 1)
+            //TODO: GET RID OF THIS PLACEHOLDER.
+            myEdit.putBoolean("isBusinessUser", true)
 
             myEdit.putString("calendarID", getCalendarId()!!.toString())
             
@@ -217,11 +230,13 @@ class MainActivity : AppCompatActivity() {
     fun scanCountSub() {
         if(!premiumAccount){
             scans--
+            updateScanNumber()
         }
 
     }
     private fun scanCountAdd() {
         scans += 3
+        updateScanNumber()
     }
 
     // Dialog for when there is no leftover scans
@@ -283,7 +298,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        updateScanNumber()
     }
 
 

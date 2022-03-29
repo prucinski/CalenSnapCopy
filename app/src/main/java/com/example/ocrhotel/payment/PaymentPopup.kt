@@ -70,6 +70,7 @@ class PaymentPopup : AppCompatActivity() {
 
     }
 
+
     private fun createPaymentsClient(activity: Activity): PaymentsClient {
         val walletOptions = Wallet.WalletOptions.Builder()
             .setEnvironment(WalletConstants.ENVIRONMENT_TEST).build()
@@ -145,12 +146,17 @@ class PaymentPopup : AppCompatActivity() {
             Log.d("BillingName", billingName)
 
             Toast.makeText(this,
-                "", Toast.LENGTH_LONG).show()
+                "Payment successful!", Toast.LENGTH_LONG).show()
 
             // Logging token string.
             Log.d("Google Pay token", paymentMethodData
                 .getJSONObject("tokenizationData")
                 .getString("token"))
+            //Updating the premium account.
+            val sh = getSharedPreferences("com.example.ocrhotel_preferences", MODE_PRIVATE)
+            val myEdit = sh.edit()
+            myEdit.putBoolean("isPremiumUser", true)
+            myEdit.apply()
 
         } catch (error: JSONException) {
             Log.e("handlePaymentSuccess", "Error: $error")
