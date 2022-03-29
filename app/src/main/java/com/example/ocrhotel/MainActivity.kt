@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -17,8 +18,10 @@ import com.example.ocrhotel.databinding.ActivityMainBinding
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MainActivity : AppCompatActivity() {
@@ -125,6 +128,22 @@ class MainActivity : AppCompatActivity() {
         // Initialize the bottom navigation
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
+
+        //removes the navigation bar, fab from the successful scan
+        val bottomBar = findViewById<BottomAppBar>(R.id.bottom_bar)
+        val fab = findViewById<FloatingActionButton>(R.id.fab)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if(destination.id == R.id.successfulScan) {
+                bottomBar.visibility = View.GONE
+                fab.visibility = View.GONE
+                bottomNavigationView.visibility = View.GONE
+            } else {
+                bottomBar.visibility = View.VISIBLE
+                fab.visibility = View.VISIBLE
+                bottomNavigationView.visibility = View.VISIBLE
+            }
+        }
 
         if(!premiumAccount){
             //Code for ads
