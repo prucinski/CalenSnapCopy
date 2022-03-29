@@ -36,14 +36,14 @@ class EventsHistoryFragment : Fragment() {
         val view = binding.root
 
         val act = activity as MainActivity
-
-        var userEvents = readUserEvents( /*jwt */)
-
-        val historyItems: MutableList<Event> = arrayListOf()
-        for (i in 1..userEvents.size)
-        {
-            historyItems.add(Event(userEvents[i][1], userEvents[i][2]))
-        }
+        val historyItems = PlaceholderContent.ITEMS
+//        var userEvents = readUserEvents( /*jwt */)
+//
+//        val historyItems: MutableList<Event> = arrayListOf()
+//        for (event of userEvents)
+//        {
+//            historyItems.add(Event(userEvents[i][1], userEvents[i][2]))
+//        }
 
 
 
