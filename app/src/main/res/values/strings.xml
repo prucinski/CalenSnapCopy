@@ -19,12 +19,12 @@
     <string name="upload">Upload from gallery</string>
     <string name="previous">Previous</string>
 
-    
+
     <!-- Ad IDs -->
     <string name="ad_id_interstitial">ca-app-pub-3940256099942544/1033173712</string>
     <string name="ad_id_banner">ca-app-pub-3940256099942544/6300978111</string>
     <string name="ad_id_reward">ca-app-pub-3940256099942544/5224354917</string>
-    
+
     <string name="alert_dialog_title">Out of Scans</string>
     <string name="alert_dialog_message">Unfortunately you are out of scans for the day. Would you like to watch an ad to get an additional scan?</string>
     <string name="decline">Decline</string>
@@ -64,7 +64,6 @@
     <string name="signature_title">Edit Details</string>
     <string name="privacy_title">Privacy</string>
     <string name="calendar_title">Default Calendar</string>
-
 
 
     <!-- Sync Preferences -->

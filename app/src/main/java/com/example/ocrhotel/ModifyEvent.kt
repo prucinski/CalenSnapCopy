@@ -52,7 +52,7 @@ class ModifyEvent : Fragment() {
 
     private val adRequest = AdRequest.Builder().build()
     private var mInterstitialAd: InterstitialAd? = null
-    private var TAG = "Interstitial Ad"
+    private val TAG = "Interstitial Ad"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -162,7 +162,7 @@ class ModifyEvent : Fragment() {
                 Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
                 currentEvent = pos
                 binding.EventDate.text = eventsList[currentEvent].eventDate
-                binding.EventHour.setText(eventsList[currentEvent].eventHour)
+                binding.EventHour.text = eventsList[currentEvent].eventHour
                 binding.eventTitle.setText(eventsList[currentEvent].eventName)
             }
 
@@ -202,7 +202,7 @@ class ModifyEvent : Fragment() {
     
    //Function for loading the interstitial ad 
    private fun loadInterAd(){
-        InterstitialAd.load(getActivity(),getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
+        InterstitialAd.load(activity,getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 mInterstitialAd = null
             }
@@ -216,7 +216,7 @@ class ModifyEvent : Fragment() {
     //Function for showing the interstitial ad
     private fun showInterAd(){
         if (mInterstitialAd != null) {
-            mInterstitialAd?.show(getActivity())
+            mInterstitialAd?.show(activity)
             mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
                     Log.d(TAG, "Ad was dismissed.")
