@@ -4,34 +4,37 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.twotone.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.ocrhotel.EventTile
+import com.example.ocrhotel.MainActivity
 import com.example.ocrhotel.R
 import com.example.ocrhotel.databinding.FragmentHomeBinding
 import com.example.ocrhotel.placeholder.PlaceholderContent
+import java.time.format.DateTimeFormatter
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -40,8 +43,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private val model: HomeViewModel by activityViewModels()
 
-    @OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.unit.ExperimentalUnitApi::class)
+    @OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,10 +56,33 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val root: View = binding.root
 
         val composeView = binding.composeHome
+        val premium = (activity as MainActivity).premiumAccount
+
+        model.eventsList.value = PlaceholderContent.ITEMS
 
         composeView.setContent {
             MaterialTheme{
-                Home()
+                Scaffold(
+                    modifier=Modifier.padding(vertical= if(!premium) 55.dp else 0.dp),
+                    topBar = { CustomTopAppBar()  }
+                ){contentPadding ->
+
+                    Box(
+                        modifier=  Modifier.padding(contentPadding)
+                    ){
+                        LazyColumn(
+
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ){
+                            items(model.eventsList.value!!) { event ->
+                                EventTile(event){
+                                    model.removeEvent(event)
+                                    // model.eventsList.value = model.eventsList.value!!.filter{it!=event}.toMutableList()
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -66,75 +93,61 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onDestroyView()
         _binding = null
     }
+
 }
 
-
-@ExperimentalUnitApi
-@Preview
-@ExperimentalMaterialApi
 @Composable
-fun Home(
+@Preview
+fun CustomTopAppBar(
     name: String = "John Smith",
     premium : Boolean = false,
     icon: ImageVector = Icons.Rounded.Person,
 ){
-    Scaffold(
-        modifier=Modifier.padding(vertical= if(!premium) 55.dp else 0.dp),
-        topBar = {
-            TopAppBar(
-                navigationIcon={
-                    Image(
-                        icon,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(Color.White),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .padding(horizontal=5.dp)
-                            .fillMaxSize()
-                            .clip(CircleShape))
-                },
-                title={
-                    Column{
-                        Text(name)
-                        Row(verticalAlignment = Alignment.CenterVertically){
-                            if(premium) {
-                                Icon(Icons.Filled.Star,contentDescription = null,
-                                    modifier=Modifier.size(10.dp)
-                                )
-                                Text(
-                                    "Premium user",
-                                    fontSize= TextUnit(2.3f, TextUnitType.Em),
-                                    modifier = Modifier.padding(start=5.dp)
-                                )
-                            }
-                            else{
-                                Icon(Icons.TwoTone.Star,contentDescription = null,
-                                modifier=Modifier.size(10.dp)
-                                )
-                                Text(
-                                    "Basic user",
-                                    fontSize= TextUnit(2.3f, TextUnitType.Em),
-                                    modifier = Modifier.padding(start=5.dp)
-                                )
-                            }
+    var expanded by rememberSaveable {mutableStateOf(false)}
 
-                        }
-                    }
-                },
-            )
-        }
-    ){contentPadding ->
-        Box(
-            modifier=  Modifier.padding(contentPadding)
-        ){
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ){
-                items(PlaceholderContent.ITEMS){ item ->
-                    EventTile(item)
+    TopAppBar(
+        title = {
+            Text("Home")
+        },
+        actions = {
+            IconButton(
+                onClick = {
+                    expanded = true
+
                 }
+            ) {
+                Icon(icon,contentDescription = null)
             }
-        }
-    }
 
+
+        },
+        // title={
+        //     Column{
+        //         Text(name)
+        //         Row(verticalAlignment = Alignment.CenterVertically){
+        //             if(premium) {
+        //                 Icon(Icons.Filled.Star,contentDescription = null,
+        //                     modifier=Modifier.size(10.dp)
+        //                 )
+        //                 Text(
+        //                     "Premium user",
+        //                     fontSize= TextUnit(2.3f, TextUnitType.Em),
+        //                     modifier = Modifier.padding(start=5.dp)
+        //                 )
+        //             }
+        //             else{
+        //                 Icon(Icons.TwoTone.Star,contentDescription = null,
+        //                 modifier=Modifier.size(10.dp)
+        //                 )
+        //                 Text(
+        //                     "Basic user",
+        //                     fontSize= TextUnit(2.3f, TextUnitType.Em),
+        //                     modifier = Modifier.padding(start=5.dp)
+        //                 )
+        //             }
+        //
+        //         }
+        //     }
+        // },
+    )
 }
