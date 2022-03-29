@@ -81,7 +81,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val prem = sh!!.getBoolean("isPremiumUser", false)
         val bus = sh!!.getBoolean("isBusinessUser", false)
         if(prem){
-            premiumPreference!!.title = "You are a premium user"
+            premiumPreference!!.title = "You are a Premium user"
             //TODO: build a string
             premiumPreference!!.summary = "Your subscription expires on xxx"
             premiumPreference.isSelectable = false

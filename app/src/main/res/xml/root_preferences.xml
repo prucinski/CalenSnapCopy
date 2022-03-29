@@ -41,17 +41,16 @@
         <Preference
             app:key="feedback"
             app:title="Send feedback"
-            app:summary="Report technical issues or suggest new features"/>
+            app:summary="Report technical issues or suggest new features"
+            app:fragment = "com.example.ocrhotel.ContactUsFragment"
+            app:destination="@+id/ContactUsFragment">
+        </Preference>
 
+        <Preference
+            app:key="terms"
+            app:title="Terms and Conditions">
+        </Preference>
 
-
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/privacy_title"
-            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
