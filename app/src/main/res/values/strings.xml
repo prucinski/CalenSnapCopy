@@ -87,5 +87,6 @@
     <string name="contact_form_button">Send Message</string>
     <string name="contact_form_post_message">Please wait! We\'re sending your message to the support department...</string>
     <string name="contact_posted">Your message has been successfully delivered.</string>
+    <string name="premium_button">Upgrade To Premium</string>
 
 </resources>
