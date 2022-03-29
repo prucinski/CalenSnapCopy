@@ -256,6 +256,9 @@ class MainActivity : AppCompatActivity() {
 
     // Function for loading the reward ad
     private fun loadRewardedAd() {
+        if(premiumAccount){
+            return
+        }
         RewardedAd.load(this,getString(R.string.ad_id_reward), adRequest, object : RewardedAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 Log.d(logTag, adError?.message)

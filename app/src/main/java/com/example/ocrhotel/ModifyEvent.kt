@@ -202,6 +202,9 @@ class ModifyEvent : Fragment() {
     
    //Function for loading the interstitial ad 
    private fun loadInterAd(){
+       if((activity as MainActivity?)?.premiumAccount!!){
+           return
+       }
         InterstitialAd.load(activity,getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 mInterstitialAd = null
