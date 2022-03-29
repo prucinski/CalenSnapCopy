@@ -3,7 +3,6 @@ package com.example.ocrhotel
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
-import android.widget.Toast
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 
@@ -17,15 +16,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         //set the "calendar"
         populateCalendarList()
     }
-    //please dont call this. I used it in the first stage of development when i wanted to undersatnd
-    //what was happening
-    fun populateCalendarListStub(){
-        var calendarListPreference : ListPreference? = findPreference("calendarID")
-        var entries = arrayOf("Cal1", "Cal2")
-        var entryValues = arrayOf("1", "2")
-        calendarListPreference!!.entries = entries
-        calendarListPreference.entryValues = entryValues
-    }
+
     //TODO: have it not be called every time. Add a preference button "Update calendar list"?
     private fun populateCalendarList(){
         //these have to be strings sadly
@@ -42,10 +33,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             CalendarContract.Calendars.OWNER_ACCOUNT            // 3
         )
 // The indices for the projection array above.
-        val PROJECTION_ID_INDEX: Int = 0
-        val PROJECTION_ACCOUNT_NAME_INDEX: Int = 1
-        val PROJECTION_DISPLAY_NAME_INDEX: Int = 2
-        val PROJECTION_OWNER_ACCOUNT_INDEX: Int = 3
+        val PROJECTION_ID_INDEX = 0
+        val PROJECTION_ACCOUNT_NAME_INDEX = 1
+        val PROJECTION_DISPLAY_NAME_INDEX = 2
+        val PROJECTION_OWNER_ACCOUNT_INDEX = 3
         val uri = CalendarContract.Calendars.CONTENT_URI
         val cur = requireContext().contentResolver.query(uri, EVENT_PROJECTION, "", null, null)
         //return first n calendars (if it even gets to this point)
@@ -62,10 +53,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         calendarNames = calendarNames.copyOf(counter)
         calendarIDs = calendarIDs.copyOf(counter)
-        var calendarListPreference : ListPreference? = findPreference("calendarID")
+        val calendarListPreference : ListPreference? = findPreference("calendarID")
         calendarListPreference!!.entries = calendarNames
         calendarListPreference.entryValues = calendarIDs
 
+
+        cur.close()
     }
     //then, upon clicking the list and choosing a value, a sharedPreference "calendarID" will get
     //updated with the desired calendar ID.

@@ -77,7 +77,7 @@ class Algorithm {
 
         val currentDate = LocalDateTime.now()
 
-        var additionalDates = mutableListOf<Triple<Int,Int,Int>>()
+        val additionalDates = mutableListOf<Triple<Int,Int,Int>>()
 
         // Convert matches into Triple objects containing the values for year, month, and day.
         // Why Triple and not just LocalDate? I reckon the former is faster for our intent which is an intermediate value.

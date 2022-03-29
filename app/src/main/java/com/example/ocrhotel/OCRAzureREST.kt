@@ -1,24 +1,15 @@
 package com.example.ocrhotel
 
-import android.content.Context
 import android.util.Log
-
 import com.microsoft.azure.cognitiveservices.vision.computervision.ComputerVisionManager
 import com.microsoft.azure.cognitiveservices.vision.computervision.implementation.ComputerVisionImpl
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.OperationStatusCodes
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
-import id.zelory.compressor.Compressor
-import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
-import java.lang.IllegalStateException
-import java.lang.StringBuilder
-import java.nio.file.Files
 import java.util.*
 import java.util.function.Consumer
 

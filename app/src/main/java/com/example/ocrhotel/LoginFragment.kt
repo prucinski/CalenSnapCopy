@@ -10,7 +10,7 @@ import android.util.Log
 
 class LoginFragment : Fragment() {
 
-    private var _binding: FragmentLoginBinding? = null;
+    private var _binding: FragmentLoginBinding? = null
 
     private val binding get() = _binding!!
 
