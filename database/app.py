@@ -88,7 +88,7 @@ def get_profile():
         cursor = connection.cursor()
 
         cursor.execute(
-            """ SELECT * FROM profile WHERE username = %s; """, (username,))
+            """ SELECT (username, remaining_free_uses, premium_user, business_user, duration_in_mins, mm_dd, darkmode) FROM profile WHERE username = %s; """, (username,))
 
         profile = cursor.fetchone()
 
@@ -112,7 +112,7 @@ def signup():
         cursor = connection.cursor()
 
         cursor.execute(
-            "SELECT * FROM profile WHERE username = %s;", (username, ))
+            "SELECT (username) FROM profile WHERE username = %s;", (username, ))
         if cursor.fetchone() is not None:
             app.logger.info(
                 "Attempted to create profile with already existing username. ")
@@ -248,7 +248,7 @@ def get_events():
         cursor = connection.cursor()
 
         cursor.execute(
-            """ SELECT * FROM userevent WHERE username = %s; """, (username,))
+            """ SELECT (id, title, event_time, username) FROM userevent WHERE username = %s; """, (username,))
         events = cursor.fetchall()
 
         return {'events': list(map(lambda e: {
@@ -282,7 +282,8 @@ def get_events_metadata():
         cursor = connection.cursor()
 
         # Get all events
-        cursor.execute(""" SELECT * FROM event; """)
+        cursor.execute(
+            """ SELECT (id, snap_time, snap_location) FROM event; """)
         events = cursor.fetchall()
 
         # Convert points into JSON format and send them back.
