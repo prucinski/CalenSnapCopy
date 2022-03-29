@@ -303,10 +303,6 @@ fun main(args: Array<String>) {
         if (token != null) {
             readProfile(token) { profile ->
                 println(profile?.username)
-
-                deleteProfile(token) {
-
-                }
             }
 
 //            readEvents(token) { events ->
