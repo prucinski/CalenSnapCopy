@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.ocrhotel.databinding.FragmentLoginBinding
 import android.util.Log
+import android.widget.Toast
 
 class LoginFragment : Fragment() {
 
@@ -28,15 +29,26 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
-    fun onLoginButtonPressed() {
+    private fun onLoginButtonPressed() {
         val username = binding.usernameInput.text.toString()
         val password = binding.passwordInput.text.toString()
 
         login(username, password) { jwt ->
             if (jwt != null) {
                 Log.w("JWT SUCCESS: ", jwt)
+                activity?.runOnUiThread {
+                    Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Log.w("JWT FAILURE: ", jwt)
+                activity?.runOnUiThread {
+                    Toast.makeText(
+                        requireContext(),
+                        "Username or password was wrong.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
             }
         }
     }
