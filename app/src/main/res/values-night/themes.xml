@@ -35,6 +35,7 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="Theme.OCRHotel.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-
+    <style name="Theme.OCRHotel.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

@@ -16,9 +16,7 @@
         android:theme="@style/Theme.OCRHotel">
         <activity
             android:name=".payment.PaymentPopup"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.Translucent"
-            />
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
