@@ -159,7 +159,7 @@ class ModifyEvent : Fragment() {
 
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
                 // An item was selected. You can retrieve the selected item using
-                Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
                 currentEvent = pos
                 binding.EventDate.text = eventsList[currentEvent].eventDate
                 binding.EventHour.text = eventsList[currentEvent].eventHour

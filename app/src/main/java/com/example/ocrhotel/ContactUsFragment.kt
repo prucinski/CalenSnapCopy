@@ -20,7 +20,7 @@ private const val ARG_PARAM2 = "param2"
 class ContactUsFragment : Fragment() {
 
     private var _binding: FragmentContactUsBinding? = null
-    private var ourMail = "fmpbitxulmeolfqhiq@bvhrs.com"
+    private var ourMail = "agentdiegoo@o2.pl"
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -79,9 +79,5 @@ class ContactUsFragment : Fragment() {
             //get and show exception message
             Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
         }
-
     }
-
-
-
 }
