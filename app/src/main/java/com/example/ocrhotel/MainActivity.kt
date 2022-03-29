@@ -1,17 +1,18 @@
 package com.example.ocrhotel
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.ocrhotel.databinding.ActivityMainBinding
 import com.google.android.gms.ads.*
@@ -25,13 +26,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var navController: NavController
 
     private val adRequest = AdRequest.Builder().build()
     private var mRewardedAd: RewardedAd? = null
-    private var logTag = "MainActivity"
+    private var TAG = "MainActivity"
 
     //init to random values
     var premiumAccount = false
@@ -86,21 +88,24 @@ class MainActivity : AppCompatActivity() {
         }
         return null
     }
-
     private fun setupSharedPrefs(){
         // Storing data into SharedPreferences
-        // Initialization on first app launch.
-        // This file is present only on the device and not in this project.
-
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-
-        // Check if file already present. if not, create it
-        if(!sh.contains("isPremiumUser")) {
+        //Initialization on first app launch.
+        //This file is present only on the device and not in this project.
+        var sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        //check if file already present. if not, create it
+        val filePresent = sh.getBoolean("fileExists", false)
+        if(!filePresent) {
             val myEdit = sh.edit()
-
-            // VALUES INITIALIZED DURING LAUNCH.
+            //VALUES INITIALIZED DURING LAUNCH.
             myEdit.putBoolean("isPremiumUser", false)
+            myEdit.putBoolean("filePresent", true)
             myEdit.putInt("numberOfScans", 1)
+
+            //check if there is a calendar permission. This is kind of dead code right now.
+            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+                if(sh.getLong("calendarID", -1) == -1L){
+                    myEdit.putString("calendarID", getCalendarId()!!.toString())
             //TODO: GET RID OF THIS PLACEHOLDER.
             myEdit.putBoolean("isBusinessUser", true)
 
@@ -122,48 +127,30 @@ class MainActivity : AppCompatActivity() {
                     this.finish()
                 }
             }
-
-        if (ContextCompat.checkSelfPermission(this,permission)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            // You can use the API that requires the permission.
-            whenPermissionGranted()
+            myEdit.commit()
         }
-        else {
-            // Directly ask for the permission.
-            // The registered ActivityResultCallback gets the result of this request.
+    }
+    //MOVED HERE from EventCreator() as we want to choose the calendar somewhere else.
+    fun findCalendarID(){
 
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Requesting permissions")
-                .setMessage(explanation)
-                .setPositiveButton("I understand"){_,_->
-                    requestPermissionLauncher.launch(permission)
-                }
-                .setNegativeButton("I disagree"){_,_->
-                    this.finish()
-                }.show()
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // First check if the necessary permissions have been granted.
-        // The below function also initializes sharedPrefs.
-        checkPermissions(Manifest.permission.READ_CALENDAR,
-            "Access to your calendar will be used for adding only those events you scan."){setupSharedPrefs()}
-
-        checkPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
-        "Your location will only be used for finding the location of the photos you take."){}
-
-        // Retrieve values that we want.
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        setupSharedPrefs()
+        //retrieve values that we want.
+        var sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         premiumAccount = sh.getBoolean("isPremiumUser", false)
         scans = sh.getInt("numberOfScans", 1)
 
+
+
+        Log.e("ACT","onCreate")
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
 
         // Initialize the navigation host
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
@@ -179,9 +166,10 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if(destination.id == R.id.successfulScan) {
-               bottomBar.visibility = View.GONE
-               fab.visibility = View.GONE
-               bottomNavigationView.visibility = View.GONE
+                bottomBar.visibility = View.GONE
+                fab.visibility = View.GONE
+                bottomNavigationView.visibility = View.GONE
+
             } else {
                 bottomBar.visibility = View.VISIBLE
                 fab.visibility = View.VISIBLE
@@ -203,7 +191,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener {
             // Go to scanning
-
             if(!premiumAccount)
                 if(scans > 0) {
                     binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
@@ -216,7 +203,6 @@ class MainActivity : AppCompatActivity() {
                 binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
                 navController.navigate(R.id.SecondFragment)
             }
-
         }
 
         binding.bottomNavigation.setOnItemSelectedListener {
@@ -238,8 +224,8 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    private fun updateScanNumber(){
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+    fun updateScanNumber(){
+        var sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         val myEdit = sh.edit()
         myEdit.putInt("numberOfScans", scans)
         myEdit.apply()
@@ -254,7 +240,7 @@ class MainActivity : AppCompatActivity() {
 
     }
     private fun scanCountAdd() {
-        scans += 3
+        scans+=3
         updateScanNumber()
     }
 
@@ -268,7 +254,7 @@ class MainActivity : AppCompatActivity() {
             }
             .setPositiveButton(resources.getString(R.string.watch_ad)) { _, _ ->
                 showRewardedVideo()
-                Log.d(logTag,"You watched the ad")
+                Log.d(TAG,"You watched the ad")
             }
             .show()
     }
@@ -280,11 +266,11 @@ class MainActivity : AppCompatActivity() {
         }
         RewardedAd.load(this,getString(R.string.ad_id_reward), adRequest, object : RewardedAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
-                Log.d(logTag, adError?.message)
+                Log.d(TAG, adError?.message)
                 mRewardedAd = null
             }
             override fun onAdLoaded(rewardedAd: RewardedAd) {
-                Log.d(logTag, "Reward Ad was loaded.")
+                Log.d(TAG, "Reward Ad was loaded.")
                 mRewardedAd = rewardedAd
             }
         })
@@ -321,8 +307,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
     }
-
-
 
 
 }
