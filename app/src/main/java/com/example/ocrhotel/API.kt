@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
+import android.util.Log
 import java.io.IOException
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -138,11 +139,12 @@ class APIJWTToken : APIValue() {
 
 fun login(username: String, password: String, callback: (token: String?) -> Unit) {
     val gson = Gson()
+    val payload = gson.toJson(object {
+        val password = password
+        val username = username
+    })
     post(path("login"),
-        gson.toJson(object {
-            val password = password
-            val username = username
-        }),
+        payload,
         decodeCallback(APIJWTToken::class.java) { result ->
             callback(result?.token)
         })
@@ -280,8 +282,12 @@ private fun <T> decodeCallback(
             println(response)
             val gson = Gson()
             val data = response.body?.string()
-            val result = gson.fromJson(data, type)
+            if (response.code != 200) {
+                Log.w("UNSUCCESSFUL HTTP RESPONSE CODE: ", "${response.code}")
+            }
+            val result = gson.fromJson(data, APIValue::class.java)
             if (result.success) {
+                val result = gson.fromJson(data, type)
                 callback(result)
             } else {
                 callback(null)
@@ -299,14 +305,10 @@ private fun <T> decodeCallback(
 fun main(args: Array<String>) {
     val password = "password1234"
 
-    login("Erik", password) { token ->
+    login("Business", password) { token ->
         if (token != null) {
             readProfile(token) { profile ->
                 println(profile?.username)
-
-                deleteProfile(token) {
-
-                }
             }
 
 //            readEvents(token) { events ->

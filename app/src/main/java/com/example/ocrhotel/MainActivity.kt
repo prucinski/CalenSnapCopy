@@ -37,7 +37,18 @@ class MainActivity : AppCompatActivity() {
 
     //init to random values
     var premiumAccount = false
+    var businessAccount = false
     var scans = 1
+
+    override fun onResume(){
+        super.onResume()
+        //if user left the activity, they might have bought premium. Check if they did.
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        premiumAccount = sh.getBoolean("isPremiumUser", false)
+        businessAccount = sh.getBoolean("isBusinessUser", false)
+        scans = sh.getInt("numberOfScans", 1)
+
+    }
 
     //TODO: MOVE THIS INTO SETTINGS?
     //TODO: maybe keep a stub to choose a default calendar upon launch
@@ -90,10 +101,30 @@ class MainActivity : AppCompatActivity() {
             myEdit.putBoolean("isPremiumUser", false)
             myEdit.putBoolean("filePresent", true)
             myEdit.putInt("numberOfScans", 1)
+
             //check if there is a calendar permission. This is kind of dead code right now.
             if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
                 if(sh.getLong("calendarID", -1) == -1L){
                     myEdit.putString("calendarID", getCalendarId()!!.toString())
+            //TODO: GET RID OF THIS PLACEHOLDER.
+            myEdit.putBoolean("isBusinessUser", true)
+
+            myEdit.putString("calendarID", getCalendarId()!!.toString())
+            
+            myEdit.apply()
+        }
+    }
+
+    private fun checkPermissions(permission: String, explanation: String, whenPermissionGranted: ()->Unit){
+        val requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    // Permission is granted. Set the shared preferences up.
+                    whenPermissionGranted()
+                } else {
+                    this.finish()
                 }
             }
             myEdit.commit()
@@ -138,6 +169,7 @@ class MainActivity : AppCompatActivity() {
                 bottomBar.visibility = View.GONE
                 fab.visibility = View.GONE
                 bottomNavigationView.visibility = View.GONE
+
             } else {
                 bottomBar.visibility = View.VISIBLE
                 fab.visibility = View.VISIBLE
@@ -229,6 +261,9 @@ class MainActivity : AppCompatActivity() {
 
     // Function for loading the reward ad
     private fun loadRewardedAd() {
+        if(premiumAccount){
+            return
+        }
         RewardedAd.load(this,getString(R.string.ad_id_reward), adRequest, object : RewardedAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 Log.d(TAG, adError?.message)
@@ -269,7 +304,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 
 
 }
