@@ -6,16 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <Spinner
         android:id="@+id/foundEventsSelector"
-        android:contentDescription="@string/select_events_from_the_list_of_found"
         android:layout_width="300dp"
-        android:layout_height="50dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/edit_button_shape"
+        android:contentDescription="@string/select_events_from_the_list_of_found"
         app:layout_constraintBottom_toTopOf="@+id/eventTitleBox"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/success" />
-
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/eventTitleBox"
@@ -34,28 +37,30 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/eventTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_button_shape"
             android:duplicateParentState="false"
             android:hint="Title" />
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <TextView
         android:id="@+id/success"
-        android:layout_width="294dp"
+        android:layout_width="306dp"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="Event Modification"
         android:textAlignment="center"
         android:textAllCaps="false"
-        android:textColor="@color/primaryColor"
-        android:textSize="20sp"
-        android:visibility="invisible"
+        android:textColor="@color/secondaryDarkColor"
+        android:textSize="38sp"
+        android:textStyle="bold"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/submit"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.547"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.09" />
-
+        app:layout_constraintVertical_bias="0.221" />
 
     <Button
         android:id="@+id/submit"
@@ -64,14 +69,13 @@
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
         android:text="@string/submit"
-        android:textColor="@color/secondaryColor"
-        android:textSize="40sp"
+        android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.522"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.734" />
+        app:layout_constraintVertical_bias="0.693" />
 
     <Button
         android:id="@+id/continued"
@@ -79,46 +83,49 @@
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
         android:text="@string/continued"
-        android:textColor="@color/secondaryColor"
-        android:textSize="40sp"
+        android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.522"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/submit"
-        app:layout_constraintVertical_bias="0.127" />
+        app:layout_constraintVertical_bias="0.109" />
 
     <LinearLayout
         android:id="@+id/llDateContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_width="302dp"
+        android:layout_height="55dp"
+        android:layout_marginBottom="52dp"
         android:gravity="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/submit"
-        app:layout_constraintVertical_bias="1"
-        >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent">
 
 
         <TextView
             android:id="@+id/EventDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="170dp"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_button_shape"
             android:fontFamily="sans-serif-medium"
             android:text="01-08-2020"
+            android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textSize="20sp"
             android:typeface="normal" />
 
         <TextView
             android:id="@+id/EventHour"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="128dp"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_button_shape"
             android:ems="4"
             android:minHeight="80dp"
-            android:text="16:00" />
-
+            android:text="16:00"
+            android:textAlignment="center"
+            android:textSize="20sp" />
     </LinearLayout>
 
 
