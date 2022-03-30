@@ -21,7 +21,7 @@ object PlaceholderContent {
      */
     val ITEM_MAP: MutableMap<String, Event> = HashMap()
 
-    private val COUNT = 5
+    private val COUNT = 6
 
     init {
         // Add some sample items.

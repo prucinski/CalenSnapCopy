@@ -4,26 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
@@ -33,8 +26,6 @@ import com.example.ocrhotel.EventTile
 import com.example.ocrhotel.MainActivity
 import com.example.ocrhotel.R
 import com.example.ocrhotel.databinding.FragmentHomeBinding
-import com.example.ocrhotel.placeholder.PlaceholderContent
-import java.time.format.DateTimeFormatter
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -43,7 +34,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private val model: HomeViewModel by activityViewModels()
+    private val model: EventListModel by activityViewModels()
+    private var premium = false
 
     @OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class)
     override fun onCreateView(
@@ -56,11 +48,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val root: View = binding.root
 
         val composeView = binding.composeHome
-        val premium = (activity as MainActivity).premiumAccount
+        premium = (activity as MainActivity).premiumAccount
 
-        model.eventsList.value = PlaceholderContent.ITEMS
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
         composeView.setContent {
+
+            val events by remember{
+                mutableStateOf(model)
+            }
+
             MaterialTheme{
                 Scaffold(
                     modifier=Modifier.padding(vertical= if(!premium) 55.dp else 0.dp),
@@ -71,13 +68,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         modifier=  Modifier.padding(contentPadding)
                     ){
                         LazyColumn(
-
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ){
-                            items(model.eventsList.value!!) { event ->
+                            items(items=events.getFutureEvents()){event->
                                 EventTile(event){
-                                    model.removeEvent(event)
-                                    // model.eventsList.value = model.eventsList.value!!.filter{it!=event}.toMutableList()
+                                    events.removeEvent(event)
+
                                 }
                             }
                         }
