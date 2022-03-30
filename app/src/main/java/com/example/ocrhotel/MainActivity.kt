@@ -37,6 +37,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume(){
         super.onResume()
+        resume()
+    }
+
+    fun resume() {
         //if user left the activity, they might have bought premium. Check if they did.
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         premiumAccount = sh.getBoolean("isPremiumUser", false)

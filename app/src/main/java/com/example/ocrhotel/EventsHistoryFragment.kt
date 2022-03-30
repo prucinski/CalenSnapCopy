@@ -50,28 +50,30 @@ class EventsHistoryFragment : Fragment() {
 
         val act = activity as MainActivity
 
-//        val historyItems = PlaceholderContent.ITEMS
+        fun goToLogin() {
+            val navHostFragment =
+                activity?.supportFragmentManager?.findFragmentById(R.id.main_content) as NavHostFragment
+            navHostFragment.navController.navigate(R.id.loginFragment)
+
+        }
+
         val jwt = getJwtFromPreferences(requireContext())
-//        val historyItems: MutableList<Event> = arrayListOf()
-//        val historyItems by mutableStateListOf<Event>()
-        val historyItems = MutableLiveData(listOf<Event>())
         if (jwt != null) {
             readUserEvents(jwt) { userEvents ->
                 val events = mutableListOf<Event>()
                 if (userEvents != null) {
                     for (event in userEvents.events) {
-                        events.add(Event(event.title))
+                        events.add(Event(event.title, extractDate(event.event_time)))
                     }
+                } else {
+                    goToLogin()
                 }
                 viewModel.historyItems.postValue(events)
             }
         } else {
             // If there is no JWT, navigate to the login page.
-            val navHostFragment =
-                activity?.supportFragmentManager?.findFragmentById(R.id.main_content) as NavHostFragment
-            navHostFragment.navController.navigate(R.id.loginFragment)
+            goToLogin()
         }
-
 
         // TODO: You can do something like this to filter events.
         // val now = LocalDateTime.now()
@@ -87,9 +89,7 @@ class EventsHistoryFragment : Fragment() {
                 MaterialTheme {
                     EventHistoryScreen(act.premiumAccount, viewModel)
                 }
-
             }
-
         }
         return view
     }

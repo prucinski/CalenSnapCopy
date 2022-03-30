@@ -12,6 +12,7 @@ import java.io.IOException
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -90,7 +91,7 @@ open class APIValue {
 }
 
 class APIProfile : APIValue() {
-    val username: String = ""
+    val username: String = "Not Logged In"
     val remaining_free_uses: Int = 0
     val premium_user: Boolean = false
     val business_user: Boolean = false
@@ -309,6 +310,10 @@ fun getJwtFromPreferences(context: Context): String? {
     return sh.getString("JWT", null)
 }
 
+fun extractDate(string: String): LocalDateTime {
+    return LocalDateTime.parse(string, DateTimeFormatter.RFC_1123_DATE_TIME)
+}
+
 /**
  * Testing
  * */
@@ -317,7 +322,7 @@ fun getJwtFromPreferences(context: Context): String? {
 fun main(args: Array<String>) {
     val password = "password1234"
 
-    login("Business", password) { token ->
+    login("User", password) { token ->
         if (token != null) {
             readProfile(token) { profile ->
                 println(profile?.username)
@@ -332,13 +337,13 @@ fun main(args: Array<String>) {
 //                }
 //            }
 
-            for (i in 1..5) {
+            for (i in 1..10) {
 
                 createEvent(
                     token,
-                    "'Business' Event $i",
-                    LocalDateTime.now(),
-                    LocalDateTime.now(),
+                    "User Event $i",
+                    LocalDateTime.now().plusHours(10),
+                    LocalDateTime.now().plusHours(10),
                     0.0,
                     0.0
                 ) {
@@ -369,7 +374,7 @@ fun main(args: Array<String>) {
 //    }
 
 
-//    createProfile("Erik2", password) {
+//    createProfile("User", password) {
 //        if (it != null) {
 //            readProfile(it, password) { profile ->
 //                println(profile?.username)
