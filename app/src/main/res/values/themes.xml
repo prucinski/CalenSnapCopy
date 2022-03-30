@@ -21,24 +21,23 @@
 
         <item name="textFillColor">@color/white</item>
 
-        <item name="bottomAppBarStyle">@style/Widget.App.BottomAppBar</item>
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
 
     </style>
 
-<!--    BottomAppBar's theme-->
-    <style name="Widget.App.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomAppBar</item>
+    <!--    BottomAppBar's theme-->
+    <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
     </style>
 
     <style name="Widget.App.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
     </style>
 
-    <style name="ThemeOverlay.App.BottomAppBar" parent="">
-        <item name="android:backgroundTint">@color/secondaryDarkColor</item>
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
         <item name="colorPrimary">@color/secondaryColor</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/primaryDarkColor</item>
     </style>
 
     <style name="ThemeOverlay.App.FloatingActionButton" parent="">

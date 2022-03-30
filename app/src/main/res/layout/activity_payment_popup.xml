@@ -48,7 +48,7 @@
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="#bc214b"
+                android:background="@drawable/button_shape"
                 android:minHeight="170dp">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -58,11 +58,10 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
                     android:gravity="center"
                     android:text="The button should appear below."
                     android:textAlignment="center"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/primaryColor"
                     android:textSize="12sp"
                     android:textStyle="bold"
 
@@ -74,7 +73,7 @@
                     android:id="@+id/popup_window_title"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:background="#9E1C40"
+                    android:background="@color/secondaryDarkColor"
                     android:gravity="center"
                     android:text="Buy premium"
                     android:textAlignment="center"

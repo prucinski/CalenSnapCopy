@@ -89,5 +89,7 @@
     <string name="contact_posted">Your message has been successfully delivered.</string>
 
     <string name="premium_button">Upgrade To Premium</string>
+    <string name="a_white_circle_with_a_check_mark_in_the_middle">A white circle with a check mark in the middle</string>
+    <string name="done">Done</string>
 
 </resources>
