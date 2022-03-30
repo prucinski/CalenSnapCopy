@@ -248,10 +248,8 @@ def get_events():
         cursor = connection.cursor()
 
         cursor.execute(
-            """ SELECT (id, title, event_time, username) FROM userevent WHERE username = %s; """, (username,))
+            """ SELECT id, title, event_time, username FROM userevent WHERE username = %s; """, (username,))
         events = cursor.fetchall()
-        app.logger.warn(events)
-        events = list(map(lambda e: e[0], events))
         return {'events': list(map(lambda e: {
             'id': e[0], 'title': e[1], 'event_time': e[2], 'username': e[3]
         }, events))}, 200
