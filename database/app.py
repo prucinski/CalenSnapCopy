@@ -88,7 +88,7 @@ def get_profile():
         cursor = connection.cursor()
 
         cursor.execute(
-            """ SELECT (username, remaining_free_uses, premium_user, business_user, duration_in_mins, mm_dd, darkmode) FROM profile WHERE username = %s; """, (username,))
+            """ SELECT username, remaining_free_uses, premium_user, business_user, duration_in_mins, mm_dd, darkmode FROM profile WHERE username = %s; """, (username,))
 
         profile = cursor.fetchone()
 
@@ -219,7 +219,7 @@ def delete_event(event_id: uuid.UUID):
 
         # Check if the user is authorized to delete the event.
         cursor.execute(
-            """ SELECT (username) FROM userevent WHERE id = %s; """, (event_id, ))
+            """ SELECT username FROM userevent WHERE id = %s; """, (event_id, ))
         (name_to_check, ) = cursor.fetchone()
         if (name_to_check != get_jwt_identity()):
             return {'success': False}, 403
@@ -272,7 +272,7 @@ def get_events_metadata():
 
         username = get_jwt_identity()
         cursor.execute(
-            """ SELECT (business_user) FROM profile WHERE username = %s; """, (username, ))
+            """ SELECT business_user FROM profile WHERE username = %s; """, (username, ))
         (business_user,) = cursor.fetchone()
         if not business_user:
             return {'success': False}, 403
@@ -282,7 +282,7 @@ def get_events_metadata():
 
         # Get all events
         cursor.execute(
-            """ SELECT (id, snap_time, snap_location) FROM event; """)
+            """ SELECT id, snap_time, snap_location FROM event; """)
         events = cursor.fetchall()
 
         # Convert points into JSON format and send them back.
