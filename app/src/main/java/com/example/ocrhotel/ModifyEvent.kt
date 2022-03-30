@@ -52,30 +52,18 @@ class ModifyEvent : Fragment() {
 
     private val adRequest = AdRequest.Builder().build()
     private var mInterstitialAd: InterstitialAd? = null
-    private val TAG = "Interstitial Ad"
+    private val debugTag = "Interstitial Ad"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-
         super.onCreate(savedInstanceState)
-        // Use the Kotlin extension in the fragment-ktx artifact
-//        setFragmentResultListener("eventData") { requestKey, bundle ->
-//
-//            // Receive both results, this is here to display the usage but can be definitely improved.
-//            val results = bundle.get("ocrResults") as ReadOperationResult
-//            val textResults = bundle.getString("ocrStringResults","")
-//            title = algo.extractTitleFromReadOperationResult(results)
-//            dates = algo.extractDates(textResults) as MutableList<Long>
-//            // Do something with the result
-//        }
-        
+        _binding = FragmentModifyEventBinding.inflate(inflater, container, false)
+
         //Interstitial Add code
         loadInterAd()
 
-        _binding = FragmentModifyEventBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -93,8 +81,28 @@ class ModifyEvent : Fragment() {
         //Applying the spinner
         val spinner: Spinner = binding.foundEventsSelector
         ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until numberOfEvents))
-            .also{adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter}
+            .also{adapter ->
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spinner.adapter = adapter
+            }
+
+
+        // Spinner choices. Called on view creation at index 0 (as we want it)
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                // An item was selected. You can retrieve the selected item using
+                Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
+                currentEvent = pos
+                binding.EventDate.text = eventsList[currentEvent].eventDate
+                binding.EventHour.text = eventsList[currentEvent].eventHour
+                binding.eventTitle.setText(eventsList[currentEvent].eventName)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                //Something will always be selected
+            }
+        }
 
         binding.EventDate.setOnClickListener{
             val currentDate = LocalDate.parse(binding.EventDate.text.toString(), dateFormatter)
@@ -132,44 +140,6 @@ class ModifyEvent : Fragment() {
         }
 
 
-        //button "Continue".
-        binding.continued.setOnClickListener {
-            activity?.let { activity ->
-                //request permission from user to access their calendars
-                ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
-                if(checkIfHasPermission()) {
-                    val eventCreator = EventCreator(eventsList, activity)
-                    //this is slightly wonky and has to be pressed twice - but it's a minor bug
-                    if (eventCreator.addEvent()) {
-                        (getActivity() as MainActivity?)?.scanCountSub() //removes a scan
-                        showInterAd()
-                        findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
-                    }
-                    else{
-                        Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()
-                    }
-                }
-                else{
-                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled.", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        //spinner choices. Called on view creation at index 0 (as we want it)
-        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-                // An item was selected. You can retrieve the selected item using
-                //Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
-                currentEvent = pos
-                binding.EventDate.text = eventsList[currentEvent].eventDate
-                binding.EventHour.text = eventsList[currentEvent].eventHour
-                binding.eventTitle.setText(eventsList[currentEvent].eventName)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                //Something will always be selected
-            }
-        }
 
         //Button "Submit".
         binding.submit.setOnClickListener {
@@ -186,11 +156,39 @@ class ModifyEvent : Fragment() {
             eventsList[currentEvent].eventDate = binding.EventDate.text.toString()
             eventsList[currentEvent].eventHour = binding.EventHour.text.toString()
 
-            //TODO: Automatically move user to next event. Fairly simple but left  it for now
+            // Automatically move user to next event. Fairly simple but left  it for now
+            spinner.setSelection(currentEvent+1)
+        }
+
+        //button "Continue".
+        binding.continued.setOnClickListener {
+            activity?.let { activity ->
+                //request permission from user to access their calendars
+                ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
+                if(checkIfHasPermission()) {
+                    val eventCreator = EventCreator(eventsList, activity)
+
+                    if (eventCreator.addEvent()) {
+                        (activity as MainActivity).scanCountSub() //removes a scan
+
+                        showInterAd()
+
+                        findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
+                    }
+                    else{
+                        Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()
+                    }
+                }
+                else{
+                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
     private fun checkIfHasPermission() :Boolean{
-        val result = context?.let { ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR) }
+        val result = context?.let {
+            ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR)
+        }
         Log.e("PERMISSION", "$result" )
         return result == PackageManager.PERMISSION_GRANTED
     }
@@ -202,10 +200,7 @@ class ModifyEvent : Fragment() {
     
    //Function for loading the interstitial ad 
    private fun loadInterAd(){
-       if((activity as MainActivity?)?.premiumAccount!!){
-           return
-       }
-        InterstitialAd.load(activity,getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
+        InterstitialAd.load(requireContext(),getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 mInterstitialAd = null
             }
@@ -216,24 +211,24 @@ class ModifyEvent : Fragment() {
         })
     }
     
-    //Function for showing the interstitial ad
+    // Displays the interstitial ad to the user.
     private fun showInterAd(){
         if (mInterstitialAd != null) {
             mInterstitialAd?.show(activity)
             mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
-                    Log.d(TAG, "Ad was dismissed.")
+                    Log.d(debugTag, "Ad was dismissed.")
                     mInterstitialAd = null
                     loadInterAd()
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-                    Log.d(TAG, "Ad failed to show.")
+                    Log.d(debugTag, "Ad failed to show.")
                     mInterstitialAd = null
                 }
 
                 override fun onAdShowedFullScreenContent() {
-                    Log.d(TAG, "Ad showed fullscreen content.")
+                    Log.d(debugTag, "Ad showed fullscreen content.")
                 }
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,10 +18,11 @@ import java.time.format.DateTimeFormatter
 @ExperimentalMaterialApi
 @Composable
 fun EventTile(
-   event : Event = Event()
+   event : Event = Event(),
+   onDelete : () -> Unit = {}
 ){
-    var expanded by remember { mutableStateOf(false) }
-    var delDialog by remember { mutableStateOf(false) }
+    var expandedMenu by rememberSaveable { mutableStateOf(false) }
+    var delDialog by rememberSaveable { mutableStateOf(false) }
     // Here we can also make it a gesture detector,
     // e.g. for deleting an event just by long pressing, etc.
     return Card(
@@ -40,7 +42,7 @@ fun EventTile(
                     Text(eventDate + " at " + event.eventHour)
                 },
                 trailing = {
-                    IconButton(onClick = { expanded = true }) {
+                    IconButton(onClick = { expandedMenu = true }) {
                         Icon(
                             Icons.Outlined.Settings,
                             contentDescription = "Reschedule event"
@@ -50,18 +52,18 @@ fun EventTile(
                     // TODO: Modify the values to lead to the respective menus
                     //  and delete etc.
                     DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
+                        expanded = expandedMenu,
+                        onDismissRequest = { expandedMenu = false },
                         modifier = Modifier
                             .background(Color.White)
                     ) {
                         DropdownMenuItem(onClick = {
-                            expanded = false
+                            expandedMenu = false
                         }) {
                             Text("Reschedule")
                         }
                         DropdownMenuItem(onClick = {
-                            expanded = false
+                            expandedMenu = false
                             delDialog = true
                         }) {
                             Text(
@@ -82,7 +84,12 @@ fun EventTile(
                 // },
                 confirmButton = {
                     Button(
-                        onClick = {delDialog = false},
+                        onClick = {
+                            // Call the delete function
+                            onDelete()
+
+                            delDialog = false
+                                  },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red,contentColor= Color.White)
                     ) {
                         Text("Yes")

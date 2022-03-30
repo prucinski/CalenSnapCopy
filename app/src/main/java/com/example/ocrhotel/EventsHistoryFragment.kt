@@ -5,19 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.ocrhotel.databinding.FragmentEventsHistoryBinding
 import com.example.ocrhotel.placeholder.PlaceholderContent
-import java.time.LocalDateTime
+import com.example.ocrhotel.ui.home.EventListModel
 
 
 /**
@@ -28,6 +31,8 @@ class EventsHistoryFragment : Fragment() {
     private var _binding: FragmentEventsHistoryBinding? = null
 
     private val binding get() = _binding!!
+
+    private val model: EventListModel by activityViewModels()
 
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -55,16 +60,25 @@ class EventsHistoryFragment : Fragment() {
         // }
 
         binding.composeView.apply{
+
+
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent{
+
+                val events by remember{
+                    mutableStateOf(model)
+                }
+
                 MaterialTheme{
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.padding(vertical= if(!act.premiumAccount) 55.dp else 0.dp)
                     ){
-                        items(historyItems){ item ->
-                            EventTile(item)
+                        items(items=events.getPastEvents()){event->
+                            EventTile(event){
+                                events.removeEvent(event)
+                            }
                         }
                     }
 
