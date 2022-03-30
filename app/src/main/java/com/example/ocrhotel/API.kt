@@ -1,10 +1,13 @@
 package com.example.ocrhotel
 
+import android.app.Activity
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import java.io.IOException
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -297,6 +300,15 @@ private fun <T> decodeCallback(
     }
 }
 
+fun getJwtFromPreferences(context: Context): String? {
+    val sh = context.getSharedPreferences(
+        context.getString(R.string.preferences_address),
+        AppCompatActivity.MODE_PRIVATE
+    )
+
+    return sh.getString("JWT", null)
+}
+
 /**
  * Testing
  * */
@@ -320,9 +332,19 @@ fun main(args: Array<String>) {
 //                }
 //            }
 
-//            createEvent(token, "TestEvent", LocalDateTime.now(), LocalDateTime.now(), 0.0, 0.0) {
-//                println("Event creation was successful: $it")
-//            }
+            for (i in 1..5) {
+
+                createEvent(
+                    token,
+                    "'Business' Event $i",
+                    LocalDateTime.now(),
+                    LocalDateTime.now(),
+                    0.0,
+                    0.0
+                ) {
+                    println("Event creation was successful: $it")
+                }
+            }
 //
 //            readUserEvents(token) {
 //                if (it != null) {
