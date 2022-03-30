@@ -45,12 +45,11 @@ class LoginFragment : Fragment() {
 
         login(username, password) { jwt ->
             if (jwt != null) {
-                Log.w("JWT SUCCESS: ", jwt)
                 activity?.runOnUiThread {
                     Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
 
 
-                    val sh = activity?.getSharedPreferences(
+                    val sh = requireActivity().getSharedPreferences(
                         getString(R.string.preferences_address),
                         AppCompatActivity.MODE_PRIVATE
                     )
@@ -59,12 +58,34 @@ class LoginFragment : Fragment() {
                         // Store JWT as a shared preference
                         val edit = sh.edit()
                         edit.putString("JWT", jwt)
+
+                        activity?.runOnUiThread {
+                            readProfile(jwt) { profile ->
+                                val sh = activity?.getSharedPreferences(
+                                    getString(R.string.preferences_address),
+                                    AppCompatActivity.MODE_PRIVATE
+                                )
+                                if (sh != null) {
+                                    val edit = sh.edit()
+                                    // Set shared preference info about premium status
+                                    if (profile != null && profile.business_user) {
+                                        edit.putBoolean("isPremiumUser", true)
+                                    } else {
+                                        edit.putBoolean("isPremiumUser", false)
+                                    }
+                                    edit.apply()
+                                    val a = (activity as MainActivity?)
+                                    Log.w("ACTIVITY MAIN", a.toString())
+                                    a?.resume()
+                                }
+                            }
+                        }
                         edit.apply()
                     }
-
+                    // Return to previous fragment
+                    activity?.supportFragmentManager?.popBackStack()
                 }
             } else {
-                Log.w("JWT FAILURE: ", jwt)
                 activity?.runOnUiThread {
                     Toast.makeText(
                         requireContext(),

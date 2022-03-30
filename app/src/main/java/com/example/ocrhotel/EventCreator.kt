@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.provider.CalendarContract.Events
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
@@ -14,7 +16,15 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
     //boolean as I use the success of the adding action as a means to move to next screen
     fun addEvent(): Boolean {
         //go through all the confirmed events and add them into the calendar
+        val jwt = getJwtFromPreferences(activity)
         for(events in eventArray) {
+
+            // Send events to API
+            if (jwt != null) {
+                createEvent(jwt, events.eventName, events.eventDateTime, LocalDateTime.now(), 0.0, 0.0) {
+                    Log.w("EVENT CREATED?", it.toString())
+                }
+            }
 
             //Extract start time in milliseconds (that is the format that is accepted by the calendar)
             val startMillis = events.eventDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()

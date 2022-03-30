@@ -7,12 +7,13 @@ import android.provider.CalendarContract
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.ocrhotel.databinding.ActivityMainBinding
+import com.example.ocrhotel.ui.home.EventListModel
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
@@ -30,58 +31,65 @@ class MainActivity : AppCompatActivity() {
     private var mRewardedAd: RewardedAd? = null
     private var logTag = "MainActivity"
 
-    //init to random values
+    // Initialize to arbitrary values
     var premiumAccount = false
     var businessAccount = false
     var scans = 1
 
-    override fun onResume(){
-        super.onResume()
-        //if user left the activity, they might have bought premium. Check if they did.
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-        premiumAccount = sh.getBoolean("isPremiumUser", false)
-        businessAccount = sh.getBoolean("isBusinessUser", false)
-        scans = sh.getInt("numberOfScans", 1)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    }
-
-    //TODO: MOVE THIS INTO SETTINGS?
-    //TODO: maybe keep a stub to choose a default calendar upon launch
-    fun getCalendarId() : Long? {
-        //via https://stackoverflow.com/questions/16242472/retrieve-the-default-calendar-id-in-android
-        val projection = arrayOf(CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
-        var calCursor = contentResolver.query(
-            CalendarContract.Calendars.CONTENT_URI,
-            projection,
-            CalendarContract.Calendars.VISIBLE + " = 1 AND " + CalendarContract.Calendars.IS_PRIMARY + "=1",
-            null,
-            CalendarContract.Calendars._ID + " ASC"
-        )
-        if (calCursor != null && calCursor.count <= 0) {
-            calCursor = contentResolver.query(
-                CalendarContract.Calendars.CONTENT_URI,
-                projection,
-                CalendarContract.Calendars.VISIBLE + " = 1",
-                null,
-                CalendarContract.Calendars._ID + " ASC"
-            )
+        // First check if the necessary permissions have been granted.
+        // The below function also initializes sharedPrefs.
+        checkPermissions(listOf(Manifest.permission.READ_CALENDAR,
+            Manifest.permission.WRITE_CALENDAR,Manifest.permission.ACCESS_FINE_LOCATION),
+            "We will need access to your calendar in order to add the events you have scanned." +
+                    "\n\nWe also require permission to use your location in order to locate your picture " +
+                    "in accordance with our Terms and Conditions."){
+            setupSharedPrefs()
         }
-        if (calCursor != null) {
-            if (calCursor.moveToFirst()) {
-                val calName: String
-                val calID: String
-                val nameCol = calCursor.getColumnIndex(projection[1])
-                val idCol = calCursor.getColumnIndex(projection[0])
-                calName = calCursor.getString(nameCol)
-                calID = calCursor.getString(idCol)
-                Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
-                val helloTutorial = Toast.makeText(applicationContext, "Event is created at this calendar: $calName", Toast.LENGTH_SHORT)
-                helloTutorial.show()
-                calCursor.close()
-                return calID.toLong()
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Retrieve values that we want.
+        retrieveAppSettings()
+
+        if(!premiumAccount){
+            //Code for ads
+            MobileAds.initialize(this) {}
+
+            //Banner ad
+            val mAdView = findViewById<AdView>(R.id.adView)
+            mAdView.loadAd(adRequest)
+
+            //Load reward ad
+            loadRewardedAd()
+        }
+
+        setupNavigation()
+
+        getJwtFromPreferences(this)?.let{jwt->
+            readUserEvents(jwt) { userEvents ->
+                val events = mutableListOf<Event>()
+
+                if (userEvents != null) {
+                    for (event in userEvents.events) {
+                        events.add(Event(event.title, extractDate(event.event_time)))
+                    }
+                } else {
+                    navController.navigate(R.id.loginFragment)
+                }
+                this.viewModels<EventListModel>().value.eventsList = events
             }
-        }
-        return null
+            readProfile(jwt) { profile ->
+                if (profile != null) {
+                    // Update profile
+                }
+
+            }
+        } ?: navController.navigate(R.id.loginFragment)
+
     }
 
     private fun setupSharedPrefs(){
@@ -107,12 +115,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermissions(permission: String, explanation: String, whenPermissionGranted: ()->Unit){
+    private fun checkPermissions(permissions: List<String>, explanation: String, whenPermissionGranted: ()->Unit){
+
         val requestPermissionLauncher =
             registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
+                ActivityResultContracts.RequestMultiplePermissions()
+            ) {results->
+                if (results.all{(_,permission)->permission}) {
                     // Permission is granted. Set the shared preferences up.
                     whenPermissionGranted()
                 } else {
@@ -120,8 +129,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        if (ContextCompat.checkSelfPermission(this,permission)
-            == PackageManager.PERMISSION_GRANTED
+
+        if (permissions.all{
+                checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED}
         ) {
             // You can use the API that requires the permission.
             whenPermissionGranted()
@@ -134,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                 .setTitle("Requesting permissions")
                 .setMessage(explanation)
                 .setPositiveButton("I understand"){_,_->
-                    requestPermissionLauncher.launch(permission)
+                    requestPermissionLauncher.launch(permissions.toTypedArray())
                 }
                 .setNegativeButton("I disagree"){_,_->
                     // this.finish()
@@ -142,56 +152,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // First check if the necessary permissions have been granted.
-        // The below function also initializes sharedPrefs.
-        checkPermissions(Manifest.permission.READ_CALENDAR ,
-            "We will need access to your calendar in order to add the events you have scanned."){setupSharedPrefs()}
-
-        checkPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
-        "Your location will only be used for finding the location of the photos you take."){}
-
-        // Retrieve values that we want.
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-        premiumAccount = sh.getBoolean("isPremiumUser", false)
-        scans = sh.getInt("numberOfScans", 1)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-
-        setContentView(binding.root)
-
+    private fun setupNavigation() {
         // Initialize the navigation host
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
         navController = navHostFragment.navController
 
         // Initialize the bottom navigation
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
 
-        if(!premiumAccount){
-            //Code for ads
-            MobileAds.initialize(this) {}
-
-            //Banner ad
-            val mAdView = findViewById<AdView>(R.id.adView)
-            mAdView.loadAd(adRequest)
-
-            //Load reward ad
-            loadRewardedAd()
-        }
-
         binding.fab.setOnClickListener {
             // Go to scanning
 
-            if(!premiumAccount)
-                if(scans > 0) {
+            if (!premiumAccount)
+                if (scans > 0) {
                     binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
                     navController.navigate(R.id.SecondFragment)
-                }
-                else{
-                  noScanDialog()
+                } else {
+                    noScanDialog()
                 }
             else {
                 binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
@@ -201,12 +180,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.bottomNavigation.setOnItemSelectedListener {
-            when(it.itemId){
+            when (it.itemId) {
                 // Go to home
                 R.id.navigation_home -> navController.navigate(R.id.home)
 
                 // Go to tutorial / help page
-                R.id.navigation_help -> Toast.makeText(peekAvailableContext(), "This will lead to a tutorial!", Toast.LENGTH_SHORT).show()
+                R.id.navigation_help -> Toast.makeText(
+                    peekAvailableContext(),
+                    "This will lead to a tutorial!",
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 // Go to the history page
                 R.id.navigation_history -> navController.navigate(R.id.eventsHistoryFragment)
@@ -217,8 +200,14 @@ class MainActivity : AppCompatActivity() {
             }
             return@setOnItemSelectedListener true
         }
-
     }
+
+    private fun retrieveAppSettings() {
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        premiumAccount = sh.getBoolean("isPremiumUser", false)
+        scans = sh.getInt("numberOfScans", 1)
+    }
+
     private fun updateScanNumber(){
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         val myEdit = sh.edit()
@@ -299,9 +288,56 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onResume(){
+        super.onResume()
+        resume()
     }
 
+    fun resume() {
+        //if user left the activity, they might have bought premium. Check if they did.
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        premiumAccount = sh.getBoolean("isPremiumUser", false)
+        businessAccount = sh.getBoolean("isBusinessUser", false)
+        scans = sh.getInt("numberOfScans", 1)
+    }
+
+    //TODO: MOVE THIS INTO SETTINGS?
+    //TODO: maybe keep a stub to choose a default calendar upon launch
+    fun getCalendarId() : Long? {
+        //via https://stackoverflow.com/questions/16242472/retrieve-the-default-calendar-id-in-android
+        val projection = arrayOf(CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
+        var calCursor = contentResolver.query(
+            CalendarContract.Calendars.CONTENT_URI,
+            projection,
+            CalendarContract.Calendars.VISIBLE + " = 1 AND " + CalendarContract.Calendars.IS_PRIMARY + "=1",
+            null,
+            CalendarContract.Calendars._ID + " ASC"
+        )
+        if (calCursor != null && calCursor.count <= 0) {
+            calCursor = contentResolver.query(
+                CalendarContract.Calendars.CONTENT_URI,
+                projection,
+                CalendarContract.Calendars.VISIBLE + " = 1",
+                null,
+                CalendarContract.Calendars._ID + " ASC"
+            )
+        }
+        if (calCursor != null) {
+            if (calCursor.moveToFirst()) {
+                val calName: String
+                val calID: String
+                val nameCol = calCursor.getColumnIndex(projection[1])
+                val idCol = calCursor.getColumnIndex(projection[0])
+                calName = calCursor.getString(nameCol)
+                calID = calCursor.getString(idCol)
+                Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
+                val helloTutorial = Toast.makeText(applicationContext, "Event is created at this calendar: $calName", Toast.LENGTH_SHORT)
+                helloTutorial.show()
+                calCursor.close()
+                return calID.toLong()
+            }
+        }
+        return null
+    }
 
 }

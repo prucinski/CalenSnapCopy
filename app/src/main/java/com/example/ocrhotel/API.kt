@@ -1,14 +1,18 @@
 package com.example.ocrhotel
 
+import android.app.Activity
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import java.io.IOException
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -87,7 +91,7 @@ open class APIValue {
 }
 
 class APIProfile : APIValue() {
-    val username: String = ""
+    val username: String = "Not Logged In"
     val remaining_free_uses: Int = 0
     val premium_user: Boolean = false
     val business_user: Boolean = false
@@ -297,6 +301,19 @@ private fun <T> decodeCallback(
     }
 }
 
+fun getJwtFromPreferences(context: Context): String? {
+    val sh = context.getSharedPreferences(
+        context.getString(R.string.preferences_address),
+        AppCompatActivity.MODE_PRIVATE
+    )
+
+    return sh.getString("JWT", null)
+}
+
+fun extractDate(string: String): LocalDateTime {
+    return LocalDateTime.parse(string, DateTimeFormatter.RFC_1123_DATE_TIME)
+}
+
 /**
  * Testing
  * */
@@ -305,7 +322,7 @@ private fun <T> decodeCallback(
 fun main(args: Array<String>) {
     val password = "password1234"
 
-    login("Business", password) { token ->
+    login("User", password) { token ->
         if (token != null) {
             readProfile(token) { profile ->
                 println(profile?.username)
@@ -320,9 +337,19 @@ fun main(args: Array<String>) {
 //                }
 //            }
 
-//            createEvent(token, "TestEvent", LocalDateTime.now(), LocalDateTime.now(), 0.0, 0.0) {
-//                println("Event creation was successful: $it")
-//            }
+            for (i in 1..10) {
+
+                createEvent(
+                    token,
+                    "User Event $i",
+                    LocalDateTime.now().plusHours(10),
+                    LocalDateTime.now().plusHours(10),
+                    0.0,
+                    0.0
+                ) {
+                    println("Event creation was successful: $it")
+                }
+            }
 //
 //            readUserEvents(token) {
 //                if (it != null) {
@@ -347,7 +374,7 @@ fun main(args: Array<String>) {
 //    }
 
 
-//    createProfile("Erik2", password) {
+//    createProfile("User", password) {
 //        if (it != null) {
 //            readProfile(it, password) { profile ->
 //                println(profile?.username)
