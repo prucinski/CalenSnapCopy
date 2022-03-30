@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -24,6 +26,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.ocrhotel.EventTile
 import com.example.ocrhotel.MainActivity
+import androidx.navigation.fragment.NavHostFragment
+import com.example.ocrhotel.*
 import com.example.ocrhotel.R
 import com.example.ocrhotel.databinding.FragmentHomeBinding
 
@@ -50,35 +54,38 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val composeView = binding.composeHome
         premium = (activity as MainActivity).premiumAccount
 
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        composeView.apply{
 
-        composeView.setContent {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            val events by remember{
-                mutableStateOf(model)
-            }
+            setContent{
+                val events by remember{
+                    mutableStateOf(model)
+                }
 
-            MaterialTheme{
-                Scaffold(
-                    modifier=Modifier.padding(vertical= if(!premium) 55.dp else 0.dp),
-                    topBar = { CustomTopAppBar()  }
-                ){contentPadding ->
+                MaterialTheme {
+                    Scaffold(
+                        modifier = Modifier.padding(vertical = if (!premium) 55.dp else 0.dp),
+                        topBar = { CustomTopAppBar() }
+                    ) { contentPadding ->
 
-                    Box(
-                        modifier=  Modifier.padding(contentPadding)
-                    ){
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ){
-                            items(items=events.getFutureEvents()){event->
-                                EventTile(event){
-                                    events.removeEvent(event)
+                        Box(
+                            modifier = Modifier.padding(contentPadding)
+                        ) {
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                items(items = events.getFutureEvents()) { event ->
+                                    EventTile(event) {
+                                        events.removeEvent(event)
 
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
             }
         }
 
@@ -92,8 +99,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
 }
 
-@Composable
 @Preview
+@Composable
 fun CustomTopAppBar(
     name: String = "John Smith",
     premium : Boolean = false,
@@ -114,36 +121,6 @@ fun CustomTopAppBar(
             ) {
                 Icon(icon,contentDescription = null)
             }
-
-
-        },
-        // title={
-        //     Column{
-        //         Text(name)
-        //         Row(verticalAlignment = Alignment.CenterVertically){
-        //             if(premium) {
-        //                 Icon(Icons.Filled.Star,contentDescription = null,
-        //                     modifier=Modifier.size(10.dp)
-        //                 )
-        //                 Text(
-        //                     "Premium user",
-        //                     fontSize= TextUnit(2.3f, TextUnitType.Em),
-        //                     modifier = Modifier.padding(start=5.dp)
-        //                 )
-        //             }
-        //             else{
-        //                 Icon(Icons.TwoTone.Star,contentDescription = null,
-        //                 modifier=Modifier.size(10.dp)
-        //                 )
-        //                 Text(
-        //                     "Basic user",
-        //                     fontSize= TextUnit(2.3f, TextUnitType.Em),
-        //                     modifier = Modifier.padding(start=5.dp)
-        //                 )
-        //             }
-        //
-        //         }
-        //     }
-        // },
+        }
     )
 }

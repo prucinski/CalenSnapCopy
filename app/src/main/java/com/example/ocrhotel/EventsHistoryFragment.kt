@@ -18,8 +18,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.NavHostFragment
 import com.example.ocrhotel.databinding.FragmentEventsHistoryBinding
-import com.example.ocrhotel.placeholder.PlaceholderContent
 import com.example.ocrhotel.ui.home.EventListModel
 
 
@@ -35,33 +35,16 @@ class EventsHistoryFragment : Fragment() {
     private val model: EventListModel by activityViewModels()
 
     @OptIn(ExperimentalMaterialApi::class)
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        _binding = FragmentEventsHistoryBinding.inflate(inflater,container,false)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentEventsHistoryBinding.inflate(inflater, container, false)
         val view = binding.root
 
         val act = activity as MainActivity
-        val historyItems = PlaceholderContent.ITEMS
-//        var userEvents = readUserEvents( /*jwt */)
-//
-//        val historyItems: MutableList<Event> = arrayListOf()
-//        for (event of userEvents)
-//        {
-//            historyItems.add(Event(userEvents[i][1], userEvents[i][2]))
-//        }
-
-
-
-
-        // TODO: You can do something like this to filter events.
-        // val now = LocalDateTime.now()
-        // historyItems.filter{
-        //     it.eventDateTime.isBefore(now)
-        // }
 
         binding.composeView.apply{
-
-
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent{
@@ -83,9 +66,7 @@ class EventsHistoryFragment : Fragment() {
                     }
 
                 }
-
             }
-
         }
         return view
     }
