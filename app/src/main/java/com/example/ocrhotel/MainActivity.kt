@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
 
         // First check if the necessary permissions have been granted.
         // The below function also initializes sharedPrefs.
-        checkPermissions(Manifest.permission.READ_CALENDAR,
+        checkPermissions(Manifest.permission.READ_CALENDAR ,
             "Access to your calendar will be used for adding only those events you scan."){setupSharedPrefs()}
 
         checkPermissions(Manifest.permission.ACCESS_FINE_LOCATION,

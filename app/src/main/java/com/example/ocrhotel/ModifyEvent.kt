@@ -164,11 +164,12 @@ class ModifyEvent : Fragment() {
         binding.continued.setOnClickListener {
             activity?.let { activity ->
                 //request permission from user to access their calendars
+                ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
                 if(checkIfHasPermission()) {
                     val eventCreator = EventCreator(eventsList, activity)
 
                     if (eventCreator.addEvent()) {
-                        (activity as MainActivity?)?.scanCountSub() //removes a scan
+                        (activity as MainActivity).scanCountSub() //removes a scan
 
                         showInterAd()
 
@@ -185,7 +186,9 @@ class ModifyEvent : Fragment() {
         }
     }
     private fun checkIfHasPermission() :Boolean{
-        val result = context?.let { ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR) }
+        val result = context?.let {
+            ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR)
+        }
         Log.e("PERMISSION", "$result" )
         return result == PackageManager.PERMISSION_GRANTED
     }
