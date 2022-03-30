@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -17,10 +16,8 @@ import com.example.ocrhotel.databinding.ActivityMainBinding
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,7 +32,18 @@ class MainActivity : AppCompatActivity() {
 
     //init to random values
     var premiumAccount = false
+    var businessAccount = false
     var scans = 1
+
+    override fun onResume(){
+        super.onResume()
+        //if user left the activity, they might have bought premium. Check if they did.
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        premiumAccount = sh.getBoolean("isPremiumUser", false)
+        businessAccount = sh.getBoolean("isBusinessUser", false)
+        scans = sh.getInt("numberOfScans", 1)
+
+    }
 
     //TODO: MOVE THIS INTO SETTINGS?
     //TODO: maybe keep a stub to choose a default calendar upon launch
@@ -90,6 +98,8 @@ class MainActivity : AppCompatActivity() {
             // VALUES INITIALIZED DURING LAUNCH.
             myEdit.putBoolean("isPremiumUser", false)
             myEdit.putInt("numberOfScans", 1)
+            //TODO: GET RID OF THIS PLACEHOLDER.
+            myEdit.putBoolean("isBusinessUser", true)
 
             myEdit.putString("calendarID", getCalendarId()!!.toString())
 
@@ -152,8 +162,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-
-
         // Initialize the navigation host
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
         navController = navHostFragment.navController
@@ -161,22 +169,6 @@ class MainActivity : AppCompatActivity() {
         // Initialize the bottom navigation
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
-
-        //removes the navigation bar, fab from the successful scan
-        val bottomBar = findViewById<BottomAppBar>(R.id.bottom_bar)
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if(destination.id == R.id.successfulScan) {
-               bottomBar.visibility = View.GONE
-               fab.visibility = View.GONE
-               bottomNavigationView.visibility = View.GONE
-            } else {
-                bottomBar.visibility = View.VISIBLE
-                fab.visibility = View.VISIBLE
-                bottomNavigationView.visibility = View.VISIBLE
-            }
-        }
 
         if(!premiumAccount){
             //Code for ads
@@ -238,11 +230,13 @@ class MainActivity : AppCompatActivity() {
     fun scanCountSub() {
         if(!premiumAccount){
             scans--
+            updateScanNumber()
         }
 
     }
     private fun scanCountAdd() {
         scans += 3
+        updateScanNumber()
     }
 
     // Dialog for when there is no leftover scans
@@ -262,6 +256,9 @@ class MainActivity : AppCompatActivity() {
 
     // Function for loading the reward ad
     private fun loadRewardedAd() {
+        if(premiumAccount){
+            return
+        }
         RewardedAd.load(this,getString(R.string.ad_id_reward), adRequest, object : RewardedAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 Log.d(logTag, adError?.message)
@@ -304,7 +301,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        updateScanNumber()
     }
 
 

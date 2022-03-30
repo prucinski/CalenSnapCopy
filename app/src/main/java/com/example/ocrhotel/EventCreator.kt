@@ -23,7 +23,7 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
             val endMillis = events.eventDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() + events.duration*60*60*1000
 
             //retrieve the calendar ID from shared preferences.
-            val sh = activity?.getSharedPreferences("com.example.ocrhotel_preferences.xml", Context.MODE_PRIVATE)
+            val sh = activity?.getSharedPreferences("com.example.ocrhotel_preferences", Context.MODE_PRIVATE)
             val calIDstr = sh.getString("calendarID", "-1")
             var calID = calIDstr!!.toLong()
             //Calendar not found in shared prefs, try again. To get to this screen, permissions must have been granted.

@@ -22,29 +22,34 @@
                 android:targetClass="com.example.ocrhotel.payment.PaymentPopup"/>
         </Preference>
         <Preference
-            app:key="login"
-            app:title="Login"
-            app:summary="Don't click me">
+            app:key="business"
+            app:title="Buy business access"
+            app:summary="See where to put your posters for highest engagement">
             <intent
                 android:targetPackage="com.example.ocrhotel"
-                android:targetClass="Navigation to a fragment from an intent?"/>
+                android:targetClass="com.example.ocrhotel.payment.PaymentPopup"/>
+        </Preference>
+        <Preference
+            app:key="login"
+            app:title="Login"
+            app:summary="Log in to your account."
+            app:fragment = "com.example.ocrhotel.LoginFragment"
+            app:destination="@+id/LoginFragment">
         </Preference>
 
 
         <Preference
             app:key="feedback"
             app:title="Send feedback"
-            app:summary="Report technical issues or suggest new features"/>
+            app:summary="Report technical issues or suggest new features"
+            app:fragment = "com.example.ocrhotel.ContactUsFragment"
+            app:destination="@+id/ContactUsFragment">
+        </Preference>
 
-
-
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/privacy_title"
-            app:useSimpleSummaryProvider="true" />
+        <Preference
+            app:key="terms"
+            app:title="Terms and Conditions">
+        </Preference>
 
 
     </PreferenceCategory>
