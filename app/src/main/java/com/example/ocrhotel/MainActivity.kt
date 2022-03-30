@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                     // Permission is granted. Set the shared preferences up.
                     whenPermissionGranted()
                 } else {
-                    this.finish()
+                    // this.finish()
                 }
             }
 
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                     requestPermissionLauncher.launch(permission)
                 }
                 .setNegativeButton("I disagree"){_,_->
-                    this.finish()
+                    // this.finish()
                 }.show()
         }
     }
@@ -148,7 +148,7 @@ class MainActivity : AppCompatActivity() {
         // First check if the necessary permissions have been granted.
         // The below function also initializes sharedPrefs.
         checkPermissions(Manifest.permission.READ_CALENDAR ,
-            "Access to your calendar will be used for adding only those events you scan."){setupSharedPrefs()}
+            "We will need access to your calendar in order to add the events you have scanned."){setupSharedPrefs()}
 
         checkPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
         "Your location will only be used for finding the location of the photos you take."){}
@@ -302,8 +302,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
     }
-
-
 
 
 }
