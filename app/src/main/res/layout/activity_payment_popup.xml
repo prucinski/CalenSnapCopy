@@ -22,6 +22,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
 
+        app:cardBackgroundColor="#00FFFFFF"
         app:cardCornerRadius="3dp"
         app:cardElevation="0dp"
         app:cardMaxElevation="0dp"
