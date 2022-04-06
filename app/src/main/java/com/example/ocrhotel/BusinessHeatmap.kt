@@ -16,6 +16,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlayOptions
+import com.google.maps.android.heatmaps.HeatmapTileProvider
 import org.json.JSONArray
 import org.json.JSONException
 import java.util.*
@@ -58,7 +59,7 @@ class BusinessHeatmap : Fragment() {
 
         // Get the data: latitude/longitude positions of police stations.
         try {
-            latLngs = readItems(R.)
+            latLngs = readItems(R.raw.police_stations)
         } catch (e: JSONException) {
             Toast.makeText(context, "Problem reading list of locations.", Toast.LENGTH_LONG)
                 .show()
