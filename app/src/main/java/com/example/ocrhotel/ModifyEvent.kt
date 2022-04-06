@@ -43,9 +43,10 @@ class ModifyEvent : Fragment() {
     private var numberOfEvents = 0
 
     // Custom date format that we may use while displaying the date to clients.
-    private val dateFormatter : DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-uuuu")
+    private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-uuuu")
 
     private var _binding: FragmentModifyEventBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -80,15 +81,19 @@ class ModifyEvent : Fragment() {
 
         //Applying the spinner
         val spinner: Spinner = binding.foundEventsSelector
-        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until numberOfEvents))
-            .also{adapter ->
+        ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            fillEvents.slice(0 until numberOfEvents)
+        )
+            .also { adapter ->
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
             }
 
 
         // Spinner choices. Called on view creation at index 0 (as we want it)
-        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
                 // An item was selected. You can retrieve the selected item using
@@ -104,25 +109,27 @@ class ModifyEvent : Fragment() {
             }
         }
 
-        binding.EventDate.setOnClickListener{
+        binding.EventDate.setOnClickListener {
             val currentDate = LocalDate.parse(binding.EventDate.text.toString(), dateFormatter)
             val datePicker =
                 MaterialDatePicker.Builder.datePicker()
                     .setTitleText("Select date")
-                    .setSelection(currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000)
+                    .setSelection(currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC) * 1000)
                     .build()
 
-            datePicker.show(parentFragmentManager,"DATE")
+            datePicker.show(parentFragmentManager, "DATE")
 
             datePicker.addOnPositiveButtonClickListener {
                 binding.EventDate.text = LocalDateTime.ofEpochSecond(
-                    datePicker.selection!!/1000,0, ZoneOffset.UTC)
+                    datePicker.selection!! / 1000, 0, ZoneOffset.UTC
+                )
                     .format(dateFormatter)
             }
         }
 
         binding.EventHour.setOnClickListener {
-            val clockFormat = if (is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+            val clockFormat =
+                if (is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
             val currentTime = LocalTime.parse(binding.EventHour.text.toString())
             val timePicker = MaterialTimePicker.Builder()
                 .setTimeFormat(clockFormat)
@@ -131,14 +138,13 @@ class ModifyEvent : Fragment() {
                 .setTitleText("Select time")
                 .build()
 
-            timePicker.show(parentFragmentManager,"TIME")
+            timePicker.show(parentFragmentManager, "TIME")
 
-            timePicker.addOnPositiveButtonClickListener{
-                binding.EventHour.text = LocalTime.of(timePicker.hour,timePicker.minute)
+            timePicker.addOnPositiveButtonClickListener {
+                binding.EventHour.text = LocalTime.of(timePicker.hour, timePicker.minute)
                     .toString()
             }
         }
-
 
 
         //Button "Submit".
@@ -149,7 +155,8 @@ class ModifyEvent : Fragment() {
             val date: LocalDate = LocalDate.parse(binding.EventDate.text, dateFormatter)
             val time: LocalTime = LocalTime.parse(binding.EventHour.text.toString())
             eventsList[currentEvent].eventDateTime = LocalDateTime.of(
-                date.year, date.monthValue, date.dayOfMonth, time.hour, time.minute)
+                date.year, date.monthValue, date.dayOfMonth, time.hour, time.minute
+            )
 
             // I'm not sure if the next two lines are necessary, but I think they are since
             // the object has already been constructed.
@@ -157,15 +164,19 @@ class ModifyEvent : Fragment() {
             eventsList[currentEvent].eventHour = binding.EventHour.text.toString()
 
             // Automatically move user to next event. Fairly simple but left  it for now
-            spinner.setSelection(currentEvent+1)
+            spinner.setSelection(currentEvent + 1)
         }
 
         //button "Continue".
         binding.continued.setOnClickListener {
             activity?.let { activity ->
                 //request permission from user to access their calendars
-                ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
-                if(checkIfHasPermission()) {
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR),
+                    1
+                )
+                if (checkIfHasPermission()) {
                     val eventCreator = EventCreator(eventsList, activity)
 
                     if (eventCreator.addEvent()) {
@@ -174,22 +185,29 @@ class ModifyEvent : Fragment() {
                         showInterAd()
 
                         findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Something went horribly wrong with adding the event. Please restart the app.",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
-                    else{
-                        Toast.makeText(context, "Something went horribly wrong with adding the event. Please restart the app.", Toast.LENGTH_LONG).show()
-                    }
-                }
-                else{
-                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Sorry, you don't have permissions for your calendar enabled.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
     }
-    private fun checkIfHasPermission() :Boolean{
+
+    private fun checkIfHasPermission(): Boolean {
         val result = context?.let {
             ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR)
         }
-        Log.e("PERMISSION", "$result" )
+        Log.e("PERMISSION", "$result")
         return result == PackageManager.PERMISSION_GRANTED
     }
 
@@ -197,22 +215,26 @@ class ModifyEvent : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    
-   //Function for loading the interstitial ad 
-   private fun loadInterAd(){
-        InterstitialAd.load(requireContext(),getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                mInterstitialAd = null
-            }
 
-            override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                mInterstitialAd = interstitialAd
-            }
-        })
+    //Function for loading the interstitial ad
+    private fun loadInterAd() {
+        InterstitialAd.load(
+            requireContext(),
+            getString(R.string.ad_id_interstitial),
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    mInterstitialAd = interstitialAd
+                }
+            })
     }
-    
+
     // Displays the interstitial ad to the user.
-    private fun showInterAd(){
+    private fun showInterAd() {
         if (mInterstitialAd != null) {
             mInterstitialAd?.show(activity)
             mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -232,5 +254,5 @@ class ModifyEvent : Fragment() {
                 }
             }
         }
-    } 
+    }
 }

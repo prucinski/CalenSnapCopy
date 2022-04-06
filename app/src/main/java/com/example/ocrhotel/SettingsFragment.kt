@@ -7,11 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.*
 
 
-
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         //different settings can be setup at root_preferences.
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
@@ -20,13 +20,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         checkAndUpdate()
     }
 
+
     //TODO: have it not be called every time. Add a preference button "Update calendar list"?
 
-    private fun populateCalendarList(){
+    private fun populateCalendarList() {
         //these have to be strings sadly
         val size = 10
-        var calendarNames = Array<String?>(size){"null"}
-        var calendarIDs =Array<String?>(size){"null"}
+        var calendarNames = Array<String?>(size) { "null" }
+        var calendarIDs = Array<String?>(size) { "null" }
 
         // Projection array. Creating indices for this array instead of doing
         // dynamic lookups improves performance.
@@ -57,36 +58,43 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         calendarNames = calendarNames.copyOf(counter)
         calendarIDs = calendarIDs.copyOf(counter)
-        val calendarListPreference : ListPreference? = findPreference("calendarID")
+        val calendarListPreference: ListPreference? = findPreference("calendarID")
         calendarListPreference!!.entries = calendarNames
         calendarListPreference.entryValues = calendarIDs
 
 
         cur.close()
     }
-    override fun onResume(){
+
+    override fun onResume() {
         super.onResume()
         checkAndUpdate()
-
     }
     //then, upon clicking the list and choosing a value, a sharedPreference "calendarID" will get
     //updated with the desired calendar ID.
 
-    private fun checkAndUpdate(){
-        val premiumPreference : Preference? = findPreference("premium")
-        val businessPreference : Preference? = findPreference("business")
-        val sh = activity?.getSharedPreferences(getString(R.string.preferences_address),
-            AppCompatActivity.MODE_PRIVATE)
+    private fun checkAndUpdate() {
+        val premiumPreference: Preference? = findPreference("premium")
+        val businessPreference: Preference? = findPreference("business")
+        val loginPreference: Preference? = findPreference("login")
+        val sh = activity?.getSharedPreferences(
+            getString(R.string.preferences_address),
+            AppCompatActivity.MODE_PRIVATE
+        )
+
+        val isLoggedIn = sh!!.getString("JWT", "")!!.isNotEmpty()
+
 
         val prem = sh!!.getBoolean("isPremiumUser", false)
         val bus = sh!!.getBoolean("isBusinessUser", false)
-        if(prem){
+        if (prem) {
             premiumPreference!!.title = "You are a Premium user"
             //TODO: build a string
             premiumPreference!!.summary = "Your subscription expires on xxx"
             premiumPreference.isSelectable = false
         }
-        if(bus){
+            
+        if (bus) {
             businessPreference!!.title = "Business features"
             businessPreference!!.summary = "Press to inspect"
         }

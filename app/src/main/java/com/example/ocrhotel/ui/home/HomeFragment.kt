@@ -54,15 +54,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val composeView = binding.composeHome
         premium = (activity as MainActivity).premiumAccount
 
-        composeView.apply{
-
+        composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            setContent{
-                val events by remember{
+            setContent {
+                val events by remember {
                     mutableStateOf(model)
                 }
 
+                val futureEvents = events.getFutureEvents()
                 MaterialTheme {
                     Scaffold(
                         modifier = Modifier.padding(vertical = if (!premium) 55.dp else 0.dp),
@@ -72,16 +72,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         Box(
                             modifier = Modifier.padding(contentPadding)
                         ) {
-                            LazyColumn(
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                items(items = events.getFutureEvents()) { event ->
-                                    EventTile(event) {
-                                        events.removeEvent(event)
+                            if (futureEvents.isEmpty()) Box (Modifier.padding(5.dp)) { Text("You have no future events yet.") }
+                            else
+                                LazyColumn(
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    items(items = futureEvents) { event ->
+                                        EventTile(event) {
+                                            events.removeEvent(event)
 
+                                        }
                                     }
                                 }
-                            }
                         }
                     }
                 }
@@ -103,10 +105,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 @Composable
 fun CustomTopAppBar(
     name: String = "John Smith",
-    premium : Boolean = false,
+    premium: Boolean = false,
     icon: ImageVector = Icons.Rounded.Person,
-){
-    var expanded by rememberSaveable {mutableStateOf(false)}
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
 
     TopAppBar(
         title = {
@@ -119,7 +121,7 @@ fun CustomTopAppBar(
 
                 }
             ) {
-                Icon(icon,contentDescription = null)
+                Icon(icon, contentDescription = null)
             }
         }
     )

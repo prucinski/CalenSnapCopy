@@ -23,16 +23,15 @@ class LoginFragment : Fragment() {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
         binding.loginButton.setOnClickListener {
-            Log.w("BUTTON", "pressed")
             onLoginButtonPressed()
         }
-
         return binding.root
     }
 
     private fun onLoginButtonPressed() {
-        val username = binding.usernameInput.text.toString()
-        val password = binding.passwordInput.text.toString()
+        // There should be no whitespace in passwords and usernames, hence, use trim().
+        val username = binding.usernameInput.text.toString().trim()
+        val password = binding.passwordInput.text.toString().trim()
 
         if (username.isBlank() || password.isBlank()) {
             Toast.makeText(
@@ -45,9 +44,9 @@ class LoginFragment : Fragment() {
 
         login(username, password) { jwt ->
             if (jwt != null) {
-                activity?.runOnUiThread {
+                // Login was successful
+                requireActivity().runOnUiThread {
                     Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-
 
                     val sh = requireActivity().getSharedPreferences(
                         getString(R.string.preferences_address),
@@ -59,31 +58,33 @@ class LoginFragment : Fragment() {
                         val edit = sh.edit()
                         edit.putString("JWT", jwt)
 
-                        activity?.runOnUiThread {
+                        requireActivity().runOnUiThread {
                             readProfile(jwt) { profile ->
-                                val sh = activity?.getSharedPreferences(
+                                val sh = requireActivity().getSharedPreferences(
                                     getString(R.string.preferences_address),
                                     AppCompatActivity.MODE_PRIVATE
                                 )
                                 if (sh != null) {
                                     val edit = sh.edit()
                                     // Set shared preference info about premium status
-                                    if (profile != null && profile.business_user) {
-                                        edit.putBoolean("isPremiumUser", true)
-                                    } else {
-                                        edit.putBoolean("isPremiumUser", false)
-                                    }
+                                    edit.putBoolean(
+                                        "isPremiumUser",
+                                        profile != null && profile.business_user
+                                    )
                                     edit.apply()
-                                    val a = (activity as MainActivity?)
-                                    Log.w("ACTIVITY MAIN", a.toString())
-                                    a?.resume()
+                                    val a = requireActivity()
+                                    if (a is MainActivity) {
+                                        a.resume()
+                                        a.reloadEvents()
+                                    }
+
+                                    // Return to previous fragment
+                                    a.supportFragmentManager?.popBackStack()
                                 }
                             }
                         }
                         edit.apply()
                     }
-                    // Return to previous fragment
-                    activity?.supportFragmentManager?.popBackStack()
                 }
             } else {
                 activity?.runOnUiThread {
