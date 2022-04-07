@@ -1,7 +1,9 @@
 package com.example.ocrhotel
 
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
-import java.time.*
+import java.time.DateTimeException
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit.HOURS
 import kotlin.math.abs
 
 
@@ -60,32 +62,35 @@ class Algorithm {
 
     //                                  1  2  3       4  5  6
     // Regex groups are the following: DD.MM.YYYY || MM.DD.YYYY
-    private val sep = " ./\\-"
+    private val sep = "./\\- "
 
     private val dateRegex = Regex("""((?:\d{1,2}-)?\d{1,2})(?:st|nd|rd|th)?[$sep]($monthsString|\d{1,2})(?:[$sep](\d{2,4}))?|($monthsString|\d{1,2})[$sep]((?:\d{1,2}-)?\d{1,2})(?:st|nd|rd|th)?(?:[$sep](\d{2,4}))?""".trimMargin())
 
-    private val timeRegex = Regex("""(\d{1,2})[.:,](\d{1,2})\s?(am|pm)?|(\d{1,2})(am|pm)""")
+    private val timeRegex = Regex("""(\d{1,2})[.:,](\d{1,2})\s?(am|pm)?|(\d{1,2})\s?(am|pm)""")
 
-    fun extractDates(string: String): List<LocalDateTime> {
+    fun extractDates(string: String): List<Event> {
 
+        val currentDate = LocalDateTime.now()
         val text = string.lowercase()
+            //    Pointless since the OCR cleans the input relatively well
+            // .replace("\\s+"," ")
+
 
         // Match the OCR text against regex to find all matches
-        val matches = dateRegex.findAll(text).toMutableList()
+        val matchesDates = dateRegex.findAll(text).toMutableList()
 
         val matchesTimes = timeRegex.findAll(text).toMutableList()
 
-        val currentDate = LocalDateTime.now()
+        // Remove times that have the same signature as dates
+        matchesTimes.removeIf{time->matchesDates.any { it.value.contains(time.value) }}
 
-        val additionalDates = mutableListOf<Triple<Int,Int,Int>>()
+        matchesDates.removeIf{ date->matchesTimes.any { it.value.contains(date.value) }}
 
-        // Convert matches into Triple objects containing the values for year, month, and day.
-        // Why Triple and not just LocalDate? I reckon the former is faster for our intent which is an intermediate value.
-        val dates: List<Triple<Int,Int,Int>> = matches.mapNotNull { match ->
-            println(match.groups)
 
-            // Flag helps differentiate between one type of date and the other, e.g. Feb 21st and 21st Feb,
-            // those are two separate matching groups in the regex. Yes, the flag is boolean.
+        val dates: List<Event> = matchesDates.mapNotNull { match ->
+            println("<Date Match> : "+match.groups)
+
+            // Decides whether the format is month first or month second.
             val flag = match.groups[4]?.value == null || match.groups[5]?.value==null
 
             // Declare the variables at the start.
@@ -94,19 +99,18 @@ class Algorithm {
             // group at index 1/5 is day; Elvis operator "?:" applies if it evaluates to Null, somehow
             // day = match.groups[if(flag) 1 else 5]?.value?.toIntOrNull() ?: currentDate.dayOfMonth
 
-
             // group at index 2/4 is month
             month = match.groups[if(flag) 2 else 4]?.value.let { m ->
                 // Check and return if the month is represented as a number.
                 // If it's a string, use the map to convert it. If this fails, return current month.
-                return@let m?.toIntOrNull() ?: months[m] ?: currentDate.monthValue
-            } // Assures the compiler this will not be null since it's somehow not convinced.
+                return@let m?.toIntOrNull() ?: months[m] ?: 0
+            }
 
-
+            // group at index 3/6 is year
             val yearStr = match.groups[if(flag) 3 else 6]?.value ?: currentDate.year.toString()
-            year = yearStr.toInt() // group at index 3/6 is year
+            year = yearStr.toInt()
             if(yearStr.length == 2)  { // Only the 2 last digits of the year? Then add century.
-                year += (currentDate.year/100)*100 // This will work long after Java is deprecated :)
+                year += (currentDate.year / 100) * 100
             }
 
             val handleMultipleDatesString = match.groups[if(flag) 1 else 5]?.value!!
@@ -115,7 +119,7 @@ class Algorithm {
             if('-' in handleMultipleDatesString) {
 
                 val splitDates = handleMultipleDatesString.split('-')
-                day = splitDates?.elementAt(0).toInt()
+                day = splitDates.elementAt(0).toInt()
 
                 if ('.' in match.groups[0]!!.value ||
                     ' ' in match.groups[0]!!.value ||
@@ -125,13 +129,15 @@ class Algorithm {
                     match.groups[if (flag) 3 else 6]?.value != null
                 ) {
 
-                    day = splitDates?.elementAt(0).toInt()
-                    val day2 = splitDates?.elementAt(1).toInt()
+                    day = splitDates.elementAt(0).toInt()
+                    val day2 = splitDates.elementAt(1).toInt()
 
-                    for(i in day..day2){
-                        additionalDates.add(Triple(year,month,i))
-                    }
-                    return@mapNotNull null
+                    val date1 = tryGetDateFromDatelike(year,month,day) ?: return@mapNotNull null
+                    val date2 = tryGetDateFromDatelike(year,month,day2) ?: return@mapNotNull null
+
+                    val duration = HOURS.between(date1,date2)
+
+                    return@mapNotNull Event(eventDateTime = date1, duration=duration.toInt())
                 }
                 // If we've simply caught a date of the type DD-MM-YYYY, we need to take care of a
                 // peculiar case/bug where it simply cuts off the Year part and thinks the month is the year.
@@ -139,69 +145,76 @@ class Algorithm {
 
                     year = currentDate.year
 
-                    day = splitDates?.elementAt(if (flag) 0 else 1).toIntOrNull()
+                    day = splitDates.elementAt(if (flag) 0 else 1).toIntOrNull()
                         ?: currentDate.dayOfMonth
 
                     month = splitDates.elementAt(if (flag) 1 else 0).toIntOrNull()
                         ?: currentDate.monthValue
 
-                    return@mapNotNull Triple(year, month, day)
+                    val ret = tryGetDateFromDatelike(year,month,day) ?: return@mapNotNull null
+
+                    return@mapNotNull Event(eventDateTime = ret)
                 }
             }
             else day = handleMultipleDatesString.toInt()
 
-
             // Handles US date format.
             // TODO: Handle US format for real.
-            //  (Preferably through a setting, although it should be working rn. This check is honestly unnecessary.)
-            if (month > 12) {month=day.also{day=month}}
+            //  (Preferably through a setting, although it should make do.)
+            if (month > 12) { month=day.also{day=month} }
 
-            // Some checks to remove invalid dates.
-            // Those could be more sophisticated, e.g. checking for day based on the month (no 29th in Feb except for leap years etc.)
-            // TODO: Probably discard the dates altogether if they are invalid.
-            if (year > currentDate.year+2) year = currentDate.year
-            if (month > 12 || month < 1) month = currentDate.monthValue
-            if (day > 31 || day < 1) day = currentDate.dayOfMonth
+            val res = tryGetDateFromDatelike(year,month,day) ?: return@mapNotNull null
 
-            return@mapNotNull Triple(year,month,day)
+            return@mapNotNull Event(eventDateTime = res)
         }
-        additionalDates.addAll(dates)
 
         // Constructs the pairs of hour and minute.
-        val times: List<Pair<Int,Int>> = matchesTimes.map { match ->
+        var firstTimeFound : Pair<Int,Int> = Pair(12,0)
+
+        val times: List<Pair<Int,Int>> = matchesTimes.mapIndexed {i, match->
+            println("<Time match> : "+match.groups)
 
             // Same as above, takes the hour from the first matching group if it's of the sort 10:00am,
             // otherwise it assumes something like 10am. ?: defaults the value to 0.
-            var hour = match.groups[1]?.value?.toInt() ?: match.groups[4]?.value?.toInt() ?: 12
+            var hour = match.groups[1]?.value?.toIntOrNull() ?: match.groups[4]?.value?.toInt() ?: 12
 
-            var minute = match.groups[2]?.value?.toInt() ?: 0
+            var minute = match.groups[2]?.value?.toIntOrNull() ?: 0
 
             val ampm = match.groups[3]?.value ?: match.groups[5]?.value
 
             if (ampm == "pm") hour += 12
 
-            if(hour > 24 || hour < 0) hour = 12
-            if(minute > 60 || minute < 0) minute = 0
+            if (hour > 23 || hour < 0 ||  minute > 59 || minute < 0){
+                hour = firstTimeFound.first
+                minute = firstTimeFound.second
+            }
 
-            return@map Pair(hour,minute)
+            if(i==0) firstTimeFound = Pair(hour,minute)
+
+            return@mapIndexed Pair(hour,minute)
         }
 
         // Maps the dates with the times.
-        // TODO: This doesn't seem right.
-        val res = additionalDates.mapIndexed { i, (y, m, d) ->
-                // This unpacks the pair. If there is no pair to unpack, it defaults to 12:00pm.
-                val (hour, min) = times.elementAtOrElse(i) { Pair(12, 0) }
-                try {
-                    return@mapIndexed LocalDateTime.of(y, m, d, hour, min)
-                }
-                catch(e: DateTimeException) {return@mapIndexed currentDate}
+        val res = dates.mapIndexed { i, event ->
+            // This unpacks the pair. If there is no pair to unpack, it defaults to 12:00pm.
+            val (hour, min) = times.elementAtOrElse(i) {firstTimeFound}
+            event.eventDateTime = event.eventDateTime.withHour(hour).withMinute(min)
+            return@mapIndexed event
         }
         return res
     }
 
+    private fun tryGetDateFromDatelike(year : Int, month: Int, day: Int): LocalDateTime?{
+        return try {
+            LocalDateTime.of(year,month,day,12,0)
+        }
+        catch (e:DateTimeException){
+            null
+        }
+    }
+
     private fun getBoundingBoxArea(boundingBox: List<Double>): Double {
-        return abs(
-            (boundingBox[0] * boundingBox[3] - boundingBox[1] * boundingBox[2])
+        return abs((boundingBox[0] * boundingBox[3] - boundingBox[1] * boundingBox[2])
                     + (boundingBox[2] * boundingBox[5] - boundingBox[3] * boundingBox[4])
                     + (boundingBox[4] * boundingBox[7] - boundingBox[5] * boundingBox[6])
         ) / 2
@@ -230,9 +243,13 @@ class Algorithm {
         // This is just a stub so far.
         val dates = extractDates(rawText!!)
         val name = extractTitleFromReadOperationResult(results)
-        return dates.map {date->
-            Event(eventName=name, eventDateTime = date)
+
+        val ret : MutableList<Event> = mutableListOf()
+        for(date in dates){
+            ret.add(Event(name,date.eventDateTime,date.duration))
         }
+
+        return ret
     }
 }
 
