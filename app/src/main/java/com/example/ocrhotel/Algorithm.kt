@@ -2,8 +2,11 @@ package com.example.ocrhotel
 
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
 import java.time.DateTimeException
+import java.time.DayOfWeek
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit.MINUTES
+import java.time.temporal.TemporalAdjusters
 import kotlin.math.abs
 
 private val months = hashMapOf(
@@ -33,9 +36,27 @@ private val months = hashMapOf(
     "dec" to 12
 )
 
+private val daysOfWeek = mapOf(
+    "monday" to DayOfWeek.MONDAY,
+    "tuesday" to DayOfWeek.TUESDAY,
+    "wednesday" to DayOfWeek.WEDNESDAY,
+    "thursday" to DayOfWeek.THURSDAY,
+    "friday" to DayOfWeek.FRIDAY,
+    "saturday" to DayOfWeek.SATURDAY,
+    "sunday" to DayOfWeek.SUNDAY,
+    "mon" to DayOfWeek.MONDAY,
+    "tue" to DayOfWeek.TUESDAY,
+    "wed" to DayOfWeek.WEDNESDAY,
+    "thu" to DayOfWeek.THURSDAY,
+    "fri" to DayOfWeek.FRIDAY,
+    "sat" to DayOfWeek.SATURDAY,
+    "sun" to DayOfWeek.SUNDAY,
+    )
+
 class Algorithm {
 
     private val monthsString = months.keys.joinToString(prefix="\\b", separator = "\\b|\\b", postfix = "\\b")
+    private val weekdaysString = daysOfWeek.keys.joinToString("|")
 
     // Default expression:
     // Handles everything from DD-MM-YYYY, DD-MMM-YYYY, MM-DD-YYYY, MMM-DD-YYYY
@@ -55,7 +76,7 @@ class Algorithm {
     // Time regex corresponds to the following: HH:mm-HH:mm PM || HH-HH PM
     private val timeRegex = Regex("""\b(?:(\d{1,2})[.:,]?(\d{1,2})?-)?(\d{1,2})[.:,](\d{1,2})\s?(am|pm)?\b|\b(?:(\d{1,2})-)?(\d{1,2})\s?(am|pm)\b""")
 
-    private val weekdayRegex = Regex("""(every|each|next)\s(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun)""")
+    private val weekdayRegex = Regex("""(every|each|next)\s($weekdaysString)""")
 
     fun extractDates(string: String): List<Event> {
 
@@ -78,6 +99,9 @@ class Algorithm {
         // as default if no other times are found later.
         val (times, firstFoundTime) = mapEventTimes(matchesTimes)
 
+        // Adds matches such as every/each/next monday to the list of found events.
+        addWeekdayMatches(text, dates)
+
         // Maps the dates with the times.
         dates.forEachIndexed { i, event ->
             // This unpacks the pair. If there is no pair to unpack, it defaults to the first found time.
@@ -88,6 +112,32 @@ class Algorithm {
 
         }
         return dates
+    }
+
+    private fun addWeekdayMatches(
+        text: String,
+        dates: MutableList<Event>
+    ) {
+        weekdayRegex.findAll(text).toMutableList().forEach { match ->
+
+            val day = daysOfWeek[match.groups[2]?.value!!]
+            var today = LocalDateTime.now()
+
+            when (match.groups[1]?.value) {
+                "every", "each" -> {
+                    for (i in 1..4) {
+                        val newDay = today.with(TemporalAdjusters.next(day))
+                        dates.add(Event(eventDateTime = newDay))
+                        today = newDay
+                    }
+
+                }
+                "next" -> {
+                    val newDay = today.with(TemporalAdjusters.next(day))
+                    dates.add(Event(eventDateTime = newDay))
+                }
+            }
+        }
     }
 
     private fun mapEventTimes(
@@ -308,7 +358,7 @@ fun main() {
         "3 feb 2020 10:30","10:00pm 3 feb 2020",
         exampleString,"april 20th, 5 jan",
         "29th february 2022 , 12th feb 2022",
-        "20-22 feb 2020","7-9pm","12-14:00")
+        "20-22 feb 2020","every sunday 7-9pm","next monday 12-14:00")
 
     for (test in testCases){
         println("\nStart test \"$test\":")
