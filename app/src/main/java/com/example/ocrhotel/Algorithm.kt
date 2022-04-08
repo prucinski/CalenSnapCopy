@@ -3,15 +3,8 @@ package com.example.ocrhotel
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ReadOperationResult
 import java.time.DateTimeException
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit.HOURS
+import java.time.temporal.ChronoUnit.MINUTES
 import kotlin.math.abs
-
-
-/**
- *  TODO
- *  - Handle American style dates, i.e. MM.DD.YYYY
- *  - Handle multiple dates for the same event, e.g. 21-22 April 2022
- */
 
 private val months = hashMapOf(
     "january" to 1,
@@ -42,14 +35,6 @@ private val months = hashMapOf(
 
 class Algorithm {
 
-    /** A subclass that holds the event data.
-     Currently only a stub that bundles the event title and date.**/
-    class Result(val dateTime: List<LocalDateTime>, val name: String) {
-        override fun toString (): String {
-            return "$name @ $dateTime"
-        }
-    }
-
     private val monthsString = months.keys.joinToString(prefix="\\b", separator = "\\b|\\b", postfix = "\\b")
 
     // Default expression:
@@ -64,10 +49,11 @@ class Algorithm {
     //                                  1  2  3       4  5  6
     // Regex groups are the following: DD.MM.YYYY || MM.DD.YYYY
     private val sep = "./\\- "
-
     private val dateRegex = Regex("""\b((?:\d{1,2}-)?\d{1,2})(?:st|nd|rd|th)?[$sep]($monthsString|\d{1,2})(?:[$sep](\d{2,4}))?\b|\b($monthsString|\d{1,2})[$sep]((?:\d{1,2}-)?\d{1,2})(?:st|nd|rd|th)?(?:[$sep](\d{2,4}))?\b""")
 
-    private val timeRegex = Regex("""\b(\d{1,2})[.:,](\d{1,2})\s?(am|pm)?\b|\b(\d{1,2})\s?(am|pm)\b""")
+    //                                          1  2  3  4  5     6  7  8
+    // Time regex corresponds to the following: HH:mm-HH:mm PM || HH-HH PM
+    private val timeRegex = Regex("""\b(?:(\d{1,2})[.:,]?(\d{1,2})?-)?(\d{1,2})[.:,](\d{1,2})\s?(am|pm)?\b|\b(?:(\d{1,2})-)?(\d{1,2})\s?(am|pm)\b""")
 
     private val weekdayRegex = Regex("""(every|each|next)\s(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun)""")
 
@@ -93,42 +79,80 @@ class Algorithm {
         val (times, firstFoundTime) = mapEventTimes(matchesTimes)
 
         // Maps the dates with the times.
-        val res = dates.mapIndexed { i, event ->
+        dates.forEachIndexed { i, event ->
             // This unpacks the pair. If there is no pair to unpack, it defaults to the first found time.
-            val (hour, min) = times.elementAtOrElse(i) {firstFoundTime}
+            val (hour, min, duration) = times.elementAtOrElse(i) {firstFoundTime}
+
             event.eventDateTime = event.eventDateTime.withHour(hour).withMinute(min)
-            return@mapIndexed event
+            if(event.duration < duration) event.duration = duration
+
         }
-        return res
+        return dates
     }
 
     private fun mapEventTimes(
         matchesTimes: MutableList<MatchResult>,
-    ): Pair<List<Pair<Int, Int>>, Pair<Int, Int>> {
-        var firstFoundTime = Pair(12,0)
+    ): Pair<List<Triple<Int, Int, Long>>, Triple<Int, Int, Long>> {
+        var firstFoundTime : Triple<Int, Int, Long> = Triple(12,0,0)
+        var dur : Long = 30
 
         val list = matchesTimes.mapIndexed { i, match ->
             println("<Time match> : " + match.groups)
 
-            // Same as above, takes the hour from the first matching group if it's of the sort 10:00am,
-            // otherwise it assumes something like 10am. ?: defaults the value to 0.
-            var hour =
-                match.groups[1]?.value?.toIntOrNull() ?: match.groups[4]?.value?.toInt() ?: 12
-            var minute = match.groups[2]?.value?.toIntOrNull() ?: 0
-            val ampm = match.groups[3]?.value ?: match.groups[5]?.value
+            // If we are dealing with time ranges
+            if ("-" in match.value) {
+                var h1 =
+                    match.groups[1]?.value?.toIntOrNull() ?: match.groups[6]?.value?.toIntOrNull()
+                    ?: 12
+                var m1 = match.groups[2]?.value?.toIntOrNull() ?: 0
 
-            if (ampm == "pm") hour += 12
+                var h2 =
+                    match.groups[3]?.value?.toIntOrNull() ?: match.groups[7]?.value?.toIntOrNull()
+                    ?: 12
+                var m2 = match.groups[4]?.value?.toIntOrNull() ?: 0
 
-            if (hour > 23 || hour < 0 || minute > 59 || minute < 0) {
-                hour = firstFoundTime.first
-                minute = firstFoundTime.second
+                val ampm = match.groups[5]?.value ?: match.groups[8]?.value
+                if (ampm == "pm") {
+                    h1 += 12;h2 += 12
+                }
+
+                if (h1 > 23 || h1 < 0 || m1 > 59 || m1 < 0) {
+                    h1 = firstFoundTime.first
+                    m1 = firstFoundTime.second
+                }
+
+                if (h2 > 23 || h2 < 0 || m2 > 59 || m2 < 0) {
+                    h2 = firstFoundTime.first
+                    m2 = firstFoundTime.second
+                }
+                dur = ((h2 - h1) * 60 + (m2 - m1)).toLong()
+
+                if (i == 0) firstFoundTime = Triple(h1, m1,dur)
+
+                return@mapIndexed Triple(h1, m1, dur)
+
+            } else {
+                // Same as above, takes the hour from the first matching group if it's of the sort 10:00am,
+                // otherwise it assumes something like 10am. ?: defaults the value to 0.
+                var hour =
+                    match.groups[3]?.value?.toIntOrNull() ?: match.groups[7]?.value?.toInt() ?: 12
+                var minute = match.groups[4]?.value?.toIntOrNull() ?: 0
+                val ampm = match.groups[5]?.value ?: match.groups[8]?.value
+
+                if (ampm == "pm") hour += 12
+
+                if (hour > 23 || hour < 0 || minute > 59 || minute < 0) {
+                    hour = firstFoundTime.first
+                    minute = firstFoundTime.second
+                }
+
+                if (i == 0) firstFoundTime = Triple(hour, minute, dur)
+
+                return@mapIndexed Triple(hour, minute, dur)
             }
-
-            if (i == 0) firstFoundTime = Pair(hour, minute)
-
-            return@mapIndexed Pair(hour, minute)
         }
-        return Pair(list, firstFoundTime)
+
+        return Pair(list,firstFoundTime)
     }
 
     private fun mapEventDates(
@@ -186,9 +210,9 @@ class Algorithm {
                 val date1 = tryGetDateFromDatelike(year, month, day) ?: return@mapNotNull null
                 val date2 = tryGetDateFromDatelike(year, month, day2) ?: return@mapNotNull null
 
-                val duration = HOURS.between(date1, date2)
+                val duration = MINUTES.between(date1, date2)
 
-                return@mapNotNull Event(eventDateTime = date1, duration = duration.toInt())
+                return@mapNotNull Event(eventDateTime = date1, duration = duration)
             }
             // If we've simply caught a date of the type DD-MM-YYYY, we need to take care of a
             // peculiar case/bug where it simply cuts off the Year part and thinks the month is the year.
@@ -284,7 +308,7 @@ fun main() {
         "3 feb 2020 10:30","10:00pm 3 feb 2020",
         exampleString,"april 20th, 5 jan",
         "29th february 2022 , 12th feb 2022",
-        "20-22 feb 2020")
+        "20-22 feb 2020","7-9pm","12-14:00")
 
     for (test in testCases){
         println("\nStart test \"$test\":")

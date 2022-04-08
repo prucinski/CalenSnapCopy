@@ -30,7 +30,7 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
             val startMillis = events.eventDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
             //end time of event.
-            val endMillis = events.eventDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() + events.duration*60*60*1000
+            val endMillis = events.eventDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() + events.duration*60*1000
 
             //retrieve the calendar ID from shared preferences.
             val sh = activity?.getSharedPreferences("com.example.ocrhotel_preferences", Context.MODE_PRIVATE)

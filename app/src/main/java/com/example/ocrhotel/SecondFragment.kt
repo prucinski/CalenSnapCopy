@@ -42,9 +42,6 @@ class SecondFragment : Fragment() {
 
     private val algorithmModel: EventDataViewModel by activityViewModels()
 
-
-    private var eventData: Algorithm.Result? = null
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
