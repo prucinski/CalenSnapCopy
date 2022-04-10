@@ -52,8 +52,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val root: View = binding.root
 
         val composeView = binding.composeHome
-        premium = (activity as MainActivity).premiumAccount
 
+        val m = (activity as MainActivity)
+        // If the user is not logged in, they should be redirected to the login page.
+        if (!m.loggedIn) {
+            val navHostFragment =
+                requireActivity().supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.loginFragment)
+        }
+
+        premium = m.premiumAccount
         composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
@@ -72,7 +81,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         Box(
                             modifier = Modifier.padding(contentPadding)
                         ) {
-                            if (futureEvents.isEmpty()) Box (Modifier.padding(5.dp)) { Text("You have no future events yet.") }
+                            if (futureEvents.isEmpty()) Box(Modifier.padding(5.dp)) { Text("You have no future events yet.") }
                             else
                                 LazyColumn(
                                     verticalArrangement = Arrangement.spacedBy(10.dp)

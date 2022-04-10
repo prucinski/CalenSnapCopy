@@ -21,6 +21,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import com.example.ocrhotel.databinding.FragmentEventsHistoryBinding
 import com.example.ocrhotel.ui.home.EventListModel
+import android.util.Log
 
 
 /**
@@ -42,24 +43,33 @@ class EventsHistoryFragment : Fragment() {
         _binding = FragmentEventsHistoryBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val act = activity as MainActivity
+        val m = activity as MainActivity
+        // If the user is not logged in, they should be redirected to the login page.
+        Log.d("LOGIN STATUS", "${m.jwt}; " + if (m.loggedIn) "Logged in" else "Not logged in")
+        if (!m.loggedIn) {
+            val navHostFragment =
+                requireActivity().supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.loginFragment)
+        }
 
-        binding.composeView.apply{
+
+        binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            setContent{
+            setContent {
 
-                val events by remember{
+                val events by remember {
                     mutableStateOf(model)
                 }
 
-                MaterialTheme{
+                MaterialTheme {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.padding(vertical= if(!act.premiumAccount) 55.dp else 0.dp)
-                    ){
-                        items(items=events.getPastEvents()){event->
-                            EventTile(event){
+                        modifier = Modifier.padding(vertical = if (!m.premiumAccount) 55.dp else 0.dp)
+                    ) {
+                        items(items = events.getPastEvents()) { event ->
+                            EventTile(event) {
                                 events.removeEvent(event)
                             }
                         }

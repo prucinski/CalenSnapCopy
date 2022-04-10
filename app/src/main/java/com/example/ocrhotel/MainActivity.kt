@@ -1,6 +1,7 @@
 package com.example.ocrhotel
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -31,10 +32,61 @@ class MainActivity : AppCompatActivity() {
     private var mRewardedAd: RewardedAd? = null
     private var logTag = "MainActivity"
 
+
+    private var _premiumAccount = false
+    private var _businessAccount = false
+    private var _scans = 1
+    private var _jwt = ""
+
+    // All of these properties below are automatically synced with the shared preferences.
+
+    val loggedIn: Boolean
+        get() = jwt.isNotEmpty()
+
+    var premiumAccount: Boolean
+        get() = _premiumAccount
+        set(value) {
+            _premiumAccount = value
+            val edit = getEdit()
+            edit.putBoolean("isPremiumUser", value)
+            edit.apply()
+        }
+
+    var businessAccount: Boolean
+        get() = _businessAccount
+        set(value) {
+            _businessAccount = value
+            val edit = getEdit()
+            edit.putBoolean("isBusinessUser", value)
+            edit.apply()
+        }
+
+    var scans: Int
+        get() = _scans
+        set(value) {
+            _scans = value
+            val edit = getEdit()
+            edit.putInt("numberOfScans", value)
+            edit.apply()
+        }
+
+    var jwt: String
+        get() = _jwt
+        set(value) {
+            _jwt = value
+            val edit = getEdit()
+            edit.putString("JWT", value)
+            edit.apply()
+        }
     // Initialize to arbitrary values
-    var premiumAccount = false
-    var businessAccount = false
-    var scans = 1
+//    var premiumAccount = false
+//    var businessAccount = false
+//    var scans = 1
+
+    fun getEdit(): SharedPreferences.Editor {
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        return sh.edit()!!
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +123,8 @@ class MainActivity : AppCompatActivity() {
             loadRewardedAd()
         }
 
+
+
         reloadEvents()
 
         setupNavigation()
@@ -91,6 +145,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 runOnUiThread {
                     this.viewModels<EventListModel>().value.eventsList = events
+                    for (event in events) {
+                        Log.d("OCR EVENT", event.eventName)
+                    }
                     Log.d(logTag, "Reloaded Events")
                 }
             }
@@ -112,22 +169,28 @@ class MainActivity : AppCompatActivity() {
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
 
         // Check if file already present. if not, create it
+        premiumAccount = sh.getBoolean("isPremiumUser", false)
+        businessAccount = sh.getBoolean("isBusinessAccount", false)
+        jwt = sh.getString("JWT", "")!!
+        scans = sh.getInt("numberOfScans", 1)
+
         if (!sh.contains("isPremiumUser")) {
             val myEdit = sh.edit()
-
-            // VALUES INITIALIZED DURING LAUNCH.
-            myEdit.putBoolean("isPremiumUser", false)
-            myEdit.putInt("numberOfScans", 1)
-            //TODO: GET RID OF THIS PLACEHOLDER.
-            myEdit.putBoolean("isBusinessUser", true)
-
+//
+//            // VALUES INITIALIZED DURING LAUNCH.
+//            myEdit.putBoolean("isPremiumUser", false)
+//            myEdit.putInt("numberOfScans", 1)
+//            //TODO: GET RID OF THIS PLACEHOLDER.
+//            myEdit.putBoolean("isBusinessUser", true)
+//            myEdit.putString("JWT", "") // User is logged out by default
+//
             val calendarId = getCalendarId()
             // Make sure that the user has a suitable calendar
             if (calendarId != null) {
                 myEdit.putString("calendarID", calendarId.toString())
                 Log.w("CALENDER", "No calendar found!")
             }
-
+//
             myEdit.apply()
         }
     }
@@ -314,19 +377,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+//
+//    override fun onResume() {
+//        super.onResume()
+//        resume()
+//    }
 
-    override fun onResume() {
-        super.onResume()
-        resume()
-    }
-
-    fun resume() {
-        //if user left the activity, they might have bought premium. Check if they did.
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-        premiumAccount = sh.getBoolean("isPremiumUser", false)
-        businessAccount = sh.getBoolean("isBusinessUser", false)
-        scans = sh.getInt("numberOfScans", 1)
-    }
+//    fun resume() {
+//        //if user left the activity, they might have bought premium. Check if they did.
+//        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+//        premiumAccount = sh.getBoolean("isPremiumUser", false)
+//        businessAccount = sh.getBoolean("isBusinessUser", false)
+//        scans = sh.getInt("numberOfScans", 1)
+//    }
 
     //TODO: MOVE THIS INTO SETTINGS?
     //TODO: maybe keep a stub to choose a default calendar upon launch

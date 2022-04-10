@@ -44,48 +44,29 @@ class LoginFragment : Fragment() {
 
         login(username, password) { jwt ->
             if (jwt != null) {
+                val a = requireActivity() as MainActivity
+                a.jwt = jwt
+
                 // Login was successful
                 requireActivity().runOnUiThread {
                     Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-
-                    val sh = requireActivity().getSharedPreferences(
-                        getString(R.string.preferences_address),
-                        AppCompatActivity.MODE_PRIVATE
-                    )
-
-                    if (sh != null) {
-                        // Store JWT as a shared preference
-                        val edit = sh.edit()
-                        edit.putString("JWT", jwt)
-
-                        requireActivity().runOnUiThread {
-                            readProfile(jwt) { profile ->
-                                val sh = requireActivity().getSharedPreferences(
-                                    getString(R.string.preferences_address),
-                                    AppCompatActivity.MODE_PRIVATE
-                                )
-                                if (sh != null) {
-                                    val edit = sh.edit()
-                                    // Set shared preference info about premium status
-                                    edit.putBoolean(
-                                        "isPremiumUser",
-                                        profile != null && profile.business_user
-                                    )
-                                    edit.apply()
-                                    val a = requireActivity()
-                                    if (a is MainActivity) {
-                                        a.resume()
-                                        a.reloadEvents()
-                                    }
-
-                                    // Return to previous fragment
-                                    a.supportFragmentManager?.popBackStack()
+                    requireActivity().runOnUiThread {
+                        readProfile(jwt) { profile ->
+                            val a = requireActivity()
+                            if (a is MainActivity) {
+                                a.reloadEvents()
+                                if (profile != null) {
+                                    a.premiumAccount = profile.premium_user
+                                    a.businessAccount = profile.business_user
+                                    a.scans = profile.remaining_free_uses
                                 }
                             }
+                            // Return to previous fragment
+                            a.supportFragmentManager.popBackStack()
                         }
-                        edit.apply()
                     }
                 }
+
             } else {
                 activity?.runOnUiThread {
                     Toast.makeText(

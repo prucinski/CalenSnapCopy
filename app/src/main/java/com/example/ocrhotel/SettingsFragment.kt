@@ -1,5 +1,6 @@
 package com.example.ocrhotel
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
@@ -37,7 +38,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,   // 2
             CalendarContract.Calendars.OWNER_ACCOUNT            // 3
         )
-// The indices for the projection array above.
+
+        // The indices for the projection array above.
         val PROJECTION_ID_INDEX = 0
         val PROJECTION_ACCOUNT_NAME_INDEX = 1
         val PROJECTION_DISPLAY_NAME_INDEX = 2
@@ -73,6 +75,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
     //then, upon clicking the list and choosing a value, a sharedPreference "calendarID" will get
     //updated with the desired calendar ID.
 
+    private val logOutOnClick = Preference.OnPreferenceClickListener {
+        val sh = activity?.getSharedPreferences(
+            getString(R.string.preferences_address),
+            AppCompatActivity.MODE_PRIVATE
+        )
+        val edit = sh!!.edit()
+        edit.putString("JWT", "")
+        edit.apply()
+        checkAndUpdate()
+        true
+    }
+
     private fun checkAndUpdate() {
         val premiumPreference: Preference? = findPreference("premium")
         val businessPreference: Preference? = findPreference("business")
@@ -85,18 +99,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val isLoggedIn = sh!!.getString("JWT", "")!!.isNotEmpty()
 
 
-        val prem = sh!!.getBoolean("isPremiumUser", false)
-        val bus = sh!!.getBoolean("isBusinessUser", false)
+        val prem = sh.getBoolean("isPremiumUser", false)
+        val bus = sh.getBoolean("isBusinessUser", false)
         if (prem) {
             premiumPreference!!.title = "You are a Premium user"
             //TODO: build a string
-            premiumPreference!!.summary = "Your subscription expires on xxx"
+            premiumPreference.summary = "Your subscription expires on xxx"
             premiumPreference.isSelectable = false
         }
-            
+
+        if (isLoggedIn) {
+            loginPreference!!.title = "Log out"
+            loginPreference.summary = "Log out of this account"
+            loginPreference.onPreferenceClickListener = logOutOnClick
+        } else {
+            loginPreference!!
+        }
+
         if (bus) {
             businessPreference!!.title = "Business features"
-            businessPreference!!.summary = "Press to inspect"
+            businessPreference.summary = "Press to inspect"
         }
 
     }
