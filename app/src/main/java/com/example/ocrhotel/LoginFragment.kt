@@ -9,6 +9,7 @@ import com.example.ocrhotel.databinding.FragmentLoginBinding
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
 
 class LoginFragment : Fragment() {
 
@@ -25,14 +26,22 @@ class LoginFragment : Fragment() {
         binding.loginButton.setOnClickListener {
             onLoginButtonPressed()
         }
+
+        binding.goToSignupButton.setOnClickListener {
+            val navHostFragment =
+                requireActivity().supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.signupFragment)
+        }
         return binding.root
     }
 
     private fun onLoginButtonPressed() {
-        // There should be no whitespace in passwords and usernames, hence, use trim().
+        // There should be no whitespace in usernames, hence, use trim().
         val username = binding.usernameInput.text.toString().trim()
-        val password = binding.passwordInput.text.toString().trim()
+        val password = binding.passwordInput.text.toString()
 
+        // Make sure not blank username or password is provided
         if (username.isBlank() || password.isBlank()) {
             Toast.makeText(
                 requireContext(),

@@ -96,19 +96,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
             AppCompatActivity.MODE_PRIVATE
         )
 
-        val isLoggedIn = sh!!.getString("JWT", "")!!.isNotEmpty()
+        val a = requireActivity() as MainActivity
 
-
-        val prem = sh.getBoolean("isPremiumUser", false)
-        val bus = sh.getBoolean("isBusinessUser", false)
-        if (prem) {
+//        val prem = sh.getBoolean("isPremiumUser", false)
+//        val bus = sh.getBoolean("isBusinessUser", false)
+        if (a.premiumAccount) {
             premiumPreference!!.title = "You are a Premium user"
             //TODO: build a string
             premiumPreference.summary = "Your subscription expires on xxx"
             premiumPreference.isSelectable = false
         }
 
-        if (isLoggedIn) {
+        if (a.loggedIn) {
             loginPreference!!.title = "Log out"
             loginPreference.summary = "Log out of this account"
             loginPreference.onPreferenceClickListener = logOutOnClick
@@ -116,7 +115,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             loginPreference!!
         }
 
-        if (bus) {
+        if (a.businessAccount) {
             businessPreference!!.title = "Business features"
             businessPreference.summary = "Press to inspect"
         }

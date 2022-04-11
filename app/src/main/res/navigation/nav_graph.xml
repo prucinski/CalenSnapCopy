@@ -109,5 +109,9 @@
         android:name="com.example.ocrhotel.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" />
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="com.example.ocrhotel.SignupFragment"
+        android:label="SignupFragment" />
 
 </navigation>

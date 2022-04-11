@@ -8,7 +8,7 @@
     tools:context=".LoginFragment">
 
     <EditText
-        android:id="@+id/usernameInput"
+        android:id="@+id/usernameSignupInput"
         android:layout_width="311dp"
         android:layout_height="73dp"
         android:layout_marginStart="50dp"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/passwordInput"
+        android:id="@+id/passwordSignupInput"
         android:layout_width="311dp"
         android:layout_height="73dp"
         android:layout_marginStart="50dp"
@@ -40,13 +40,13 @@
         app:layout_constraintTop_toBottomOf="@+id/usernameSignupInput" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/signupButton"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
         android:background="@drawable/button_shape"
-        android:text="@string/login"
+        android:text="Sign up"
         android:textColor="@color/secondaryColor"
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -54,23 +54,6 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.822" />
-
-    <Button
-        android:id="@+id/goToSignupButton"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:background="@drawable/button_shape"
-        android:text="Sign Up"
-        android:textColor="@color/secondaryColor"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.955" />
+        app:layout_constraintVertical_bias="0.819" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
