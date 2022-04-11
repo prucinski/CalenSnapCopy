@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 /**
  * Holds basic properties of an event, e.g. name, time, and duration.
  * */
-data class Event(var eventName: String = "Event", var eventDateTime: LocalDateTime = LocalDateTime.now(), var duration: Int = 2) : Serializable
+data class Event(var eventName: String = "Event", var eventDateTime: LocalDateTime = LocalDateTime.now(), var duration: Long = 30) : Serializable
 // ,Parcelable
      {
     //strings - used only to display the data.
