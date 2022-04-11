@@ -3,6 +3,7 @@ package com.example.ocrhotel
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.*
 
@@ -89,6 +90,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if(bus){
             businessPreference!!.title = "Business features"
             businessPreference!!.summary = "Press to inspect"
+            businessPreference.setFragment("com.example.ocrhotel.BusinessHeatmap")
         }
 
     }

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RawRes
+import androidx.appcompat.app.AppCompatActivity
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -34,9 +35,16 @@ class BusinessHeatmap : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val trial = false
+        if(trial){
+            val sydney = LatLng(-34.0, 151.0)
+            addTrialHeatMap(googleMap)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        }
+        else{
+            val aberdeen = LatLng(57.14, -2.09)
+        }
+
 
     }
 
@@ -49,17 +57,17 @@ class BusinessHeatmap : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Toast.makeText(context, "Please wait. The map is loading...", Toast.LENGTH_SHORT).show()
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
-    //probably pass by reference
-    private fun addHeatMap(map: GoogleMap) {
+    //pass by reference
+    private fun addTrialHeatMap(map: GoogleMap) {
         var latLngs: List<LatLng?>? = null
-
-        // Get the data: latitude/longitude positions of police stations.
+        // Get the data: latitude/longitude positions of police stations in Sydney
         try {
-            latLngs = readItems(R.raw.police_stations)
+            latLngs = readTrialItems(R.raw.police_stations)
         } catch (e: JSONException) {
             Toast.makeText(context, "Problem reading list of locations.", Toast.LENGTH_LONG)
                 .show()
@@ -69,13 +77,29 @@ class BusinessHeatmap : Fragment() {
         val provider = HeatmapTileProvider.Builder()
             .data(latLngs)
             .build()
+        // Add a tile overlay to the map, using the heat map tile provider.
+        val overlay = map.addTileOverlay(TileOverlayOptions().tileProvider(provider))
+    }
 
+    private fun addHeatMap(map: GoogleMap){
+        var latLngs: List<LatLng?>? = null
+        // Get the data: latitude/longitude positions of points of event scans
+        try {
+            latLngs = readItems()
+        } catch (e: JSONException) {
+            Toast.makeText(context, "Problem reading list of locations.", Toast.LENGTH_LONG)
+                .show()
+        }
+        // Create a heat map tile provider, passing it the latlngs of the scans.
+        val provider = HeatmapTileProvider.Builder()
+            .data(latLngs)
+            .build()
         // Add a tile overlay to the map, using the heat map tile provider.
         val overlay = map.addTileOverlay(TileOverlayOptions().tileProvider(provider))
     }
 
     @Throws(JSONException::class)
-    private fun readItems(@RawRes resource: Int): List<LatLng?> {
+    private fun readTrialItems(@RawRes resource: Int): List<LatLng?> {
         val result: MutableList<LatLng?> = ArrayList()
         val inputStream = requireContext().resources.openRawResource(resource)
         val json = Scanner(inputStream).useDelimiter("\\A").next()
@@ -86,6 +110,38 @@ class BusinessHeatmap : Fragment() {
             val lng = `object`.getDouble("lng")
             result.add(LatLng(lat, lng))
         }
+        return result
+    }
+
+    @Throws(JSONException::class)
+    private fun readItems(): List<LatLng?> {
+        val result: MutableList<LatLng?> = ArrayList()
+
+        //get jwt token (whatever that is :D )
+        val sh = requireActivity().getSharedPreferences(
+            getString(R.string.preferences_address),
+            AppCompatActivity.MODE_PRIVATE
+        )
+        val jwt = sh.getString("JWT", null)
+
+        //get the data, then go through the data and create a list of LatLangs
+        if(jwt != null){
+             readEvents(jwt){ apiEvents ->
+
+            }
+        }
+
+
+        /*
+        val json = Scanner(inputStream).useDelimiter("\\A").next()
+        val array = JSONArray(json)
+        for (i in 0 until array.length()) {
+            val `object` = array.getJSONObject(i)
+            val lat = `object`.getDouble("lat")
+            val lng = `object`.getDouble("lng")
+            result.add(LatLng(lat, lng))
+        }
+         */
         return result
     }
 }

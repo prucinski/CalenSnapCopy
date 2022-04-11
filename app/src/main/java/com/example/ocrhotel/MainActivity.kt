@@ -185,12 +185,12 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home -> navController.navigate(R.id.home)
 
                 // Go to tutorial / help page
-                R.id.navigation_help -> navController.navigate(R.id.businessHeatmap)
-                    //Toast.makeText(
-                    //peekAvailableContext(),
-                    //"This will lead to a tutorial!",
-                    //Toast.LENGTH_SHORT
-                //).show()
+                R.id.navigation_help ->
+                    Toast.makeText(
+                    peekAvailableContext(),
+                    "This will lead to a tutorial!",
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 // Go to the history page
                 R.id.navigation_history -> navController.navigate(R.id.eventsHistoryFragment)
