@@ -3,6 +3,7 @@ package com.example.ocrhotel
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,7 @@ class BusinessHeatmap : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+        //check it out or normal operation
         val trial = false
         if(trial){
             val sydney = LatLng(-34.0, 151.0)
@@ -43,6 +45,8 @@ class BusinessHeatmap : Fragment() {
         }
         else{
             val aberdeen = LatLng(57.14, -2.09)
+            addHeatMap((googleMap))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(aberdeen))
         }
 
 
@@ -125,23 +129,28 @@ class BusinessHeatmap : Fragment() {
         val jwt = sh.getString("JWT", null)
 
         //get the data, then go through the data and create a list of LatLangs
-        if(jwt != null){
-             readEvents(jwt){ apiEvents ->
-
+        if(jwt != null) {
+            //TODO: wait for values being returned instead of hanging the app
+            activity?.runOnUiThread {
+                Log.d("jwt", "jwt found.")
+                //fake point for error handling. Remove when this works fine
+                result.add(LatLng(0.0, 0.0))
+                readEvents(jwt) { apiEvents ->
+                    for (event in apiEvents!!.events) {
+                        Log.d("event", event.snap_location.toString())
+                        val lat = event.snap_location.N
+                        val lng = -event.snap_location.W
+                        result.add(LatLng(lat, lng))
+                    }
+                }
             }
         }
-
-
-        /*
-        val json = Scanner(inputStream).useDelimiter("\\A").next()
-        val array = JSONArray(json)
-        for (i in 0 until array.length()) {
-            val `object` = array.getJSONObject(i)
-            val lat = `object`.getDouble("lat")
-            val lng = `object`.getDouble("lng")
-            result.add(LatLng(lat, lng))
+        else{
+            Toast.makeText(context, "Error retreiving events. Please check if you're logged in",
+                Toast.LENGTH_SHORT).show()
+                //ensuring there's at least one result so as not to crash the programme
+                result.add(LatLng(0.0,0.0))
         }
-         */
         return result
     }
 }
