@@ -185,7 +185,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home -> navController.navigate(R.id.home)
 
                 // Go to tutorial / help page
-                R.id.navigation_help -> Toast.makeText(
+                R.id.navigation_help ->
+                    Toast.makeText(
                     peekAvailableContext(),
                     "This will lead to a tutorial!",
                     Toast.LENGTH_SHORT
