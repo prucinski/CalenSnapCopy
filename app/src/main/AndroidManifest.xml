@@ -32,7 +32,8 @@
 
         <activity
             android:name=".payment.PaymentPopup"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Translucent"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
