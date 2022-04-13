@@ -24,6 +24,11 @@
         <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
 
+        <!-- Setting text color. -->>
+        <item name="android:textColorPrimary">@color/primaryDarkColor</item>
+        <item name="android:textColorSecondary">@android:color/tab_indicator_text</item>
+        <item name ="android:textColorTertiary">@android:color/tab_indicator_text</item>
+        <item name ="android:textColorHint">@android:color/tab_indicator_text</item>
     </style>
 
     <!--    BottomAppBar's theme-->
