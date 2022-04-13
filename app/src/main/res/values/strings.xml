@@ -102,5 +102,9 @@
     <string name="first_fragment_label">First Fragment</string>
     <string name="next">Next</string>
     <string name="delete">delete</string>
+    <string name="deleteLastTitle">\"Attempting to delete the last event\"</string>
+    <string name="deleteLastMessage">\"Deleting the last event will bring you back to the home page. Do you want to proceed?\"</string>
+    <string name="deleteLastNo">\"Take me back\"</string>
+    <string name="deleteLastYes">\"Delete anyway\"</string>
 
 </resources>

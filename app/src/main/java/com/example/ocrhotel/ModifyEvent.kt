@@ -200,26 +200,6 @@ class ModifyEvent : Fragment() {
 
 
             }
-
-            //legacy code for old submit - will delete later
-            /*
-            // Once the button is pressed, modify the values inside the list.
-            eventsList[currentEvent].eventName = binding.eventTitle.text.toString()
-
-            val date: LocalDate = LocalDate.parse(binding.EventDate.text, dateFormatter)
-            val time: LocalTime = LocalTime.parse(binding.EventHour.text.toString())
-            eventsList[currentEvent].eventDateTime = LocalDateTime.of(
-                date.year, date.monthValue, date.dayOfMonth, time.hour, time.minute)
-
-            // I'm not sure if the next two lines are necessary, but I think they are since
-            // the object has already been constructed.
-            eventsList[currentEvent].eventDate = binding.EventDate.text.toString()
-            eventsList[currentEvent].eventHour = binding.EventHour.text.toString()
-
-            // Automatically move user to next event. Fairly simple but left  it for now
-            spinner.setSelection(currentEvent+1)
-
-             */
         }
 
         //button "Delete". Used to delete an unwanted event.
@@ -229,12 +209,12 @@ class ModifyEvent : Fragment() {
             if(eventsList.size == 1){
                 //TODO: MOVE THESE INTO RESOURCES
                     MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Attempting to delete the last event")
-                        .setMessage("Deleting the last event will bring you back to the home page. Do you want to proceed?")
-                        .setNegativeButton("Take me back") { dialog, _ ->
+                        .setTitle(R.string.deleteLastTitle)
+                        .setMessage(R.string.deleteLastMessage)
+                        .setNegativeButton(R.string.deleteLastNo) { dialog, _ ->
                             dialog.dismiss()
                         }
-                        .setPositiveButton("Delete anyway") { _, _ ->
+                        .setPositiveButton(R.string.deleteLastYes) { _, _ ->
                             findNavController().navigate(R.id.action_modifyEvent_to_home)
                         }
                         .show()

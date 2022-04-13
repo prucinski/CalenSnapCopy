@@ -1,32 +1,48 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
 
-    <style name="Theme.OCRHotel" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="Theme.OCRHotel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Adding so that the Action bar is not visible -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primaryLightColor</item>
+        <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/primaryColor</item>
+        <item name="colorOnPrimary">@color/secondaryColor</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/secondaryLightColor</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
         <item name="colorOnSecondary">@color/secondaryTextColor</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- The background of the application. -->
-        <item name="android:windowBackground">@color/primaryDarkColor</item>
+        <item name="android:windowBackground">@color/white</item>
 
-        <item name="colorOnSurface">#465661</item>-->
-        <item name="colorSurface">#465661</item>-->
-        <item name="colorOnBackground">#212121</item>-->
-        <item name="android:colorBackground">@color/white</item>
-        <item name="colorError">#F44336</item>-->
-        <item name="colorOnError">#FFFFFF</item>
+        <item name="textFillColor">@color/white</item>
 
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
+        <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
 
+    </style>
+
+    <!--    BottomAppBar's theme-->
+    <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
+    </style>
+
+    <style name="Widget.App.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
+        <item name="colorPrimary">@color/secondaryColor</item>
+        <item name="colorOnPrimary">@color/primaryDarkColor</item>
+    </style>
+
+    <style name="ThemeOverlay.App.FloatingActionButton" parent="">
+        <item name="colorSecondary">@color/primaryColor</item>
+        <item name="colorOnSecondary">@color/secondaryColor</item>
     </style>
 
     <style name="Theme.OCRHotel.NoActionBar">
@@ -35,7 +51,18 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="Theme.AppCompat.Translucent" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:background">#00000000</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
     <style name="Theme.OCRHotel.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.OCRHotel.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
 </resources>
