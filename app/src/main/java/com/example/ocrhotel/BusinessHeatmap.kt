@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.maps.android.heatmaps.HeatmapTileProvider
+import kotlinx.coroutines.delay
 import org.json.JSONArray
 import org.json.JSONException
 import java.util.*
@@ -133,17 +134,24 @@ class BusinessHeatmap : Fragment() {
             //TODO: wait for values being returned instead of hanging the app
             activity?.runOnUiThread {
                 Log.d("jwt", "jwt found.")
-                //fake point for error handling. Remove when this works fine
-                result.add(LatLng(0.0, 0.0))
+
+                var found: Boolean = false;
                 readEvents(jwt) { apiEvents ->
                     for (event in apiEvents!!.events) {
-
-                        resu                    Log.d("event", event.snap_location.toString())
+                        found = true;
+                        Log.d("event", event.snap_location.toString())
                         val lat = event.snap_location.N
-                        val lng = -event.snap_location.Wlt.add(LatLng(lat, lng))
+                        val lng = -event.snap_location.W
+                        result.add(LatLng(lat, lng))
+                    }
+                    //fake point for error handling.
+                    if(!found) {
+                        result.add(LatLng(0.0, 0.0))
                     }
                     Log.d("jwt", "callback 1")
                 }
+                //TODO: WAIT FOR CALLBACK!!!
+                Thread.sleep(2000)
                 Log.d("jwt", "callback 2")
             }
         }

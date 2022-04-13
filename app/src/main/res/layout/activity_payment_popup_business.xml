@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/popup_window_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundDimEnabled="false"
+    android:windowContentOverlay="@null"
+    android:windowIsFloating="true"
+    android:windowIsTranslucent="true"
+    android:windowNoTitle="true"
+    app:cardBackgroundColor="@android:color/transparent"
+    tools:context=".payment.PaymentPopup"
+    tools:visibility="visible">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/popup_window_view_with_border"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+
+        app:cardBackgroundColor="#00FFFFFF"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="0dp"
+        app:cardMaxElevation="0dp"
+        app:cardPreventCornerOverlap="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/popup_window_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="2dp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="0dp"
+            app:cardMaxElevation="0dp"
+            app:cardPreventCornerOverlap="false">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/popup_window_background_container"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/button_shape"
+                android:minHeight="170dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/popup_window_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="@drawable/button_shape"
+                    android:backgroundTint="@color/secondaryDarkColor"
+                    android:gravity="center"
+                    android:text="BUY BUSINESS"
+                    android:textAlignment="center"
+                    android:textColor="@color/secondaryLightColor"
+                    android:textSize="24sp"
+                    app:autoSizeMaxTextSize="24dp"
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <include
+                    android:id="@+id/googlePayButton"
+                    layout="@layout/buy_with_googlepay_button"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

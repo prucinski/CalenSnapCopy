@@ -24,6 +24,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+
         app:errorEnabled="false"
         app:hintAnimationEnabled="true"
         app:hintEnabled="true"
@@ -39,6 +40,10 @@
             android:layout_height="wrap_content"
             android:background="@drawable/edit_button_shape"
             android:duplicateParentState="false"
+            android:inputType="text"
+            android:maxLines="1"
+            android:lines="1"
+            android:singleLine="true"
             android:hint="Title" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,21 +69,36 @@
     <Button
         android:id="@+id/submit"
         style="@style/Widget.AppCompat.Button"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
+        android:layout_width="160dp"
+        android:layout_height="61dp"
+        android:layout_marginEnd="-32dp"
         android:background="@drawable/button_shape"
         android:text="@string/submit"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintEnd_toStartOf="@+id/textView2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.716" />
 
     <Button
-        android:id="@+id/continued"
-        android:layout_width="300dp"
+        android:id="@+id/delete"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="160dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="-32dp"
+        android:background="@drawable/button_shape"
+        android:text="@string/delete"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.716" />
+
+    <Button
+        android:id="@+id/finish"
+        android:layout_width="332dp"
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
         android:text="@string/continued"
@@ -125,6 +145,15 @@
             android:textSize="20sp" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/submit" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

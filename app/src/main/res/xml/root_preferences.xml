@@ -27,7 +27,7 @@
             app:summary="See where to put your posters for highest engagement">
             <intent
                 android:targetPackage="com.example.ocrhotel"
-                android:targetClass="com.example.ocrhotel.payment.PaymentPopup"/>
+                android:targetClass="com.example.ocrhotel.payment.PaymentPopupBusiness"/>
         </Preference>
         <Preference
             app:key="login"
