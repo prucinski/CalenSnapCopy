@@ -14,7 +14,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OCRHotel">
-
+        <activity
+            android:name=".payment.PaymentPopupBusiness"
+            android:exported="false"
+            android:label="@string/title_activity_payment_popup_business"
+            android:theme="@style/Theme.OCRHotel.NoActionBar" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -33,7 +37,7 @@
         <activity
             android:name=".payment.PaymentPopup"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.Translucent"/>
+            android:theme="@style/Theme.AppCompat.Translucent" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

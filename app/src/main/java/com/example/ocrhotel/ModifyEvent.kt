@@ -3,12 +3,16 @@ package com.example.ocrhotel
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.format.DateFormat.is24HourFormat
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
@@ -23,6 +27,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.time.LocalDate
@@ -30,16 +35,17 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 class ModifyEvent : Fragment() {
 
     // The events list. It is modifiable.
-    private var eventsList: List<Event> = emptyList()
+    private lateinit var eventsList: MutableList<Event>
 
     // Keep track which event we're looking at now. By default we're looking at the first event.
     private var currentEvent = 0
 
-    // This will decide how many entries will be generated with the spinner.
+    // This will decide how many entries will be generated with the spinner upon first launch
     private var numberOfEvents = 0
 
     // Custom date format that we may use while displaying the date to clients.
@@ -53,6 +59,8 @@ class ModifyEvent : Fragment() {
     private val adRequest = AdRequest.Builder().build()
     private var mInterstitialAd: InterstitialAd? = null
     private val debugTag = "Interstitial Ad"
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,7 +79,7 @@ class ModifyEvent : Fragment() {
 
         // TODO: GET THAT EVENT ARRAY - change key
         // Receive the event list from SecondFragment.
-        eventsList = arguments?.getSerializable("data") as List<Event>
+        eventsList = arguments?.getSerializable("data") as MutableList<Event>
         numberOfEvents = eventsList.size
         Log.d("List size", " in ModifyEvent on creation: $numberOfEvents")
 
@@ -80,7 +88,7 @@ class ModifyEvent : Fragment() {
 
         //Applying the spinner
         val spinner: Spinner = binding.foundEventsSelector
-        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until numberOfEvents))
+        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until eventsList.size))
             .also{adapter ->
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
@@ -91,8 +99,8 @@ class ModifyEvent : Fragment() {
         spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-                // An item was selected. You can retrieve the selected item using
-                Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
+                // An item was selected
+                //Toast.makeText(context, "This has been selected $pos", Toast.LENGTH_SHORT).show()
                 currentEvent = pos
                 binding.EventDate.text = eventsList[currentEvent].eventDate
                 binding.EventHour.text = eventsList[currentEvent].eventHour
@@ -100,10 +108,34 @@ class ModifyEvent : Fragment() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
-                //Something will always be selected
+               //automatically reselects event no 1.
             }
         }
+        //check if title has been modified. I dont like this solution too much but it works
+        binding.eventTitle.addTextChangedListener(object: TextWatcher {
+            //give user 1s bewteen keyboard input
+            var delay : Long = 1000
+            var timer = Timer()
+            override fun afterTextChanged(p0: Editable?) {
+                timer = Timer()
+                timer.schedule(object : TimerTask() {
+                    override fun run() {
+                        eventsList[currentEvent].eventName = binding.eventTitle.text.toString()
+                        Log.d("EDIT", "TEXT FIELD SUCCESSFULLY UPLOADED")
+                    }
+                }, delay)
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+            //reset timer on input
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                timer.cancel()
+                timer.purge()
+            }
+        })
 
+
+        //update event date
         binding.EventDate.setOnClickListener{
             val currentDate = LocalDate.parse(binding.EventDate.text.toString(), dateFormatter)
             val datePicker =
@@ -118,9 +150,14 @@ class ModifyEvent : Fragment() {
                 binding.EventDate.text = LocalDateTime.ofEpochSecond(
                     datePicker.selection!!/1000,0, ZoneOffset.UTC)
                     .format(dateFormatter)
+                //set it for the event too
+                eventsList[currentEvent].eventDateTime = LocalDateTime.ofEpochSecond(
+                    datePicker.selection!!/1000,0, ZoneOffset.UTC)
+
+
             }
         }
-
+        //update event hour
         binding.EventHour.setOnClickListener {
             val clockFormat = if (is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
             val currentTime = LocalTime.parse(binding.EventHour.text.toString())
@@ -136,13 +173,36 @@ class ModifyEvent : Fragment() {
             timePicker.addOnPositiveButtonClickListener{
                 binding.EventHour.text = LocalTime.of(timePicker.hour,timePicker.minute)
                     .toString()
+                //set the events' hour to the chosen one.
+                eventsList[currentEvent].eventHour = LocalTime.of(timePicker.hour,timePicker.minute).toString()
+
             }
         }
 
-
-
-        //Button "Submit".
+        //Button "Submit". - now responsible for adding an additional event (in case some event
+        //was missed by the scanner)
         binding.submit.setOnClickListener {
+
+            //see if limit was reached
+            if(eventsList.size == 14){
+                Toast.makeText(context, "Maxmimum limit of events reached", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                eventsList.add(Event())
+                //recreate the spinner
+                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until eventsList.size))
+                    .also{adapter ->
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        spinner.adapter = adapter
+                    }
+                //select the event that was just added
+                spinner.setSelection(eventsList.size-1)
+
+
+            }
+
+            //legacy code for old submit - will delete later
+            /*
             // Once the button is pressed, modify the values inside the list.
             eventsList[currentEvent].eventName = binding.eventTitle.text.toString()
 
@@ -158,10 +218,46 @@ class ModifyEvent : Fragment() {
 
             // Automatically move user to next event. Fairly simple but left  it for now
             spinner.setSelection(currentEvent+1)
+
+             */
         }
 
-        //button "Continue".
-        binding.continued.setOnClickListener {
+        //button "Delete". Used to delete an unwanted event.
+        binding.delete.setOnClickListener{
+            val tempEvent = currentEvent
+            //leave the screen if all the events have been deleted.
+            if(eventsList.size == 1){
+                //TODO: MOVE THESE INTO RESOURCES
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Attempting to delete the last event")
+                        .setMessage("Deleting the last event will bring you back to the home page. Do you want to proceed?")
+                        .setNegativeButton("Take me back") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton("Delete anyway") { _, _ ->
+                            findNavController().navigate(R.id.action_modifyEvent_to_home)
+                        }
+                        .show()
+            }
+            //get rid of the event
+            else{
+                eventsList.removeAt(currentEvent)
+                //repopulate the spinner
+                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until eventsList.size))
+                    .also{adapter ->
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        spinner.adapter = adapter
+                    }
+                if(tempEvent>=0){
+                    spinner.setSelection(tempEvent-1)
+                }
+
+            }
+        }
+
+        //button "Finish". Used by the user to confirm that they want to add the events to the
+        //calendar
+        binding.finish.setOnClickListener {
             activity?.let { activity ->
                 //request permission from user to access their calendars
                 ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
@@ -170,7 +266,6 @@ class ModifyEvent : Fragment() {
 
                     if (eventCreator.addEvent()) {
                         (activity as MainActivity).scanCountSub() //removes a scan
-
                         showInterAd()
 
                         findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
@@ -184,6 +279,8 @@ class ModifyEvent : Fragment() {
                 }
             }
         }
+
+
     }
     private fun checkIfHasPermission() :Boolean{
         val result = context?.let {
@@ -234,3 +331,4 @@ class ModifyEvent : Fragment() {
         }
     } 
 }
+

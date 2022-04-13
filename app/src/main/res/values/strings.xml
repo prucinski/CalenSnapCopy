@@ -9,6 +9,12 @@
         <item>Event 6</item>
         <item>Event 7</item>
         <item>Event 8</item>
+        <item>Event 9</item>
+        <item>Event 10</item>
+        <item>Event 11</item>
+        <item>Event 12</item>
+        <item>Event 13</item>
+        <item>Event 14</item>
     </string-array>
 
     <string name="app_name">CalenSnap</string>
@@ -44,7 +50,7 @@
     <string name="found_multiple_event">Multiple events found. Please modify the events if necessary and press "add" on each, then "continue".</string>
     <string name="home">Home</string>
     <string name="success">Event Created Successfully!</string>
-    <string name="continued">continue</string>
+    <string name="continued">finish</string>
     <string name="submit">add</string>
     <string name="hello_blank_fragment">This page will contain: settings/buy premium/scan history. Buttons for those will be added in second term.</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -91,5 +97,10 @@
     <string name="premium_button">Upgrade To Premium</string>
     <string name="a_white_circle_with_a_check_mark_in_the_middle">A white circle with a check mark in the middle</string>
     <string name="done">Done</string>
+    <string name="title_activity_payment_popup_business">PaymentPopupBusiness</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="next">Next</string>
+    <string name="delete">delete</string>
 
 </resources>
