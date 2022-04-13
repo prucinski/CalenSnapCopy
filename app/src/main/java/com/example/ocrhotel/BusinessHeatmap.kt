@@ -137,12 +137,14 @@ class BusinessHeatmap : Fragment() {
                 result.add(LatLng(0.0, 0.0))
                 readEvents(jwt) { apiEvents ->
                     for (event in apiEvents!!.events) {
-                        Log.d("event", event.snap_location.toString())
+
+                        resu                    Log.d("event", event.snap_location.toString())
                         val lat = event.snap_location.N
-                        val lng = -event.snap_location.W
-                        result.add(LatLng(lat, lng))
+                        val lng = -event.snap_location.Wlt.add(LatLng(lat, lng))
                     }
+                    Log.d("jwt", "callback 1")
                 }
+                Log.d("jwt", "callback 2")
             }
         }
         else{
