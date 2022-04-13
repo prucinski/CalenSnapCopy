@@ -114,5 +114,9 @@
         android:name="com.example.ocrhotel.BusinessHeatmap"
         android:label="fragment_business_heatmap"
         tools:layout="@layout/fragment_business_heatmap" />
+    <fragment
+        android:id="@+id/tutorialFragment"
+        android:name="com.example.ocrhotel.TutorialFragment"
+        android:label="TutorialFragment" />
 
 </navigation>

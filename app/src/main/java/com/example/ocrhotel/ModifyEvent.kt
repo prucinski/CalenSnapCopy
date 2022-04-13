@@ -207,7 +207,6 @@ class ModifyEvent : Fragment() {
             val tempEvent = currentEvent
             //leave the screen if all the events have been deleted.
             if(eventsList.size == 1){
-                //TODO: MOVE THESE INTO RESOURCES
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(R.string.deleteLastTitle)
                         .setMessage(R.string.deleteLastMessage)
