@@ -15,8 +15,8 @@ data class Event(var eventName: String = "Event", var eventDateTime: LocalDateTi
 // ,Parcelable
      {
     //strings - used only to display the data.
-    var eventDate = eventDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-    var eventHour = eventDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    val eventDate get() : String? = eventDateTime.format(DateTimeFormatter.ofPattern("dd-MM-uuuu"))
+    val eventHour get() : String? = eventDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
     //
     // constructor(parcel: Parcel) : this(
     //     parcel.readString()!!,
