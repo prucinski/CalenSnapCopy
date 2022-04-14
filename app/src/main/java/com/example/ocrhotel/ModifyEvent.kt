@@ -77,18 +77,20 @@ class ModifyEvent : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        // TODO: GET THAT EVENT ARRAY - change key
         // Receive the event list from SecondFragment.
         eventsList = arguments?.getSerializable("data") as MutableList<Event>
         numberOfEvents = eventsList.size
         Log.d("List size", " in ModifyEvent on creation: $numberOfEvents")
 
-        val fillEvents = resources.getStringArray(R.array.events)
+        // TODO: Use this whenever the algorithm has been modified to actually understand multiple titles.
+        // val fillEvents = eventsList.map{it.eventName}.toMutableList()
+        val fillEvents = eventsList.mapIndexed{idx,_-> "Event ${idx+1}" }.toMutableList()
+
         super.onViewCreated(view, savedInstanceState)
 
         //Applying the spinner
         val spinner: Spinner = binding.foundEventsSelector
-        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until eventsList.size))
+        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents)
             .also{adapter ->
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
@@ -183,28 +185,20 @@ class ModifyEvent : Fragment() {
         //was missed by the scanner)
         binding.submit.setOnClickListener {
 
-            //see if limit was reached
-            if(eventsList.size == 14){
-                Toast.makeText(context, "Maxmimum limit of events reached", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                eventsList.add(Event())
-                //recreate the spinner
-                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until eventsList.size))
-                    .also{adapter ->
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                        spinner.adapter = adapter
-                    }
-                //select the event that was just added
-                spinner.setSelection(eventsList.size-1)
-
-
-            }
+            eventsList.add(Event())
+            fillEvents.add("Event")
+            //recreate the spinner
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents)
+                .also{adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinner.adapter = adapter
+                }
+            //select the event that was just added
+            spinner.setSelection(eventsList.size-1)
         }
 
         //button "Delete". Used to delete an unwanted event.
         binding.delete.setOnClickListener{
-            val tempEvent = currentEvent
             //leave the screen if all the events have been deleted.
             if(eventsList.size == 1){
                     MaterialAlertDialogBuilder(requireContext())
@@ -213,7 +207,7 @@ class ModifyEvent : Fragment() {
                         .setNegativeButton(R.string.deleteLastNo) { dialog, _ ->
                             dialog.dismiss()
                         }
-                        .setPositiveButton(R.string.deleteLastYes) { _, _ ->
+                        .setPositiveButton("Delete anyway") { _, _ ->
                             findNavController().navigate(R.id.action_modifyEvent_to_home)
                         }
                         .show()
@@ -221,15 +215,15 @@ class ModifyEvent : Fragment() {
             //get rid of the event
             else{
                 eventsList.removeAt(currentEvent)
+                fillEvents.removeAt(currentEvent)
                 //repopulate the spinner
-                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents.slice(0 until eventsList.size))
+                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents)
                     .also{adapter ->
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spinner.adapter = adapter
                     }
-                if(tempEvent>=0){
-                    spinner.setSelection(tempEvent-1)
-                }
+                currentEvent -= 1
+                spinner.setSelection(currentEvent)
 
             }
         }
