@@ -37,6 +37,14 @@
             app:destination="@+id/LoginFragment">
         </Preference>
 
+        <Preference
+            app:key="logout"
+            app:title="Logout"
+            app:summary="Log-out from your account."
+            app:fragment = "com.example.ocrhotel.LoginFragment"
+            app:destination="@+id/LoginFragment">
+        </Preference>
+
 
         <Preference
             app:key="feedback"

@@ -226,7 +226,8 @@ class ModifyEvent : Fragment() {
                             dialog.dismiss()
                         }
                         .setPositiveButton("Delete anyway") { _, _ ->
-                            findNavController().navigate(R.id.action_modifyEvent_to_home)
+                            findNavController().popBackStack()
+                            // findNavController().navigate(R.id.action_modifyEvent_to_home)
                         }
                         .show()
             }
