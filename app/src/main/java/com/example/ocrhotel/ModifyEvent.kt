@@ -57,7 +57,6 @@ class ModifyEvent : Fragment() {
     private val debugTag = "Interstitial Ad"
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,7 +72,8 @@ class ModifyEvent : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        // Receive the event list from SecondFragment.
+        // Receive the event list from SecondFragment. Suppressing it because it's annoying me.
+        @Suppress("UNCHECKED_CAST")
         eventsList = arguments?.getSerializable("data") as MutableList<Event>
 
         if(eventsList.size == 0){
