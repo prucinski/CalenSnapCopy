@@ -80,17 +80,35 @@ class SettingsFragment : PreferenceFragmentCompat() {
             AppCompatActivity.MODE_PRIVATE)
 
         val prem = sh!!.getBoolean("isPremiumUser", false)
-        val bus = sh!!.getBoolean("isBusinessUser", false)
+        val bus = sh.getBoolean("isBusinessUser", false)
         if(prem){
             premiumPreference!!.title = "You are a Premium user"
             //TODO: build a string
-            premiumPreference!!.summary = "Your subscription expires on xxx"
+            premiumPreference.summary = "Your subscription expires on xxx"
             premiumPreference.isSelectable = false
         }
         if(bus){
             businessPreference!!.title = "Business features"
-            businessPreference!!.summary = "Press to inspect"
-            businessPreference.setFragment("com.example.ocrhotel.BusinessHeatmap")
+            businessPreference.summary = "Press to inspect"
+            businessPreference.fragment = "com.example.ocrhotel.BusinessHeatmap"
+        }
+
+        val login : Preference? = findPreference("login")
+        val logout : Preference? = findPreference("logout")
+        if(sh.getString("JWT",null) != null){
+            login?.isVisible = false
+            logout?.isVisible = true
+        }
+        else{
+            login?.isVisible = true
+            logout?.isVisible = false
+        }
+
+        // Once you implement it, better set it inside the onCreatePref
+        // instead of letting it sit here
+        logout?.setOnPreferenceClickListener {
+            // TODO ("Implement Log out")
+            true
         }
 
     }

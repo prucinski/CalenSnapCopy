@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+
         // First check if the necessary permissions have been granted.
         // The below function also initializes sharedPrefs.
         checkPermissions(listOf(Manifest.permission.READ_CALENDAR,
@@ -52,13 +56,10 @@ class MainActivity : AppCompatActivity() {
             setupSharedPrefs()
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Retrieve values that we want.
         retrieveAppSettings()
 
-        if(!premiumAccount){
+        if(!premiumAccount && !businessAccount){
             //Code for ads
             MobileAds.initialize(this) {}
 
@@ -184,7 +185,7 @@ class MainActivity : AppCompatActivity() {
         binding.fab.setOnClickListener {
             // Go to scanning
 
-            if (!premiumAccount)
+            if (!premiumAccount && !businessAccount)
                 if (scans > 0) {
                     binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
                     navController.navigate(R.id.SecondFragment)
@@ -231,11 +232,8 @@ class MainActivity : AppCompatActivity() {
 
     // Used in Modify Event to subtract the amount of scans
     fun scanCountSub() {
-        if(!premiumAccount){
-            scans--
-            updateScanNumber()
-        }
-
+        scans--
+        updateScanNumber()
     }
     private fun scanCountAdd() {
         scans += 3
@@ -259,7 +257,7 @@ class MainActivity : AppCompatActivity() {
 
     // Function for loading the reward ad
     private fun loadRewardedAd() {
-        if(premiumAccount){
+        if(premiumAccount || businessAccount){
             return
         }
         RewardedAd.load(this,getString(R.string.ad_id_reward), adRequest, object : RewardedAdLoadCallback() {
