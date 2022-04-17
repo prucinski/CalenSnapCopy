@@ -172,7 +172,7 @@ def upgrade():
 
         connection = connect()
         cursor = connection.cursor()
-        cursor.execute(""" UPDATE profile SET premium_user = %s, business_user = %s, WHERE username = %s; """ (
+        cursor.execute(""" UPDATE profile SET premium_user = %s, business_user = %s, WHERE username = %s; """, (
             is_premium, is_business, username))
 
         return {'success': True}, 200
