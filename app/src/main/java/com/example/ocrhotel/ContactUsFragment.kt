@@ -20,7 +20,7 @@ private const val ARG_PARAM2 = "param2"
 class ContactUsFragment : Fragment() {
 
     private var _binding: FragmentContactUsBinding? = null
-    private var ourMail = "agentdiegoo@o2.pl"
+    private var ourMail = "calensnap@gmail.com"
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -34,9 +34,7 @@ class ContactUsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.postMessage.setOnClickListener {
             //checking if fields are filled out. Rather terrible but it's better than nothing.
-
-            //TODO: This regex at the bottom is finicky and doesn't work
-            if(binding.yourEmail.text.toString() == ""){
+            if(!checkEmail()){
                 Toast.makeText(context, "Error - please supply a valid email address!", Toast.LENGTH_SHORT).show()
             }
             else if (binding.yourSubject.text.toString() == ""){
@@ -54,11 +52,10 @@ class ContactUsFragment : Fragment() {
 
 
     }
-    //TODO: Can someone verify this regex? Idk why but it doesn't work
-    fun checkEmail() : Boolean{
-        val mail = binding.postMessage.text
-        val mailRegex = ("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$").toRegex()
-        return mailRegex.matches(mail)
+    private fun checkEmail() : Boolean{
+        val mail = binding.yourEmail.text
+        val mailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
+        return mailRegex.toRegex().matches(mail)
     }
     private fun sendEmail(){
         //via https://devofandroid.blogspot.com/2018/11/send-email-using-intent-android-studio.html

@@ -110,9 +110,6 @@ class MainActivity : AppCompatActivity() {
             // VALUES INITIALIZED DURING LAUNCH.
             myEdit.putBoolean("isPremiumUser", false)
             myEdit.putInt("numberOfScans", 1)
-            //TODO: GET RID OF THIS PLACEHOLDER.
-            myEdit.putBoolean("isBusinessUser", true)
-
             myEdit.putString("calendarID", getCalendarId()!!.toString())
 
             myEdit.apply()
