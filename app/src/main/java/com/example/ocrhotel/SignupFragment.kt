@@ -70,7 +70,7 @@ class SignupFragment : Fragment() {
                                         }
                                     }
 
-                                    requireActivity().runOnUiThread{
+                                    requireActivity().runOnUiThread {
                                         // Navigate to the Home fragment
                                         val navHostFragment =
                                             requireActivity().supportFragmentManager.findFragmentById(

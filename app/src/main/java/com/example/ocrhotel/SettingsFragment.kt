@@ -76,13 +76,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     //updated with the desired calendar ID.
 
     private val logOutOnClick = Preference.OnPreferenceClickListener {
-        val sh = activity?.getSharedPreferences(
-            getString(R.string.preferences_address),
-            AppCompatActivity.MODE_PRIVATE
-        )
-        val edit = sh!!.edit()
-        edit.putString("JWT", "")
-        edit.apply()
+        // Reset jwt == log out user
+        (requireActivity() as MainActivity).jwt = ""
         checkAndUpdate()
         true
     }
