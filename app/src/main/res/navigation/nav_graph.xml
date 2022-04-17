@@ -108,7 +108,11 @@
         android:id="@+id/loginFragment"
         android:name="com.example.ocrhotel.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login" >
+    <action
+        android:id="@+id/action_loginFragment_to_home"
+        app:destination="@id/home" />
+</fragment>
     <fragment
         android:id="@+id/businessHeatmap"
         android:name="com.example.ocrhotel.BusinessHeatmap"

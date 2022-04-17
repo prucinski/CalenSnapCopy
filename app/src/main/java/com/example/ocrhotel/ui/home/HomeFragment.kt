@@ -1,6 +1,7 @@
 package com.example.ocrhotel.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ import com.example.ocrhotel.*
 import com.example.ocrhotel.R
 import com.example.ocrhotel.databinding.FragmentHomeBinding
 
+@ExperimentalMaterialApi
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var _binding: FragmentHomeBinding? = null
@@ -53,7 +55,29 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         val composeView = binding.composeHome
         premium = (activity as MainActivity).premiumAccount
+        composeHomeView()
 
+        return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("RESUMING", "onResume() called")
+        var temp = premium
+        premium = (activity as MainActivity).premiumAccount
+        //update the upper bar if premium has been purchased. This library requires
+        //recomposing the entire view :(
+        if(temp != premium){
+            composeHomeView()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+    private fun composeHomeView(){
+        val composeView = binding.composeHome
         composeView.apply{
 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -89,12 +113,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-        return root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
 }

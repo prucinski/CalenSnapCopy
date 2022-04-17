@@ -7,8 +7,11 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.joda.time.DateTime
 
 
@@ -89,23 +92,51 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val prem = sh.getBoolean("isPremiumUser", false)
         val bus = sh.getBoolean("isBusinessUser", false)
-        val pExpDay = sh.getInt("premiumExpirationDay)", -1)
-        val pExpMth = sh.getInt("premiumExpirationMonth)", -1)
-        val bExpDay = sh.getInt("businessExpirationDay)", -1)
-        val bExpMth = sh.getInt("businessExpirationMonth)", -1)
+        val pExpDay = sh.getInt("premiumExpirationDay", -1)
+        val pExpMth = sh.getInt("premiumExpirationMonth", -1)
+        val bExpDay = sh.getInt("businessExpirationDay", -1)
+        val bExpMth = sh.getInt("businessExpirationMonth", -1)
         if (prem) {
             premiumPreference!!.title = "You are a Premium user"
-            //TODO: build a string
             val pStringSummary =
                 "Your subscription will expire on $pExpDay.$pExpMth. Press to cancel"
             premiumPreference.summary = pStringSummary
-            premiumPreference.isSelectable = false
+            premiumPreference.setOnPreferenceClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Cancelling premium")
+                    .setMessage("Are you sure you want to cancel your subscription? You will" +
+                            "lose any remaining days of premium you might have." +
+                            "")
+                    .setPositiveButton("OK"){_,_->
+                        //sadly this coupling is required to minimize opening sharedPrefs
+                        (activity as MainActivity).premiumAccount = false
+                        removePremium()
+                    }
+                    .setNegativeButton("Take me back"){_,_->
+                    }.show()
+                true
+            }
         }
         //if user is a business one, that will override the premium account anyway!
         if (bus) {
             premiumPreference!!.title = "You are a Business user"
             val bStringSummary =
-                "Your subscription will expire on $bExpDay.$bExpMth. Press to cancel"
+                "Your business subscription will expire on $bExpDay.$bExpMth. Press to cancel"
+            premiumPreference.summary = bStringSummary
+            premiumPreference.setOnPreferenceClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Cancelling business")
+                    .setMessage("Are you sure you want to cancel your subscription? You will " +
+                            "lose any remaining days of business access you might have." +
+                            "")
+                    .setPositiveButton("OK"){_,_->
+                        removeBusiness()
+                    }
+                    .setNegativeButton("Take me back"){_,_->
+                    }.show()
+                true
+            }
+            premiumPreference.summary = bStringSummary
             businessPreference!!.title = "Business features"
             businessPreference.summary = "Press to inspect"
             businessPreference.fragment = "com.example.ocrhotel.BusinessHeatmap"
@@ -125,7 +156,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // Once you implement it, better set it inside the onCreatePref
         // instead of letting it sit here
         logout?.setOnPreferenceClickListener {
-            // TODO ("Implement Log out")
+            // TODO ("Implement Log out"), if this behaviour is not enough.
+            val editor = sh.edit()
+            editor.putString("JWT", null)
+            editor.commit()
+            (activity as MainActivity).resetTables()
+            refreshFragment()
             true
         }
         //check whether the subscriptions have expired. Right now, it doesn't automatically extend
@@ -133,13 +169,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (pExpDay == DateTime.now().dayOfMonth) {
             if (pExpMth == DateTime.now().monthOfYear) {
                 removePremium()
-                refreshFragment()
             }
         }
         if (bExpDay == DateTime.now().dayOfMonth) {
             if (bExpMth == DateTime.now().monthOfYear) {
                 removeBusiness()
-                refreshFragment()
             }
         }
     }
@@ -154,6 +188,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         editor.putInt("premiumExpirationMonth)", -1)
         //no need to update the expiration dates as they will not be read anyway
         editor.commit()
+        refreshFragment()
 
     }
 
@@ -172,12 +207,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
         editor.putInt("businessExpirationMonth)", -1)
 
         editor.commit()
+        refreshFragment()
     }
 
     //refresh by renavigating to this fragment
     private fun refreshFragment(){
         val navController: NavController =
-            requireActivity().findNavController(R.id.settingsMenu)
+            NavHostFragment.findNavController(this)
         navController.run {
             popBackStack()
             navigate(R.id.settingsMenu)
