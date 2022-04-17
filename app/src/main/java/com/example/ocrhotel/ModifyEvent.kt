@@ -278,7 +278,7 @@ class ModifyEvent : Fragment() {
                     }
                 }
                 else{
-                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled. Try restarting the app.", Toast.LENGTH_SHORT).show()
                 }
             }
         }

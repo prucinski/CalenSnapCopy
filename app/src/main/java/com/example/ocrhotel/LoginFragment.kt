@@ -9,6 +9,7 @@ import com.example.ocrhotel.databinding.FragmentLoginBinding
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
 
 class LoginFragment : Fragment() {
 
@@ -82,8 +83,10 @@ class LoginFragment : Fragment() {
                         }
                         edit.apply()
                     }
-                    // Return to previous fragment
-                    activity?.supportFragmentManager?.popBackStack()
+                    // Move to home, update the tables before moving.
+                    (activity as MainActivity?)!!.jwtAndPopulateTables()
+                    val navController = NavHostFragment.findNavController(this)
+                    navController.navigate(R.id.home)
                 }
             } else {
                 activity?.runOnUiThread {

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -72,28 +73,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupNavigation()
-
-        getJwtFromPreferences(this)?.let{jwt->
-            readUserEvents(jwt) { userEvents ->
-                val events = mutableListOf<Event>()
-
-                if (userEvents != null) {
-                    for (event in userEvents.events) {
-                        events.add(Event(event.title, extractDate(event.event_time)))
-                    }
-                } else {
-                    navController.navigate(R.id.loginFragment)
-                }
-                this.viewModels<EventListModel>().value.eventsList = events
-            }
-            readProfile(jwt) { profile ->
-                if (profile != null) {
-                    // Update profile
-                }
-
-            }
-        } ?: navController.navigate(R.id.loginFragment)
-
+        jwtAndPopulateTables()
     }
 
     private fun setupSharedPrefs(){
@@ -126,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                     // Permission is granted. Set the shared preferences up.
                     whenPermissionGranted()
                 } else {
-                    // this.finish()
+                    //this.finish()
                 }
             }
 
@@ -148,7 +128,8 @@ class MainActivity : AppCompatActivity() {
                     requestPermissionLauncher.launch(permissions.toTypedArray())
                 }
                 .setNegativeButton("I disagree"){_,_->
-                    // this.finish()
+                    //turn off the app if permissions are not granted.
+                     this.finish()
                 }.show()
         }
     }
@@ -207,7 +188,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_history -> navController.navigate(R.id.eventsHistoryFragment)
 
                 // Go to the settings page
-                R.id.navigation_settings -> navController.navigate(R.id.settingsMenu)
+                R.id.navigation_settings ->
+                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED){
+                     navController.navigate(R.id.settingsMenu)
+                }
+                else{
+                    Toast.makeText(this, "You don't have calendar permissions enabled. The app will " +
+                               "not function without them. Please restart the application and grant these permisisons"
+                        , Toast.LENGTH_LONG).show()
+                }
+
 
             }
             return@setOnItemSelectedListener true
@@ -301,6 +291,32 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         resume()
     }
+    fun jwtAndPopulateTables(){
+        getJwtFromPreferences(this)?.let{jwt->
+            readUserEvents(jwt) { userEvents ->
+                val events = mutableListOf<Event>()
+
+                if (userEvents != null) {
+                    for (event in userEvents.events) {
+                        events.add(Event(event.title, extractDate(event.event_time)))
+                    }
+                } else {
+                    navController.navigate(R.id.loginFragment)
+                }
+                this.viewModels<EventListModel>().value.eventsList = events
+            }
+            readProfile(jwt) { profile ->
+                if (profile != null) {
+                    // Update profile
+                }
+
+            }
+        } ?: navController.navigate(R.id.loginFragment)
+    }
+    //function to be called after logging out to clear the tables.
+    fun resetTables(){
+        this.viewModels<EventListModel>().value.eventsList = emptyList()
+    }
 
     fun resume() {
         //if user left the activity, they might have bought premium. Check if they did.
@@ -340,7 +356,7 @@ class MainActivity : AppCompatActivity() {
                 calName = calCursor.getString(nameCol)
                 calID = calCursor.getString(idCol)
                 Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
-                val helloTutorial = Toast.makeText(applicationContext, "Event is created at this calendar: $calName", Toast.LENGTH_SHORT)
+                val helloTutorial = Toast.makeText(applicationContext, "Events will be created at this calendar: $calName", Toast.LENGTH_SHORT)
                 helloTutorial.show()
                 calCursor.close()
                 return calID.toLong()

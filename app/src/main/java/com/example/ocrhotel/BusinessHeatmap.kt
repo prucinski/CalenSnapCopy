@@ -134,7 +134,6 @@ class BusinessHeatmap : Fragment() {
             //TODO: wait for values being returned instead of hanging the app
             activity?.runOnUiThread {
                 Log.d("jwt", "jwt found.")
-
                 var found: Boolean = false;
                 readEvents(jwt) { apiEvents ->
                     for (event in apiEvents!!.events) {
