@@ -349,9 +349,9 @@ fun main(args: Array<String>) {
                 println(profile?.username)
             }
 
-            upgradeProfile(token, true, true) {
-                if (it) println("Success")
-            }
+//            upgradeProfile(token, false, false) {
+//                if (it) println("Success")
+//            }
 
 //            readEvents(token) { events ->
 //                if (events != null) {
