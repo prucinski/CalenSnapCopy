@@ -16,6 +16,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.wallet.*
+import org.joda.time.DateTime
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -153,10 +154,14 @@ class PaymentPopupBusiness : AppCompatActivity() {
             Log.d("Google Pay token", paymentMethodData
                 .getJSONObject("tokenizationData")
                 .getString("token"))
-            //Updating the premium account.
+            //Updating the business account. Business account comes in with in-built premium
+            val expirationDate = DateTime.now().plusDays(30)
             val sh = getSharedPreferences("com.example.ocrhotel_preferences", MODE_PRIVATE)
             val myEdit = sh.edit()
+            myEdit.putBoolean("isPremiumUser", true)
             myEdit.putBoolean("isBusinessUser", true)
+            myEdit.putInt("businessExpirationMonth", expirationDate.monthOfYear)
+            myEdit.putInt("businessExpirationDay", expirationDate.dayOfMonth)
             myEdit.apply()
 
         } catch (error: JSONException) {
