@@ -174,10 +174,12 @@ def upgrade():
         cursor = connection.cursor()
         cursor.execute(""" UPDATE profile SET premium_user = %s, business_user = %s, WHERE username = %s; """, (
             is_premium, is_business, username))
+        connection.commit()
 
         return {'success': True}, 200
 
     except Exception as e:
+        app.logger.warn(e)
         return {'success': False}, 400
 
 
