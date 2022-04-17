@@ -107,8 +107,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val bStringSummary =
                 "Your subscription will expire on $bExpDay.$bExpMth. Press to cancel"
             businessPreference!!.title = "Business features"
-            businessPreference!!.summary = "Press to inspect"
-            businessPreference!!.setFragment("com.example.ocrhotel.BusinessHeatmap")
+            businessPreference.summary = "Press to inspect"
+            businessPreference.fragment = "com.example.ocrhotel.BusinessHeatmap"
+        }
+
+        val login : Preference? = findPreference("login")
+        val logout : Preference? = findPreference("logout")
+        if(sh.getString("JWT",null) != null){
+            login?.isVisible = false
+            logout?.isVisible = true
+        }
+        else{
+            login?.isVisible = true
+            logout?.isVisible = false
+        }
+
+        // Once you implement it, better set it inside the onCreatePref
+        // instead of letting it sit here
+        logout?.setOnPreferenceClickListener {
+            // TODO ("Implement Log out")
+            true
         }
         //check whether the subscriptions have expired. Right now, it doesn't automatically extend
         //due to the technicalities with the payment provider, but it is easily amendable.

@@ -47,7 +47,6 @@
         android:layout_marginBottom="50dp"
         android:background="@drawable/button_shape"
         android:text="@string/login"
-        android:textColor="@color/secondaryColor"
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

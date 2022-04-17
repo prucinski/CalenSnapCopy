@@ -195,5 +195,9 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="event_modification">Event Modification</string>
+    <string name="title">Title</string>
+    <string name="_01_08_2020">01-08-2020</string>
+    <string name="_16_00">16:00</string>
 
 </resources>
