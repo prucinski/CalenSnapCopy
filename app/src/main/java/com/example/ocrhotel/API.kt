@@ -77,6 +77,14 @@ private fun post(url: HttpUrl, data: String, callback: Callback, jwt: String? = 
     return makeCall(request, callback)
 }
 
+// Put to the specified http url
+private fun put(url: HttpUrl, data: String, callback: Callback, jwt: String? = null): Call {
+    val request = baseRequest(url, jwt)
+        .put(data.toRequestBody())
+        .build()
+    return makeCall(request, callback)
+}
+
 // Delete at the specified http url
 private fun delete(url: HttpUrl, callback: Callback, jwt: String? = null): Call {
     val request = baseRequest(url, jwt)
@@ -186,6 +194,19 @@ fun deleteProfile(jwt: String, callback: (Boolean) -> Unit) {
     delete(path("profile"), validateCallback(callback), jwt)
 }
 
+fun upgradeProfile(
+    jwt: String,
+    isPremium: Boolean,
+    isBusiness: Boolean,
+    callback: (Boolean) -> Unit
+) {
+    val gson = Gson()
+    val payload = gson.toJson(object {
+        val premium = isPremium
+        val business = isBusiness
+    })
+    put(path("upgrade"), payload, validateCallback(callback), jwt)
+}
 
 // Create a new event for the user with profileId. This updates both the userevent and the event table.
 fun createEvent(
@@ -337,19 +358,19 @@ fun main(args: Array<String>) {
 //                }
 //            }
 
-            for (i in 1..10) {
-
-                createEvent(
-                    token,
-                    "User Event $i",
-                    LocalDateTime.now().plusHours(10),
-                    LocalDateTime.now().plusHours(10),
-                    0.0,
-                    0.0
-                ) {
-                    println("Event creation was successful: $it")
-                }
-            }
+//            for (i in 1..10) {
+//
+//                createEvent(
+//                    token,
+//                    "User Event $i",
+//                    LocalDateTime.now().plusHours(10),
+//                    LocalDateTime.now().plusHours(10),
+//                    0.0,
+//                    0.0
+//                ) {
+//                    println("Event creation was successful: $it")
+//                }
+//            }
 //
 //            readUserEvents(token) {
 //                if (it != null) {
