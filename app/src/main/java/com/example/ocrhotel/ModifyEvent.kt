@@ -174,7 +174,7 @@ class ModifyEvent : Fragment() {
             datePicker.show(parentFragmentManager,"DATE")
 
             datePicker.addOnPositiveButtonClickListener {
-                binding.EventDate.text = LocalDateTime.ofEpochSecond(
+                binding.endEventDate.text = LocalDateTime.ofEpochSecond(
                     datePicker.selection!!/1000,0, ZoneOffset.UTC)
                     .format(dateFormatter)
 
@@ -194,7 +194,7 @@ class ModifyEvent : Fragment() {
             timePicker.show(parentFragmentManager,"TIME")
 
             timePicker.addOnPositiveButtonClickListener{
-                binding.EventHour.text = LocalTime.of(timePicker.hour,timePicker.minute)
+                binding.endEventHour.text = LocalTime.of(timePicker.hour,timePicker.minute)
                     .toString()
 
             }
