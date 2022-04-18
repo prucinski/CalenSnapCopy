@@ -8,12 +8,12 @@
         <item name="android:windowFullscreen">true</item>
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/secondaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryColorVariant</item>
+        <item name="colorOnPrimary">@color/secondaryLightColor</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
-        <item name="colorOnSecondary">@color/secondaryTextColor</item>
+        <item name="colorOnSecondary">@color/secondaryLightColor</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- The background of the application. -->
@@ -21,29 +21,34 @@
 
         <item name="textFillColor">@color/white</item>
 
-        <item name="bottomAppBarStyle">@style/Widget.App.BottomAppBar</item>
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
+
+        <!-- Setting text color. -->>
+        <item name="android:textColorPrimary">@color/primaryDarkColor</item>
+        <item name="android:textColorSecondary">@android:color/tab_indicator_text</item>
+        <item name ="android:textColorTertiary">@android:color/tab_indicator_text</item>
+        <item name ="android:textColorHint">@android:color/tab_indicator_text</item>
 
     </style>
 
-<!--    BottomAppBar's theme-->
-    <style name="Widget.App.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomAppBar</item>
+    <!--    BottomAppBar's theme-->
+    <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
     </style>
 
     <style name="Widget.App.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
     </style>
 
-    <style name="ThemeOverlay.App.BottomAppBar" parent="">
-        <item name="android:backgroundTint">@color/secondaryDarkColor</item>
-        <item name="colorPrimary">@color/secondaryColor</item>
-        <item name="colorOnPrimary">@color/white</item>
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorOnPrimary">@color/primaryDarkColor</item>
     </style>
 
     <style name="ThemeOverlay.App.FloatingActionButton" parent="">
-        <item name="colorSecondary">@color/primaryColor</item>
-        <item name="colorOnSecondary">@color/secondaryColor</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorOnSecondary">@color/secondaryLightColor</item>
     </style>
 
     <style name="Theme.OCRHotel.NoActionBar">
@@ -52,9 +57,22 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="Theme.AppCompat.Translucent" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:background">#00000000</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
     <style name="Theme.OCRHotel.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.OCRHotel.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="MaterialTextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+    </style>
 
- </resources>
+
+</resources>

@@ -27,12 +27,20 @@
             app:summary="See where to put your posters for highest engagement">
             <intent
                 android:targetPackage="com.example.ocrhotel"
-                android:targetClass="com.example.ocrhotel.payment.PaymentPopup"/>
+                android:targetClass="com.example.ocrhotel.payment.PaymentPopupBusiness"/>
         </Preference>
         <Preference
             app:key="login"
             app:title="Login"
             app:summary="Log in to your account."
+            app:fragment = "com.example.ocrhotel.LoginFragment"
+            app:destination="@+id/LoginFragment">
+        </Preference>
+
+        <Preference
+            app:key="logout"
+            app:title="Logout"
+            app:summary="Log out from your account."
             app:fragment = "com.example.ocrhotel.LoginFragment"
             app:destination="@+id/LoginFragment">
         </Preference>

@@ -29,7 +29,6 @@ class SecondFragment : Fragment() {
         var eventData: MutableLiveData<List<Event>> = MutableLiveData(null)
         var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
         var errorOccurred: MutableLiveData<Boolean> = MutableLiveData(false)
-
     }
 
     private var _binding: FragmentSecondBinding? = null
@@ -42,9 +41,6 @@ class SecondFragment : Fragment() {
 
     private val algorithmModel: EventDataViewModel by activityViewModels()
 
-
-    private var eventData: Algorithm.Result? = null
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,6 +52,14 @@ class SecondFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (!(activity as MainActivity).loggedIn) {
+            // User has to be logged in to scan images
+            val navHostFragment =
+                requireActivity().supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.loginFragment)
+        }
 
         imageProvider = ImageProvider(this, activity, this::handleImage)
         binding.uploadImage.setOnClickListener {
@@ -99,7 +103,7 @@ class SecondFragment : Fragment() {
                     )
 
                 val navController = NavHostFragment.findNavController(this)
-                navController.navigate(R.id.modifyEvent,bundle)
+                navController.navigate(R.id.modifyEvent, bundle)
 
             }
         }
@@ -116,12 +120,12 @@ class SecondFragment : Fragment() {
         activity?.let { a ->
             a.contentResolver.openInputStream(uri)?.let { inputStream ->
 
-                val bytes : ByteArray = inputStream.readBytes()
+                val bytes: ByteArray = inputStream.readBytes()
 
-                Log.d("App", "Image size: ${bytes.size/1_000_000} MB.")
+                Log.d("App", "Image size: ${bytes.size / 1_000_000} MB.")
 
                 // Create a temporary file that may be used to reduce the size of the image.
-                val tempFile = File.createTempFile("__tempOCR_","")
+                val tempFile = File.createTempFile("__tempOCR_", "")
                 // Delete the temporary file once it is no longer needed.
                 tempFile.deleteOnExit()
 
@@ -129,20 +133,20 @@ class SecondFragment : Fragment() {
 
                     // Reduce to fit 4MB if the image is too big.
                     val image =
-                        if(bytes.size > 4_000_000) context?.let {
+                        if (bytes.size > 4_000_000) context?.let {
 
                             // Only write bytes in case you actually have to create a new image.
                             tempFile.writeBytes(bytes)
 
-                            Log.d("OCR","Image resized.")
-                            Compressor.compress(it,tempFile){
+                            Log.d("OCR", "Image resized.")
+                            Compressor.compress(it, tempFile) {
                                 size(4_000_000)
                             }
                         }!!.readBytes()
                         else
                             bytes
 
-                    Log.d("OCR" , """Final image size: ${image.size/1_000_000} MB.""")
+                    Log.d("OCR", """Final image size: ${image.size / 1_000_000} MB.""")
 
                     val ocr = OCRAzureREST()
                     val algo = Algorithm()

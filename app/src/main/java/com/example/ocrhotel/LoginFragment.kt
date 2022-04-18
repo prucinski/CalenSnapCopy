@@ -41,7 +41,7 @@ class LoginFragment : Fragment() {
         val username = binding.usernameInput.text.toString().trim()
         val password = binding.passwordInput.text.toString()
 
-        // Make sure not blank username or password is provided
+        // Make sure no blank username or password is provided
         if (username.isBlank() || password.isBlank()) {
             Toast.makeText(
                 requireContext(),

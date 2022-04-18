@@ -108,7 +108,20 @@
         android:id="@+id/loginFragment"
         android:name="com.example.ocrhotel.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login" >
+    <action
+        android:id="@+id/action_loginFragment_to_home"
+        app:destination="@id/home" />
+</fragment>
+    <fragment
+        android:id="@+id/businessHeatmap"
+        android:name="com.example.ocrhotel.BusinessHeatmap"
+        android:label="fragment_business_heatmap"
+        tools:layout="@layout/fragment_business_heatmap" />
+    <fragment
+        android:id="@+id/tutorialFragment"
+        android:name="com.example.ocrhotel.TutorialFragment"
+        android:label="TutorialFragment" />
     <fragment
         android:id="@+id/signupFragment"
         android:name="com.example.ocrhotel.SignupFragment"

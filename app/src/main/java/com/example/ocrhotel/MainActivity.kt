@@ -6,10 +6,12 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -18,8 +20,10 @@ import com.example.ocrhotel.ui.home.EventListModel
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MainActivity : AppCompatActivity() {
@@ -91,6 +95,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+
         // First check if the necessary permissions have been granted.
         // The below function also initializes sharedPrefs.
         checkPermissions(
@@ -105,13 +113,10 @@ class MainActivity : AppCompatActivity() {
             setupSharedPrefs()
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Retrieve values that we want.
         retrieveAppSettings()
 
-        if (!premiumAccount) {
+        if(!(premiumAccount || businessAccount)){
             //Code for ads
             MobileAds.initialize(this) {}
 
@@ -126,8 +131,12 @@ class MainActivity : AppCompatActivity() {
 
 
         reloadEvents()
-
         setupNavigation()
+    }
+
+    fun logOut() {
+        jwt = "" // this means user is logged out
+        resetEvents()
     }
 
     fun reloadEvents() {
@@ -161,6 +170,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    //function to be called after logging out to clear the tables.
+    fun resetEvents(){
+        this.viewModels<EventListModel>().value.eventsList = emptyList()
+    }
+
+
+
     private fun setupSharedPrefs() {
         // Storing data into SharedPreferences
         // Initialization on first app launch.
@@ -176,21 +192,12 @@ class MainActivity : AppCompatActivity() {
 
         if (!sh.contains("isPremiumUser")) {
             val myEdit = sh.edit()
-//
-//            // VALUES INITIALIZED DURING LAUNCH.
-//            myEdit.putBoolean("isPremiumUser", false)
-//            myEdit.putInt("numberOfScans", 1)
-//            //TODO: GET RID OF THIS PLACEHOLDER.
-//            myEdit.putBoolean("isBusinessUser", true)
-//            myEdit.putString("JWT", "") // User is logged out by default
-//
-            val calendarId = getCalendarId()
-            // Make sure that the user has a suitable calendar
-            if (calendarId != null) {
-                myEdit.putString("calendarID", calendarId.toString())
-                Log.w("CALENDER", "No calendar found!")
-            }
-//
+
+            // VALUES INITIALIZED DURING LAUNCH.
+            myEdit.putBoolean("isPremiumUser", false)
+            myEdit.putInt("numberOfScans", 1)
+            myEdit.putString("calendarID", getCalendarId()!!.toString())
+
             myEdit.apply()
         }
     }
@@ -209,7 +216,7 @@ class MainActivity : AppCompatActivity() {
                     // Permission is granted. Set the shared preferences up.
                     whenPermissionGranted()
                 } else {
-                    // this.finish()
+                    //this.finish()
                 }
             }
 
@@ -230,8 +237,9 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton("I understand") { _, _ ->
                     requestPermissionLauncher.launch(permissions.toTypedArray())
                 }
-                .setNegativeButton("I disagree") { _, _ ->
-                    // this.finish()
+                .setNegativeButton("I disagree"){_,_->
+                    //turn off the app if permissions are not granted.
+                     this.finish()
                 }.show()
         }
     }
@@ -246,10 +254,26 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
 
+        //removes the navigation bar, fab from the successful scan
+        val bottomBar = findViewById<BottomAppBar>(R.id.bottom_bar)
+        val fab = findViewById<FloatingActionButton>(R.id.fab)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if(destination.id == R.id.successfulScan) {
+                bottomBar.visibility = View.GONE
+                fab.visibility = View.GONE
+                bottomNavigationView.visibility = View.GONE
+            } else {
+                bottomBar.visibility = View.VISIBLE
+                fab.visibility = View.VISIBLE
+                bottomNavigationView.visibility = View.VISIBLE
+            }
+        }
+
         binding.fab.setOnClickListener {
             // Go to scanning
 
-            if (!premiumAccount)
+            if (!premiumAccount && !businessAccount)
                 if (scans > 0) {
                     binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
                     navController.navigate(R.id.SecondFragment)
@@ -269,17 +293,21 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home -> navController.navigate(R.id.home)
 
                 // Go to tutorial / help page
-                R.id.navigation_help -> Toast.makeText(
-                    peekAvailableContext(),
-                    "This will lead to a tutorial!",
-                    Toast.LENGTH_SHORT
-                ).show()
-
+                R.id.navigation_help -> navController.navigate(R.id.tutorialFragment)
                 // Go to the history page
                 R.id.navigation_history -> navController.navigate(R.id.eventsHistoryFragment)
 
                 // Go to the settings page
-                R.id.navigation_settings -> navController.navigate(R.id.settingsMenu)
+                R.id.navigation_settings ->
+                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED){
+                     navController.navigate(R.id.settingsMenu)
+                }
+                else{
+                    Toast.makeText(this, "You don't have calendar permissions enabled. The app will " +
+                               "not function without them. Please restart the application and grant these permisisons"
+                        , Toast.LENGTH_LONG).show()
+                }
+
 
             }
             return@setOnItemSelectedListener true
@@ -301,11 +329,8 @@ class MainActivity : AppCompatActivity() {
 
     // Used in Modify Event to subtract the amount of scans
     fun scanCountSub() {
-        if (!premiumAccount) {
-            scans--
-            updateScanNumber()
-        }
-
+        scans--
+        updateScanNumber()
     }
 
     private fun scanCountAdd() {
@@ -330,7 +355,7 @@ class MainActivity : AppCompatActivity() {
 
     // Function for loading the reward ad
     private fun loadRewardedAd() {
-        if (premiumAccount) {
+        if(premiumAccount || businessAccount){
             return
         }
         RewardedAd.load(
@@ -377,19 +402,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-//
-//    override fun onResume() {
-//        super.onResume()
-//        resume()
-//    }
-
-//    fun resume() {
-//        //if user left the activity, they might have bought premium. Check if they did.
-//        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-//        premiumAccount = sh.getBoolean("isPremiumUser", false)
-//        businessAccount = sh.getBoolean("isBusinessUser", false)
-//        scans = sh.getInt("numberOfScans", 1)
-//    }
 
     //TODO: MOVE THIS INTO SETTINGS?
     //TODO: maybe keep a stub to choose a default calendar upon launch
@@ -423,12 +435,8 @@ class MainActivity : AppCompatActivity() {
                 val idCol = calCursor.getColumnIndex(projection[0])
                 calName = calCursor.getString(nameCol)
                 calID = calCursor.getString(idCol)
-                Log.d("CAL", "Calendar name = $calName Calendar ID = $calID")
-                val helloTutorial = Toast.makeText(
-                    applicationContext,
-                    "Event is created at this calendar: $calName",
-                    Toast.LENGTH_SHORT
-                )
+                Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
+                val helloTutorial = Toast.makeText(applicationContext, "Events will be created at this calendar: $calName", Toast.LENGTH_SHORT)
                 helloTutorial.show()
                 calCursor.close()
                 return calID.toLong()
