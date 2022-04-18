@@ -98,7 +98,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         // First check if the necessary permissions have been granted.
         // The below function also initializes sharedPrefs.
         checkPermissions(
@@ -127,9 +126,6 @@ class MainActivity : AppCompatActivity() {
             //Load reward ad
             loadRewardedAd()
         }
-
-
-
         reloadEvents()
         setupNavigation()
     }
@@ -162,7 +158,10 @@ class MainActivity : AppCompatActivity() {
             }
             readProfile(jwt) { profile ->
                 if (profile != null) {
-                    // Update profile
+                    // Update shared preferences from profile
+                    businessAccount = profile.business_user
+                    premiumAccount = profile.premium_user
+                    scans = profile.remaining_free_uses
                 }
 
             }
