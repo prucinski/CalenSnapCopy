@@ -18,7 +18,7 @@
             android:name=".payment.PaymentPopupBusiness"
             android:exported="false"
             android:label="@string/title_activity_payment_popup_business"
-            android:theme="@style/Theme.OCRHotel.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.Translucent" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

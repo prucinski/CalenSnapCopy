@@ -9,7 +9,7 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryColorVariant</item>
-        <item name="colorOnPrimary">@color/secondaryLightColor</item>
+        <item name="colorOnPrimary">@color/secondaryColor</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
@@ -47,8 +47,9 @@
     </style>
 
     <style name="ThemeOverlay.App.FloatingActionButton" parent="">
-        <item name="colorSecondary">@color/secondaryColor</item>
-        <item name="colorOnSecondary">@color/secondaryLightColor</item>
+        <!-- The name and chosen color don't match, but that's intentional in order to have the floating button black -->>
+        <item name="colorSecondary">@color/primaryColor</item>
+        <item name="colorOnSecondary">@color/secondaryColor</item>
     </style>
 
     <style name="Theme.OCRHotel.NoActionBar">
