@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="625dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="55dp"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:background="@android:color/white">
