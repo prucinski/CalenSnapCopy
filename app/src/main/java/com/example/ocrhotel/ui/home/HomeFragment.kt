@@ -31,6 +31,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.ocrhotel.*
 import com.example.ocrhotel.R
 import com.example.ocrhotel.databinding.FragmentHomeBinding
+import com.google.android.material.composethemeadapter.MdcTheme
 
 @ExperimentalMaterialApi
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -42,6 +43,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val binding get() = _binding!!
     private val model: EventListModel by activityViewModels()
     private var premium = false
+    private var business = false
 
     @OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class)
     override fun onCreateView(
@@ -53,8 +55,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val composeView = binding.composeHome
         premium = (activity as MainActivity).premiumAccount
+        business = (activity as MainActivity).businessAccount
         composeHomeView()
 
         return root
@@ -63,7 +65,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onResume() {
         super.onResume()
         Log.d("RESUMING", "onResume() called")
-        var temp = premium
+        val temp = premium
         premium = (activity as MainActivity).premiumAccount
         //update the upper bar if premium has been purchased. This library requires
         //recomposing the entire view :(
@@ -87,9 +89,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     mutableStateOf(model)
                 }
 
-                MaterialTheme {
+                MdcTheme {
                     Scaffold(
-                        modifier = Modifier.padding(vertical = if (!premium) 55.dp else 0.dp),
+                        modifier = Modifier.padding(top = if (!premium && !business) 55.dp else 0.dp),
                         topBar = { CustomTopAppBar() }
                     ) { contentPadding ->
 

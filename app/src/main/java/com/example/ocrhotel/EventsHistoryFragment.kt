@@ -21,6 +21,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import com.example.ocrhotel.databinding.FragmentEventsHistoryBinding
 import com.example.ocrhotel.ui.home.EventListModel
+import com.google.android.material.composethemeadapter.MdcTheme
+
 
 
 /**
@@ -53,10 +55,10 @@ class EventsHistoryFragment : Fragment() {
                     mutableStateOf(model)
                 }
 
-                MaterialTheme{
+                MdcTheme{
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.padding(vertical= if(!act.premiumAccount) 55.dp else 0.dp)
+                        modifier = Modifier.padding(top= if(!act.premiumAccount && !act.businessAccount) 55.dp else 0.dp)
                     ){
                         items(items=events.getPastEvents()){event->
                             EventTile(event){

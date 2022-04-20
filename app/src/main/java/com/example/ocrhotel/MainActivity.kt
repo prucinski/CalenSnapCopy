@@ -60,7 +60,14 @@ class MainActivity : AppCompatActivity() {
         // Retrieve values that we want.
         retrieveAppSettings()
 
-        if(!premiumAccount && !businessAccount){
+        initializeAds()
+
+        setupNavigation()
+        jwtAndPopulateTables()
+    }
+
+    private fun initializeAds() {
+        if (!premiumAccount && !businessAccount) {
             //Code for ads
             MobileAds.initialize(this) {}
 
@@ -71,9 +78,6 @@ class MainActivity : AppCompatActivity() {
             //Load reward ad
             loadRewardedAd()
         }
-
-        setupNavigation()
-        jwtAndPopulateTables()
     }
 
     private fun setupSharedPrefs(){
@@ -143,22 +147,6 @@ class MainActivity : AppCompatActivity() {
         // Initialize the bottom navigation
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
-
-        //removes the navigation bar, fab from the successful scan
-        val bottomBar = findViewById<BottomAppBar>(R.id.bottom_bar)
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if(destination.id == R.id.successfulScan) {
-                bottomBar.visibility = View.GONE
-                fab.visibility = View.GONE
-                bottomNavigationView.visibility = View.GONE
-            } else {
-                bottomBar.visibility = View.VISIBLE
-                fab.visibility = View.VISIBLE
-                bottomNavigationView.visibility = View.VISIBLE
-            }
-        }
 
         binding.fab.setOnClickListener {
             // Go to scanning
