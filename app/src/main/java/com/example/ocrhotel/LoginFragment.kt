@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.ocrhotel.databinding.FragmentLoginBinding
 import android.util.Log
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -20,12 +21,22 @@ class LoginFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
         binding.loginButton.setOnClickListener {
-            Log.w("BUTTON", "pressed")
             onLoginButtonPressed()
+        }
+
+        // Make the form click the button when enter is pressed.
+        binding.passwordInput.setOnEditorActionListener { _, actionId, _ ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> {
+                    onLoginButtonPressed()
+                    true
+                }
+                else -> false
+            }
         }
 
         return binding.root
@@ -62,23 +73,16 @@ class LoginFragment : Fragment() {
 
                         activity?.runOnUiThread {
                             readProfile(jwt) { profile ->
-                                val sh = activity?.getSharedPreferences(
-                                    getString(R.string.preferences_address),
-                                    AppCompatActivity.MODE_PRIVATE
-                                )
-                                if (sh != null) {
-                                    val edit = sh.edit()
-                                    // Set shared preference info about premium status
-                                    if (profile != null && profile.business_user) {
-                                        edit.putBoolean("isPremiumUser", true)
-                                    } else {
-                                        edit.putBoolean("isPremiumUser", false)
-                                    }
-                                    edit.apply()
-                                    val a = (activity as MainActivity?)
-                                    Log.w("ACTIVITY MAIN", a.toString())
-                                    a?.resume()
+                                // Set shared preference info about premium status
+                                if (profile != null && profile.business_user) {
+                                    edit.putBoolean("isPremiumUser", true)
+                                } else {
+                                    edit.putBoolean("isPremiumUser", false)
                                 }
+                                edit.apply()
+                                val a = (activity as MainActivity?)
+                                Log.w("ACTIVITY MAIN", a.toString())
+                                a?.resume()
                             }
                         }
                         edit.apply()
