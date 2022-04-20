@@ -5,36 +5,42 @@
 
     <PreferenceCategory
         android:layout_height="wrap_content"
-        app:title="@string/account_header">
+        app:title="@string/account_header"
+        app:iconSpaceReserved="false">
 
-
-        <ListPreference
-            app:key="calendarID"
-            app:title="@string/calendar_title"
-            app:useSimpleSummaryProvider="true" />
 
         <Preference
             app:key="premium"
             app:title="Buy premium"
-            app:summary="Unlimited scans and no ads">
+            app:summary="Unlimited scans and no ads"
+
+            app:iconSpaceReserved="false"
+            >
             <intent
                 android:targetPackage="com.example.ocrhotel"
                 android:targetClass="com.example.ocrhotel.payment.PaymentPopup"/>
         </Preference>
+
         <Preference
             app:key="business"
             app:title="Buy business access"
-            app:summary="See where to put your posters for highest engagement">
+            app:summary="See where to put your posters for highest engagement"
+
+            app:iconSpaceReserved="false"
+            >
             <intent
                 android:targetPackage="com.example.ocrhotel"
                 android:targetClass="com.example.ocrhotel.payment.PaymentPopupBusiness"/>
         </Preference>
+
         <Preference
             app:key="login"
             app:title="Login"
             app:summary="Log in to your account."
             app:fragment = "com.example.ocrhotel.LoginFragment"
-            app:destination="@+id/LoginFragment">
+            app:destination="@+id/LoginFragment"
+            app:iconSpaceReserved="false"
+            >
         </Preference>
 
         <Preference
@@ -42,25 +48,48 @@
             app:title="Logout"
             app:summary="Log out from your account."
             app:fragment = "com.example.ocrhotel.LoginFragment"
-            app:destination="@+id/LoginFragment">
+            app:destination="@+id/LoginFragment"            app:iconSpaceReserved="false"
+            >
         </Preference>
 
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="Calendar"
+        app:iconSpaceReserved="false"
+        >
+
+        <ListPreference
+            app:key="calendarID"
+            app:title="@string/calendar_title"
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="About"
+        app:iconSpaceReserved="false"
+        >
 
         <Preference
             app:key="feedback"
             app:title="Send feedback"
             app:summary="Report technical issues or suggest new features"
             app:fragment = "com.example.ocrhotel.ContactUsFragment"
-            app:destination="@+id/ContactUsFragment">
+            app:destination="@+id/ContactUsFragment"
+            app:iconSpaceReserved="false"
+            >
         </Preference>
 
         <Preference
             app:key="terms"
-            app:title="Terms and Conditions">
+            app:title="Terms and Conditions"
+            app:iconSpaceReserved="false"
+            >
         </Preference>
-
-
     </PreferenceCategory>
-
 
 </PreferenceScreen>
