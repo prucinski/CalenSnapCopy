@@ -154,7 +154,7 @@ class PaymentPopupBusiness : AppCompatActivity() {
             Log.d("Google Pay token", paymentMethodData
                 .getJSONObject("tokenizationData")
                 .getString("token"))
-            //Updating the business account. Business account comes in with in-built premium
+            // Updating the business account. Business account comes with built-in premium
             val expirationDate = DateTime.now().plusDays(30)
             val sh = getSharedPreferences("com.example.ocrhotel_preferences", MODE_PRIVATE)
             val myEdit = sh.edit()
@@ -163,6 +163,9 @@ class PaymentPopupBusiness : AppCompatActivity() {
             myEdit.putInt("businessExpirationMonth", expirationDate.monthOfYear)
             myEdit.putInt("businessExpirationDay", expirationDate.dayOfMonth)
             myEdit.apply()
+
+            // Close the activity
+            this.finish()
 
         } catch (error: JSONException) {
             Log.e("handlePaymentSuccess", "Error: $error")

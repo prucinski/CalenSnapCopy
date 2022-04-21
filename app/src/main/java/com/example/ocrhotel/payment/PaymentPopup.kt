@@ -162,6 +162,9 @@ class PaymentPopup : AppCompatActivity() {
             myEdit.putInt("premiumExpirationDay", expirationDate.dayOfMonth)
             myEdit.apply()
 
+            // Close the activity
+            this.finish()
+
         } catch (error: JSONException) {
             Log.e("handlePaymentSuccess", "Error: $error")
         }
