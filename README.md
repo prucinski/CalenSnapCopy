@@ -1,4 +1,4 @@
-# ![app icon](app\src\main\app_icon_32x32.png) CalenSnap
+# ![app icon](./app/src/main/app_icon_32x32.png) CalenSnap
 Universal scheduler and event planner for Android, utilizing advanced image processing and cutting-edge cloud-based OCR technologies.
 
 ## Features
