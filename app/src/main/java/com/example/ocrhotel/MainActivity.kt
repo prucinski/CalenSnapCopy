@@ -23,6 +23,7 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 
 
 class MainActivity : AppCompatActivity() {
@@ -182,7 +183,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 else{
                     Toast.makeText(this, "You don't have calendar permissions enabled. The app will " +
-                               "not function without them. Please restart the application and grant these permisisons"
+                               "not function without them. Please restart the application and grant these permissions."
                         , Toast.LENGTH_LONG).show()
                 }
 
@@ -280,30 +281,42 @@ class MainActivity : AppCompatActivity() {
         resume()
     }
     fun jwtAndPopulateTables(){
-        getJwtFromPreferences(this)?.let{jwt->
-            readUserEvents(jwt) { userEvents ->
-                val events = mutableListOf<Event>()
+        this.runOnUiThread {
+            // Get the JWT token
+            getJwtFromPreferences(this)?.let{jwt->
 
-                if (userEvents != null) {
-                    for (event in userEvents.events) {
-                        events.add(Event(event.title, extractDate(event.event_time)))
+                // If it exists, read the user events
+                readUserEvents(jwt) { userEvents ->
+                    val events = mutableListOf<Event>()
+
+                    if (userEvents != null) {
+                        for (event in userEvents.events) {
+                            events.add(Event(event.title, extractDate(event.event_time)))
+                        }
+                    } else {
+                        navController.navigate(R.id.loginFragment)
                     }
-                } else {
-                    navController.navigate(R.id.loginFragment)
+                    this.viewModels<EventListModel>().value.eventsList = events
                 }
-                this.viewModels<EventListModel>().value.eventsList = events
-            }
-            readProfile(jwt) { profile ->
-                if (profile != null) {
-                    // Update profile
-                }
+                readProfile(jwt) { profile ->
+                    if (profile != null) {
+                        // TODO: Update profile
+                    }
 
-            }
-        } ?: navController.navigate(R.id.loginFragment)
+                }
+            // If JWT token does not exist (user is not logged in), navigate to login.
+            } ?: navController.navigate(R.id.loginFragment)
+        }
+
     }
     //function to be called after logging out to clear the tables.
     fun resetTables(){
         this.viewModels<EventListModel>().value.eventsList = emptyList()
+
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        sh.edit().clear().apply()
+
+        this.recreate()
     }
 
     fun resume() {
