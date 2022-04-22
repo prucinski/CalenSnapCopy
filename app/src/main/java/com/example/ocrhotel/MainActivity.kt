@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
+import android.view.View.VISIBLE
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -361,6 +363,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return null
+    }
+
+    fun showTermsAndConditions(){
+        val myWebView: WebView = findViewById(R.id.webview)
+        myWebView.visibility = VISIBLE
+
+        val url = "https://gist.github.com/Rinto-kun/2f1b25dbf101ab61d2ea8ab2a195bd89"
+
+        myWebView.loadUrl(url)
     }
 
 }

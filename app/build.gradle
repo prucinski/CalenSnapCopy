@@ -118,7 +118,8 @@ dependencies {
     // When using a AppCompat theme
     implementation "com.google.accompanist:accompanist-appcompat-theme:0.24.6-alpha"
 
-    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+    // Markdown library for Terms and Conditions. Can delete if apk too big.
+    implementation "io.noties.markwon:core:4.6.2"
 
 
 }

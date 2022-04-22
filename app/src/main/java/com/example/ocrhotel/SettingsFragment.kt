@@ -26,6 +26,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         //set the "calendar"
         populateCalendarList()
+
+        val tocPreference : Preference? = findPreference("terms")
+        tocPreference?.setOnPreferenceClickListener {
+            (activity as MainActivity?)?.showTermsAndConditions()
+            true
+        }
+
         checkAndUpdate()
     }
 
