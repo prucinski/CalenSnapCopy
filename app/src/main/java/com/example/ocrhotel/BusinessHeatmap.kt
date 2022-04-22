@@ -39,12 +39,11 @@ class BusinessHeatmap : Fragment() {
          */
         //check it out or normal operation
         val trial = false
-        if(trial){
+        if (trial) {
             val sydney = LatLng(-34.0, 151.0)
             addTrialHeatMap(googleMap)
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-        }
-        else{
+        } else {
             val aberdeen = LatLng(57.14, -2.09)
             addHeatMap((googleMap))
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(aberdeen))
@@ -67,6 +66,7 @@ class BusinessHeatmap : Fragment() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
+
     //pass by reference
     private fun addTrialHeatMap(map: GoogleMap) {
         var latLngs: List<LatLng?>? = null
@@ -86,21 +86,25 @@ class BusinessHeatmap : Fragment() {
         val overlay = map.addTileOverlay(TileOverlayOptions().tileProvider(provider))
     }
 
-    private fun addHeatMap(map: GoogleMap){
+    private fun addHeatMap(map: GoogleMap) {
         var latLngs: List<LatLng?>? = null
         // Get the data: latitude/longitude positions of points of event scans
         try {
-            latLngs = readItems()
+            readItems { result ->
+                activity?.runOnUiThread{
+                    latLngs = result
+                    // Create a heat map tile provider, passing it the latlngs of the scans.
+                    val provider = HeatmapTileProvider.Builder()
+                        .data(latLngs)
+                        .build()
+                    // Add a tile overlay to the map, using the heat map tile provider.
+                    val overlay = map.addTileOverlay(TileOverlayOptions().tileProvider(provider))
+                }
+            }
         } catch (e: JSONException) {
             Toast.makeText(context, "Problem reading list of locations.", Toast.LENGTH_LONG)
                 .show()
         }
-        // Create a heat map tile provider, passing it the latlngs of the scans.
-        val provider = HeatmapTileProvider.Builder()
-            .data(latLngs)
-            .build()
-        // Add a tile overlay to the map, using the heat map tile provider.
-        val overlay = map.addTileOverlay(TileOverlayOptions().tileProvider(provider))
     }
 
     @Throws(JSONException::class)
@@ -119,47 +123,35 @@ class BusinessHeatmap : Fragment() {
     }
 
     @Throws(JSONException::class)
-    private fun readItems(): List<LatLng?> {
-        val result: MutableList<LatLng?> = ArrayList()
+    private fun readItems(callback: (List<LatLng>) -> Unit) {
 
-        //get jwt token (whatever that is :D )
-        val sh = requireActivity().getSharedPreferences(
-            getString(R.string.preferences_address),
-            AppCompatActivity.MODE_PRIVATE
-        )
-        val jwt = sh.getString("JWT", null)
+        val m = activity as MainActivity
 
         //get the data, then go through the data and create a list of LatLangs
-        if(jwt != null) {
+        if (m.loggedIn) {
+            val result: MutableList<LatLng> = ArrayList()
             //TODO: wait for values being returned instead of hanging the app
             activity?.runOnUiThread {
                 Log.d("jwt", "jwt found.")
                 var found: Boolean = false;
-                readEvents(jwt) { apiEvents ->
+                readEvents(m.jwt) { apiEvents ->
                     for (event in apiEvents!!.events) {
                         found = true;
-                        Log.d("event", event.snap_location.toString())
+                        Log.d("heatmap::event", event.snap_location.toString())
                         val lat = event.snap_location.N
                         val lng = -event.snap_location.W
                         result.add(LatLng(lat, lng))
                     }
-                    //fake point for error handling.
-                    if(!found) {
-                        result.add(LatLng(0.0, 0.0))
-                    }
-                    Log.d("jwt", "callback 1")
+                    callback(result)
                 }
-                //TODO: WAIT FOR CALLBACK!!!
-                Thread.sleep(2000)
-                Log.d("jwt", "callback 2")
             }
+        } else {
+
+            Toast.makeText(
+                context, "Error retreiving events. Please check if you're logged in",
+                Toast.LENGTH_SHORT
+            ).show()
+            //ensuring there's at least one result so as not to crash the programme
         }
-        else{
-            Toast.makeText(context, "Error retreiving events. Please check if you're logged in",
-                Toast.LENGTH_SHORT).show()
-                //ensuring there's at least one result so as not to crash the programme
-                result.add(LatLng(0.0,0.0))
-        }
-        return result
     }
 }
