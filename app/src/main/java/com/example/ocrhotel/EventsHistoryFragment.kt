@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.NavHostFragment
 import com.example.ocrhotel.databinding.FragmentEventsHistoryBinding
-import com.example.ocrhotel.ui.home.EventListModel
+import com.example.ocrhotel.models.EventListModel
+import com.example.ocrhotel.widgets.EventTile
 import com.google.android.material.composethemeadapter.MdcTheme
 
 

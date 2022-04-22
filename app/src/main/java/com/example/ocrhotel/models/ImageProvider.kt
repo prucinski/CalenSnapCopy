@@ -1,10 +1,11 @@
-package com.example.ocrhotel
+package com.example.ocrhotel.models
 
 import android.app.Activity
 import android.net.Uri
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import com.example.ocrhotel.BuildConfig
 import java.io.File
 import java.util.*
 

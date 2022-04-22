@@ -1,4 +1,4 @@
-package com.example.ocrhotel
+package com.example.ocrhotel.models
 
 import android.util.Log
 import com.microsoft.azure.cognitiveservices.vision.computervision.ComputerVisionManager

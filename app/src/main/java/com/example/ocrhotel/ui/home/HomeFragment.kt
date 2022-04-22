@@ -16,19 +16,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,10 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.ocrhotel.EventTile
+import com.example.ocrhotel.widgets.EventTile
 import com.example.ocrhotel.MainActivity
 import com.example.ocrhotel.R
 import com.example.ocrhotel.databinding.FragmentHomeBinding
+import com.example.ocrhotel.models.EventListModel
 import com.google.android.material.composethemeadapter.MdcTheme
 
 @ExperimentalMaterialApi
