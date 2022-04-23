@@ -1,14 +1,9 @@
-package com.example.ocrhotel.ui.home
+package com.example.ocrhotel.models
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import androidx.navigation.fragment.NavHostFragment
-import com.example.ocrhotel.*
-import com.example.ocrhotel.placeholder.PlaceholderContent
 import java.time.LocalDateTime
 
 class EventListModel : ViewModel() {

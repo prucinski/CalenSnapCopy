@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
+import com.example.ocrhotel.models.Event
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback

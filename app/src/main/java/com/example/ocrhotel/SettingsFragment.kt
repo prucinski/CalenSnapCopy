@@ -26,6 +26,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         //set the "calendar"
         populateCalendarList()
+
         checkAndUpdate()
     }
 

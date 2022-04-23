@@ -1,10 +1,11 @@
 package com.example.ocrhotel
 
 import android.util.Log
+import com.example.ocrhotel.models.Algorithm
+import com.example.ocrhotel.models.OCRAzureREST
 import org.junit.Test
 import org.junit.Assert.*
 import java.io.File
-import java.lang.Exception
 import java.time.LocalDateTime
 import java.util.*
 

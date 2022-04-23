@@ -1,4 +1,4 @@
-package com.example.ocrhotel
+package com.example.ocrhotel.models
 
 import android.os.Parcel
 import android.os.Parcelable

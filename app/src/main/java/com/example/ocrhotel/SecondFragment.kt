@@ -15,6 +15,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import com.example.ocrhotel.databinding.FragmentSecondBinding
+import com.example.ocrhotel.models.Algorithm
+import com.example.ocrhotel.models.Event
+import com.example.ocrhotel.models.ImageProvider
+import com.example.ocrhotel.models.OCRAzureREST
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.launch

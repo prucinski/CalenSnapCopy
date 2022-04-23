@@ -1,4 +1,4 @@
-package com.example.ocrhotel
+package com.example.ocrhotel.widgets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
@@ -12,14 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.ocrhotel.models.Event
 import java.time.format.DateTimeFormatter
 
 @Preview
 @ExperimentalMaterialApi
 @Composable
 fun EventTile(
-   event : Event = Event(),
-   onDelete : () -> Unit = {}
+    event : Event = Event(),
+    onDelete : () -> Unit = {}
 ){
     var expandedMenu by rememberSaveable { mutableStateOf(false) }
     var delDialog by rememberSaveable { mutableStateOf(false) }
