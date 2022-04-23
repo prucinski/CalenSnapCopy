@@ -1,7 +1,6 @@
 package com.example.ocrhotel
 
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.ocrhotel.databinding.FragmentTOSBinding
 import io.noties.markwon.Markwon
-import java.io.File
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.util.stream.Collectors
 
 class TOSFragment : Fragment() {
 
@@ -26,11 +27,10 @@ class TOSFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val path = Environment.getRootDirectory().toString()+"/LICENSE.md"
+        val license = resources.openRawResource(R.raw.license)
 
-        println(path)
-
-        val toc = File(path)
+        val content: String = BufferedReader(InputStreamReader(license))
+            .lines().parallel().collect(Collectors.joining("\n"))
 
         val textView = activity?.findViewById<TextView>(R.id.terms)
 
@@ -38,6 +38,6 @@ class TOSFragment : Fragment() {
         val markwon : Markwon = Markwon.create(requireContext())
 
         // set markdown
-        markwon.setMarkdown(textView!!, toc.readText());
+        markwon.setMarkdown(textView!!, content);
     }
 }

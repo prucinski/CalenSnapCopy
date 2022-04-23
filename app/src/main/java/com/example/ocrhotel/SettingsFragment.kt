@@ -27,12 +27,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         //set the "calendar"
         populateCalendarList()
 
-        val tocPreference : Preference? = findPreference("terms")
-        tocPreference?.setOnPreferenceClickListener {
-            (activity as MainActivity?)?.showTermsAndConditions()
-            true
-        }
-
         checkAndUpdate()
     }
 
