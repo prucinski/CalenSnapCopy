@@ -28,7 +28,8 @@ import com.example.ocrhotel.databinding.FragmentEventsHistoryBinding
 import com.example.ocrhotel.models.EventListModel
 import com.example.ocrhotel.widgets.EventTile
 import com.google.android.material.composethemeadapter.MdcTheme
-
+import android.util.Log
+import androidx.navigation.fragment.NavHostFragment
 
 
 /**
@@ -50,7 +51,16 @@ class EventsHistoryFragment : Fragment() {
         _binding = FragmentEventsHistoryBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val act = activity as MainActivity
+        val m = activity as MainActivity
+        // If the user is not logged in, they should be redirected to the login page.
+        Log.d("LOGIN STATUS", "${m.jwt}; " + if (m.loggedIn) "Logged in" else "Not logged in")
+        if (!m.loggedIn) {
+            val navHostFragment =
+                requireActivity().supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.loginFragment)
+        }
+
 
         binding.composeView.apply{
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -65,7 +75,7 @@ class EventsHistoryFragment : Fragment() {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .padding(top = if (!act.premiumAccount && !act.businessAccount) 55.dp else 0.dp)
+                            .padding(top = if (!m.premiumAccount && !m.businessAccount) 55.dp else 0.dp)
 
 
                     ) {

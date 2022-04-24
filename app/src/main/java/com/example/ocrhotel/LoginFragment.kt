@@ -39,13 +39,21 @@ class LoginFragment : Fragment() {
             }
         }
 
+        binding.goToSignupButton.setOnClickListener {
+            val navHostFragment =
+                requireActivity().supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.signupFragment)
+        }
         return binding.root
     }
 
     private fun onLoginButtonPressed() {
-        val username = binding.usernameInput.text.toString()
+        // There should be no whitespace in usernames, hence, use trim().
+        val username = binding.usernameInput.text.toString().trim()
         val password = binding.passwordInput.text.toString()
 
+        // Make sure no blank username or password is provided
         if (username.isBlank() || password.isBlank()) {
             Toast.makeText(
                 requireContext(),
@@ -57,41 +65,29 @@ class LoginFragment : Fragment() {
 
         login(username, password) { jwt ->
             if (jwt != null) {
-                activity?.runOnUiThread {
+                val a = requireActivity() as MainActivity
+                a.jwt = jwt
+
+                // Login was successful
+                requireActivity().runOnUiThread {
                     Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-
-
-                    val sh = requireActivity().getSharedPreferences(
-                        getString(R.string.preferences_address),
-                        AppCompatActivity.MODE_PRIVATE
-                    )
-
-                    if (sh != null) {
-                        // Store JWT as a shared preference
-                        val edit = sh.edit()
-                        edit.putString("JWT", jwt)
-
-                        activity?.runOnUiThread {
-                            readProfile(jwt) { profile ->
-                                // Set shared preference info about premium status
-                                if (profile != null && profile.business_user) {
-                                    edit.putBoolean("isPremiumUser", true)
-                                } else {
-                                    edit.putBoolean("isPremiumUser", false)
+                    requireActivity().runOnUiThread {
+                        readProfile(jwt) { profile ->
+                            val a = requireActivity()
+                            if (a is MainActivity) {
+                                a.reloadEvents()
+                                if (profile != null) {
+                                    a.premiumAccount = profile.premium_user
+                                    a.businessAccount = profile.business_user
+                                    a.scans = profile.remaining_free_uses
                                 }
-                                edit.apply()
-                                val a = (activity as MainActivity?)
-                                Log.w("ACTIVITY MAIN", a.toString())
-                                a?.resume()
                             }
+                            // Return to previous fragment
+                            a.supportFragmentManager.popBackStack()
                         }
-                        edit.apply()
                     }
-                    // Move to home, update the tables before moving.
-                    (activity as MainActivity?)!!.jwtAndPopulateTables()
-                    val navController = NavHostFragment.findNavController(this)
-                    navController.navigate(R.id.home)
                 }
+
             } else {
                 activity?.runOnUiThread {
                     Toast.makeText(

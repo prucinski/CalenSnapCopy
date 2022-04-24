@@ -64,6 +64,14 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (!(activity as MainActivity).loggedIn) {
+            // User has to be logged in to scan images
+            val navHostFragment =
+                requireActivity().supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.loginFragment)
+        }
+
         imageProvider = ImageProvider(this, activity, this::handleImage)
         binding.uploadImage.setOnClickListener {
             imageProvider.useGallery()
@@ -115,7 +123,7 @@ class SecondFragment : Fragment() {
                     )
 
                 val navController = NavHostFragment.findNavController(this)
-                navController.navigate(R.id.modifyEvent,bundle)
+                navController.navigate(R.id.modifyEvent, bundle)
 
             }
         }
@@ -137,12 +145,12 @@ class SecondFragment : Fragment() {
             a.contentResolver.openInputStream(uri)?.let { inputStream ->
 
 
-                val bytes : ByteArray = inputStream.readBytes()
+                val bytes: ByteArray = inputStream.readBytes()
 
-                Log.d("App", "Image size: ${bytes.size/1_000_000} MB.")
+                Log.d("App", "Image size: ${bytes.size / 1_000_000} MB.")
 
                 // Create a temporary file that may be used to reduce the size of the image.
-                val tempFile = File.createTempFile("__tempOCR_","")
+                val tempFile = File.createTempFile("__tempOCR_", "")
                 // Delete the temporary file once it is no longer needed.
                 tempFile.deleteOnExit()
 
@@ -150,7 +158,7 @@ class SecondFragment : Fragment() {
 
                     // Reduce to fit 4MB if the image is too big.
                     val image =
-                        if(bytes.size > 4_000_000) context?.let {
+                        if (bytes.size > 4_000_000) context?.let {
 
                             algorithmModel.progressIndicator.postValue(Progress.Resizing)
                             // Only write bytes in case you actually have to create a new image.

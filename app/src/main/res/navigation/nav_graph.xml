@@ -122,5 +122,9 @@
         android:id="@+id/tutorialFragment"
         android:name="com.example.ocrhotel.TutorialFragment"
         android:label="TutorialFragment" />
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="com.example.ocrhotel.SignupFragment"
+        android:label="SignupFragment" />
 
 </navigation>

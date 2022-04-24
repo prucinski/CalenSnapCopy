@@ -1,6 +1,7 @@
 package com.example.ocrhotel
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -35,10 +36,61 @@ class MainActivity : AppCompatActivity() {
     private var mRewardedAd: RewardedAd? = null
     private var logTag = "MainActivity"
 
+
+    private var _premiumAccount = false
+    private var _businessAccount = false
+    private var _scans = 1
+    private var _jwt = ""
+
+    // All of these properties below are automatically synced with the shared preferences.
+
+    val loggedIn: Boolean
+        get() = jwt.isNotEmpty()
+
+    var premiumAccount: Boolean
+        get() = _premiumAccount
+        set(value) {
+            _premiumAccount = value
+            val edit = getEdit()
+            edit.putBoolean("isPremiumUser", value)
+            edit.apply()
+        }
+
+    var businessAccount: Boolean
+        get() = _businessAccount
+        set(value) {
+            _businessAccount = value
+            val edit = getEdit()
+            edit.putBoolean("isBusinessUser", value)
+            edit.apply()
+        }
+
+    var scans: Int
+        get() = _scans
+        set(value) {
+            _scans = value
+            val edit = getEdit()
+            edit.putInt("numberOfScans", value)
+            edit.apply()
+        }
+
+    var jwt: String
+        get() = _jwt
+        set(value) {
+            _jwt = value
+            val edit = getEdit()
+            edit.putString("JWT", value)
+            edit.apply()
+        }
     // Initialize to arbitrary values
-    var premiumAccount = false
-    var businessAccount = false
-    var scans = 1
+//    var premiumAccount = false
+//    var businessAccount = false
+//    var scans = 1
+
+    fun getEdit(): SharedPreferences.Editor {
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        return sh.edit()!!
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,14 +98,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         // First check if the necessary permissions have been granted.
         // The below function also initializes sharedPrefs.
-        checkPermissions(listOf(Manifest.permission.READ_CALENDAR,
-            Manifest.permission.WRITE_CALENDAR,Manifest.permission.ACCESS_FINE_LOCATION),
+        checkPermissions(
+            listOf(
+                Manifest.permission.READ_CALENDAR,
+                Manifest.permission.WRITE_CALENDAR, Manifest.permission.ACCESS_FINE_LOCATION
+            ),
             "We will need access to your calendar in order to add the events you have scanned." +
                     "\n\nWe also require permission to use your location in order to locate your picture " +
-                    "in accordance with our Terms and Conditions."){
+                    "in accordance with our Terms and Conditions."
+        ) {
             setupSharedPrefs()
         }
 
@@ -61,13 +116,12 @@ class MainActivity : AppCompatActivity() {
         retrieveAppSettings()
 
         initializeAds()
-
+        reloadEvents()
         setupNavigation()
-        jwtAndPopulateTables()
     }
 
     private fun initializeAds() {
-        if (!premiumAccount && !businessAccount) {
+        if (!(premiumAccount || businessAccount)) {
             //Code for ads
             MobileAds.initialize(this) {}
 
@@ -78,9 +132,63 @@ class MainActivity : AppCompatActivity() {
             //Load reward ad
             loadRewardedAd()
         }
+        reloadEvents()
+        setupNavigation()
     }
 
-    private fun setupSharedPrefs(){
+    fun synchronizeChanges() {
+        // Send changes made to the preferences to the
+    }
+
+    fun logOut() {
+        synchronizeChanges()
+        jwt = "" // this means user is logged out
+        premiumAccount = false
+        businessAccount = false
+        resetEvents()
+    }
+
+    fun reloadEvents() {
+        Log.d(logTag, "Reloading events.")
+        getJwtFromPreferences(this)?.let { jwt ->
+            readUserEvents(jwt) { userEvents ->
+                val events = mutableListOf<Event>()
+
+                if (userEvents != null) {
+                    for (event in userEvents.events) {
+                        events.add(Event(event.title, extractDate(event.event_time)))
+                    }
+                } else {
+                    navController.navigate(R.id.loginFragment)
+                }
+                runOnUiThread {
+                    this.viewModels<EventListModel>().value.eventsList = events
+                    for (event in events) {
+                        Log.d("OCR EVENT", event.eventName)
+                    }
+                    Log.d(logTag, "Reloaded Events")
+                }
+            }
+            readProfile(jwt) { profile ->
+                if (profile != null) {
+                    // Update shared preferences from profile
+                    businessAccount = profile.business_user
+                    premiumAccount = profile.premium_user
+                    scans = profile.remaining_free_uses
+                }
+
+            }
+        } ?: navController.navigate(R.id.loginFragment)
+
+    }
+
+    //function to be called after logging out to clear the tables.
+    fun resetEvents() {
+        this.viewModels<EventListModel>().value.eventsList = emptyList()
+    }
+
+
+    private fun setupSharedPrefs() {
         // Storing data into SharedPreferences
         // Initialization on first app launch.
         // This file is present only on the device and not in this project.
@@ -88,7 +196,12 @@ class MainActivity : AppCompatActivity() {
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
 
         // Check if file already present. if not, create it
-        if(!sh.contains("isPremiumUser")) {
+        premiumAccount = sh.getBoolean("isPremiumUser", false)
+        businessAccount = sh.getBoolean("isBusinessAccount", false)
+        jwt = sh.getString("JWT", "")!!
+        scans = sh.getInt("numberOfScans", 1)
+
+        if (!sh.contains("isPremiumUser")) {
             val myEdit = sh.edit()
 
             // VALUES INITIALIZED DURING LAUNCH.
@@ -100,13 +213,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermissions(permissions: List<String>, explanation: String, whenPermissionGranted: ()->Unit){
+    private fun checkPermissions(
+        permissions: List<String>,
+        explanation: String,
+        whenPermissionGranted: () -> Unit
+    ) {
 
         val requestPermissionLauncher =
             registerForActivityResult(
                 ActivityResultContracts.RequestMultiplePermissions()
-            ) {results->
-                if (results.all{(_,permission)->permission}) {
+            ) { results ->
+                if (results.all { (_, permission) -> permission }) {
                     // Permission is granted. Set the shared preferences up.
                     whenPermissionGranted()
                 } else {
@@ -115,25 +232,25 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-        if (permissions.all{
-                checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED}
+        if (permissions.all {
+                checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
+            }
         ) {
             // You can use the API that requires the permission.
             whenPermissionGranted()
-        }
-        else {
+        } else {
             // Directly ask for the permission.
             // The registered ActivityResultCallback gets the result of this request.
 
             MaterialAlertDialogBuilder(this)
                 .setTitle("Requesting permissions")
                 .setMessage(explanation)
-                .setPositiveButton("I understand"){_,_->
+                .setPositiveButton("I understand") { _, _ ->
                     requestPermissionLauncher.launch(permissions.toTypedArray())
                 }
-                .setNegativeButton("I disagree"){_,_->
+                .setNegativeButton("I disagree") { _, _ ->
                     //turn off the app if permissions are not granted.
-                     this.finish()
+                    this.finish()
                 }.show()
         }
     }
@@ -177,14 +294,20 @@ class MainActivity : AppCompatActivity() {
 
                 // Go to the settings page
                 R.id.navigation_settings ->
-                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED){
-                     navController.navigate(R.id.settingsMenu)
-                }
-                else{
-                    Toast.makeText(this, "You don't have calendar permissions enabled. The app will " +
-                               "not function without them. Please restart the application and grant these permissions."
-                        , Toast.LENGTH_LONG).show()
-                }
+                    if (ActivityCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.READ_CALENDAR
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        navController.navigate(R.id.settingsMenu)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "You don't have calendar permissions enabled. The app will " +
+                                    "not function without them. Please restart the application and grant these permissions.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
 
 
             }
@@ -198,7 +321,7 @@ class MainActivity : AppCompatActivity() {
         scans = sh.getInt("numberOfScans", 1)
     }
 
-    private fun updateScanNumber(){
+    private fun updateScanNumber() {
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         val myEdit = sh.edit()
         myEdit.putInt("numberOfScans", scans)
@@ -210,6 +333,7 @@ class MainActivity : AppCompatActivity() {
         scans--
         updateScanNumber()
     }
+
     private fun scanCountAdd() {
         scans += 3
         updateScanNumber()
@@ -225,26 +349,31 @@ class MainActivity : AppCompatActivity() {
             }
             .setPositiveButton(resources.getString(R.string.watch_ad)) { _, _ ->
                 showRewardedVideo()
-                Log.d(logTag,"You watched the ad")
+                Log.d(logTag, "You watched the ad")
             }
             .show()
     }
 
     // Function for loading the reward ad
     private fun loadRewardedAd() {
-        if(premiumAccount || businessAccount){
+        if (premiumAccount || businessAccount) {
             return
         }
-        RewardedAd.load(this,getString(R.string.ad_id_reward), adRequest, object : RewardedAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                Log.d(logTag, adError?.message)
-                mRewardedAd = null
-            }
-            override fun onAdLoaded(rewardedAd: RewardedAd) {
-                Log.d(logTag, "Reward Ad was loaded.")
-                mRewardedAd = rewardedAd
-            }
-        })
+        RewardedAd.load(
+            this,
+            getString(R.string.ad_id_reward),
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(logTag, adError?.message)
+                    mRewardedAd = null
+                }
+
+                override fun onAdLoaded(rewardedAd: RewardedAd) {
+                    Log.d(logTag, "Reward Ad was loaded.")
+                    mRewardedAd = rewardedAd
+                }
+            })
     }
 
     // Function for showing the reward video and handling callbacks
@@ -275,62 +404,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume(){
-        super.onResume()
-        resume()
-    }
-    fun jwtAndPopulateTables(){
-        this.runOnUiThread {
-            // Get the JWT token
-            getJwtFromPreferences(this)?.let{jwt->
-
-                // If it exists, read the user events
-                readUserEvents(jwt) { userEvents ->
-                    val events = mutableListOf<Event>()
-
-                    if (userEvents != null) {
-                        for (event in userEvents.events) {
-                            events.add(Event(event.title, extractDate(event.event_time)))
-                        }
-                    } else {
-                        navController.navigate(R.id.loginFragment)
-                    }
-                    this.viewModels<EventListModel>().value.eventsList = events
-                }
-                readProfile(jwt) { profile ->
-                    if (profile != null) {
-                        // TODO: Update profile
-                    }
-
-                }
-            // If JWT token does not exist (user is not logged in), navigate to login.
-            } ?: navController.navigate(R.id.loginFragment)
-        }
-
-    }
-    //function to be called after logging out to clear the tables.
-    fun resetTables(){
-        this.viewModels<EventListModel>().value.eventsList = emptyList()
-
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-        sh.edit().clear().apply()
-
-        this.recreate()
-    }
-
-    fun resume() {
-        //if user left the activity, they might have bought premium. Check if they did.
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-        premiumAccount = sh.getBoolean("isPremiumUser", false)
-        businessAccount = sh.getBoolean("isBusinessUser", false)
-        scans = sh.getInt("numberOfScans", 1)
-    }
-
     //TODO: MOVE THIS INTO SETTINGS?
     //TODO: maybe keep a stub to choose a default calendar upon launch
-    fun getCalendarId() : Long? {
+    fun getCalendarId(): Long? {
         //via https://stackoverflow.com/questions/16242472/retrieve-the-default-calendar-id-in-android
-        val projection = arrayOf(CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
+        val projection = arrayOf(
+            CalendarContract.Calendars._ID,
+            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME
+        )
         var calCursor = contentResolver.query(
             CalendarContract.Calendars.CONTENT_URI,
             projection,
@@ -355,8 +436,12 @@ class MainActivity : AppCompatActivity() {
                 val idCol = calCursor.getColumnIndex(projection[0])
                 calName = calCursor.getString(nameCol)
                 calID = calCursor.getString(idCol)
-                Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
-                val helloTutorial = Toast.makeText(applicationContext, "Events will be created at this calendar: $calName", Toast.LENGTH_SHORT)
+                Log.d("CAL", "Calendar name = $calName Calendar ID = $calID")
+                val helloTutorial = Toast.makeText(
+                    applicationContext,
+                    "Events will be created at this calendar: $calName",
+                    Toast.LENGTH_SHORT
+                )
                 helloTutorial.show()
                 calCursor.close()
                 return calID.toLong()
@@ -365,7 +450,7 @@ class MainActivity : AppCompatActivity() {
         return null
     }
 
-    fun showTermsAndConditions(){
+    fun showTermsAndConditions() {
         val myWebView: WebView = findViewById(R.id.webview)
         myWebView.visibility = VISIBLE
 

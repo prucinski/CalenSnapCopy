@@ -160,6 +160,29 @@ def delete_profile():
         return {'success': False}, 400
 
 
+@app.route('/upgrade', methods=['PUT'])
+@jwt_required()
+def upgrade():
+    """ Upgrade the user account to premium or to business. """
+    username = get_jwt_identity()
+    try:
+
+        is_premium = request.json['premium']
+        is_business = request.json['business']
+
+        connection = connect()
+        cursor = connection.cursor()
+        cursor.execute(""" UPDATE profile SET premium_user = %s, business_user = %s WHERE username = %s; """, (
+            is_premium, is_business, username))
+        connection.commit()
+
+        return {'success': True}, 200
+
+    except Exception as e:
+        app.logger.warn(e)
+        return {'success': False}, 400
+
+
 @app.route('/events', methods=['POST'])
 @jwt_required()
 def create_event():
@@ -212,7 +235,7 @@ def create_event():
 @app.route('/events/<uuid:event_id>', methods=['DELETE'])
 @jwt_required()
 def delete_event(event_id: uuid.UUID):
-    """ Delete the specified event. """
+    """ Delete the specified (user)event. """
     try:
         connection = connect()
         cursor = connection.cursor()

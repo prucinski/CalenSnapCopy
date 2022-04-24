@@ -1,5 +1,7 @@
 package com.example.ocrhotel
 
+import android.os.Build
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
@@ -15,7 +17,6 @@ import java.time.LocalDate
 import java.time.LocalDate.now
 import java.time.format.DateTimeFormatter
 
-
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +30,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         checkAndUpdate()
     }
+
 
     //TODO: have it not be called every time. Add a preference button "Update calendar list"?
 
@@ -46,7 +48,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,   // 2
             CalendarContract.Calendars.OWNER_ACCOUNT            // 3
         )
-// The indices for the projection array above.
+
+        // The indices for the projection array above.
         val PROJECTION_ID_INDEX = 0
         val PROJECTION_ACCOUNT_NAME_INDEX = 1
         val PROJECTION_DISPLAY_NAME_INDEX = 2
@@ -78,7 +81,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onResume() {
         super.onResume()
         checkAndUpdate()
-
     }
     //then, upon clicking the list and choosing a value, a sharedPreference "calendarID" will get
     //updated with the desired calendar ID.
@@ -91,14 +93,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.preferences_address),
             AppCompatActivity.MODE_PRIVATE
         )
+        val a = requireActivity() as MainActivity
 
-        val prem = sh.getBoolean("isPremiumUser", false)
-        val bus = sh.getBoolean("isBusinessUser", false)
         val pExpDay = sh.getInt("premiumExpirationDay", -1)
         val pExpMth = sh.getInt("premiumExpirationMonth", -1)
         val bExpDay = sh.getInt("businessExpirationDay", -1)
         val bExpMth = sh.getInt("businessExpirationMonth", -1)
-        if (prem) {
+        if (a.premiumAccount) {
             premiumPreference!!.title = "You are a Premium user"
 
             val pStringSummary =
@@ -126,7 +127,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
         //if user is a business one, that will override the premium account anyway!
-        if (bus) {
+        if (a.businessAccount) {
             premiumPreference!!.title = "You are a Business user"
 
             val bStringSummary =
@@ -158,7 +159,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val login : Preference? = findPreference("login")
         val logout : Preference? = findPreference("logout")
-        if(sh.getString("JWT",null) != null){
+        if(a.loggedIn){
             login?.isVisible = false
             logout?.isVisible = true
         }
@@ -171,12 +172,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // instead of letting it sit here
         logout?.setOnPreferenceClickListener {
             // TODO ("Implement Log out"), if this behaviour is not enough.
-            val editor = sh.edit()
-            editor.putString("JWT", null)
-            editor.apply()
-            (activity as MainActivity).resetTables()
-            activity?.recreate()
-            // refreshFragment()
+            (activity as MainActivity).logOut()
+            refreshFragment()
             true
         }
         //check whether the subscriptions have expired. Right now, it doesn't automatically extend
@@ -198,7 +195,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             AppCompatActivity.MODE_PRIVATE
         )
         val editor = sh.edit()
-        editor.putBoolean("isPremiumUser", false)
+        val m = (activity as MainActivity)
+        m.premiumAccount = false
         editor.putInt("premiumExpirationDay", -1)
         editor.putInt("premiumExpirationMonth", -1)
         //no need to update the expiration dates as they will not be read anyway
@@ -213,13 +211,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             AppCompatActivity.MODE_PRIVATE
         )
         val editor = sh.edit()
-        editor.putBoolean("isBusinessUser", false)
-        editor.putBoolean("isPremiumUser", false)
-        // cautionary update of the other values.
-        editor.putInt("premiumExpirationDay", -1)
-        editor.putInt("premiumExpirationMonth", -1)
-        editor.putInt("businessExpirationDay", -1)
-        editor.putInt("businessExpirationMonth", -1)
+        val m = (activity as MainActivity)
+        m.businessAccount = false
+        m.premiumAccount = false
+        //cautionary update of the other values.
+        editor.putInt("premiumExpirationDay)", -1)
+        editor.putInt("premiumExpirationMonth)", -1)
+        editor.putInt("businessExpirationDay)", -1)
+        editor.putInt("businessExpirationMonth)", -1)
 
         editor.apply()
         refreshFragment()
