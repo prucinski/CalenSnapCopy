@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.ocrhotel.databinding.FragmentModifyEventBinding
+import com.example.ocrhotel.models.Event
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -178,7 +179,7 @@ class ModifyEvent : Fragment() {
             datePicker.show(parentFragmentManager, "DATE")
 
             datePicker.addOnPositiveButtonClickListener {
-                binding.EventDate.text = LocalDateTime.ofEpochSecond(
+                binding.endEventDate.text = LocalDateTime.ofEpochSecond(
                     datePicker.selection!! / 1000, 0, ZoneOffset.UTC
                 )
                     .format(dateFormatter)
@@ -201,7 +202,7 @@ class ModifyEvent : Fragment() {
             timePicker.show(parentFragmentManager, "TIME")
 
             timePicker.addOnPositiveButtonClickListener {
-                binding.EventHour.text = LocalTime.of(timePicker.hour, timePicker.minute)
+                binding.endEventHour.text = LocalTime.of(timePicker.hour, timePicker.minute)
                     .toString()
 
             }

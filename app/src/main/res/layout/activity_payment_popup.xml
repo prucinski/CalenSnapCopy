@@ -22,6 +22,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
 
+        android:background="#00FFFFFF"
         app:cardBackgroundColor="#00FFFFFF"
         app:cardCornerRadius="3dp"
         app:cardElevation="0dp"
@@ -38,14 +39,14 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_margin="2dp"
-            app:cardCornerRadius="3dp"
+            app:cardCornerRadius="15dp"
             app:cardElevation="0dp"
             app:cardMaxElevation="0dp"
             app:cardPreventCornerOverlap="false">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/popup_window_background_container"
-                android:layout_width="250dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:background="@drawable/button_shape"

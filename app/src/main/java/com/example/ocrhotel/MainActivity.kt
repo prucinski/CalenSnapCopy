@@ -6,7 +6,8 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
-import android.view.View
+import android.view.View.VISIBLE
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -16,14 +17,13 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.ocrhotel.databinding.ActivityMainBinding
-import com.example.ocrhotel.ui.home.EventListModel
+import com.example.ocrhotel.models.Event
+import com.example.ocrhotel.models.EventListModel
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MainActivity : AppCompatActivity() {
@@ -115,7 +115,14 @@ class MainActivity : AppCompatActivity() {
         // Retrieve values that we want.
         retrieveAppSettings()
 
-        if(!(premiumAccount || businessAccount)){
+        initializeAds()
+
+        setupNavigation()
+        jwtAndPopulateTables()
+    }
+
+    private fun initializeAds() {
+        if (!(premiumAccount || businessAccount)){
             //Code for ads
             MobileAds.initialize(this) {}
 
@@ -253,22 +260,6 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
 
-        //removes the navigation bar, fab from the successful scan
-        val bottomBar = findViewById<BottomAppBar>(R.id.bottom_bar)
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if(destination.id == R.id.successfulScan) {
-                bottomBar.visibility = View.GONE
-                fab.visibility = View.GONE
-                bottomNavigationView.visibility = View.GONE
-            } else {
-                bottomBar.visibility = View.VISIBLE
-                fab.visibility = View.VISIBLE
-                bottomNavigationView.visibility = View.VISIBLE
-            }
-        }
-
         binding.fab.setOnClickListener {
             // Go to scanning
 
@@ -303,7 +294,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 else{
                     Toast.makeText(this, "You don't have calendar permissions enabled. The app will " +
-                               "not function without them. Please restart the application and grant these permisisons"
+                               "not function without them. Please restart the application and grant these permissions."
                         , Toast.LENGTH_LONG).show()
                 }
 
@@ -442,6 +433,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return null
+    }
+
+    fun showTermsAndConditions(){
+        val myWebView: WebView = findViewById(R.id.webview)
+        myWebView.visibility = VISIBLE
+
+        val url = "https://gist.github.com/Rinto-kun/2f1b25dbf101ab61d2ea8ab2a195bd89"
+
+        myWebView.loadUrl(url)
     }
 
 }

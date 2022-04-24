@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="625dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="55dp"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:background="@android:color/white">
@@ -20,49 +20,66 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="fill_parent"
+                android:id="@+id/feedback_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="3dp"
-                android:text="@string/contact_form_email"
-                android:textAllCaps="true"
-                android:textColor="@color/primaryColor"
-                android:textSize="12sp" />
-
-            <EditText
-                android:id="@+id/your_email"
-                android:layout_width="fill_parent"
-                android:layout_height="38dp"
-                android:layout_marginBottom="20dp"
-                android:inputType="textEmailAddress"
-                android:singleLine="true"
-                android:textSize="14sp" />
+                android:layout_marginBottom="40dp"
+                android:text="Feedback"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="@color/primaryColorVariant"
+                android:textSize="38sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:text="@string/contact_form_email"
+                android:textAllCaps="true"
+                android:textColor="@color/primaryColor"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/your_email"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
                 android:text="@string/contact_form_subject"
                 android:textAllCaps="true"
                 android:textColor="@color/primaryColor"
-                android:textSize="12sp" />
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/your_subject"
                 android:layout_width="fill_parent"
-                android:layout_height="38dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:inputType="text"
+                android:minHeight="48dp"
                 android:singleLine="true"
-                android:textSize="14sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="32dp"
                 android:paddingLeft="3dp"
+                android:paddingRight="3dp"
                 android:text="@string/contact_form_message"
                 android:textAllCaps="true"
                 android:textColor="@color/primaryColor"
-                android:textSize="12sp" />
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/your_message"
@@ -72,22 +89,23 @@
                 android:height="180dp"
                 android:gravity="top"
                 android:inputType="textMultiLine"
-                android:textSize="14sp" />
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/post_message"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@color/primaryLightColor"
+                android:background="@drawable/button_shape"
                 android:paddingLeft="15dp"
                 android:paddingTop="1dp"
                 android:paddingRight="15dp"
                 android:paddingBottom="1dp"
                 android:text="@string/contact_form_button"
                 android:textAllCaps="true"
-                android:textColor="@color/secondaryLightColor"
-                android:textSize="13sp" />
+                android:textColor="@color/secondaryColor"
+                android:textSize="24sp" />
         </LinearLayout>
     </ScrollView>
+
 </FrameLayout>

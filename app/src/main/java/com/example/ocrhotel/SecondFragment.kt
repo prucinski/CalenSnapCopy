@@ -15,6 +15,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import com.example.ocrhotel.databinding.FragmentSecondBinding
+import com.example.ocrhotel.models.Algorithm
+import com.example.ocrhotel.models.Event
+import com.example.ocrhotel.models.ImageProvider
+import com.example.ocrhotel.models.OCRAzureREST
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.launch
@@ -27,8 +31,16 @@ class SecondFragment : Fragment() {
 
     class EventDataViewModel : ViewModel() {
         var eventData: MutableLiveData<List<Event>> = MutableLiveData(null)
-        var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+        var progressIndicator: MutableLiveData<Progress> = MutableLiveData(Progress.NotStarted)
         var errorOccurred: MutableLiveData<Boolean> = MutableLiveData(false)
+    }
+
+    enum class Progress{
+        NotStarted,
+        Started,
+        Resizing,
+        Analyzing,
+        // Finished
     }
 
     private var _binding: FragmentSecondBinding? = null
@@ -44,9 +56,8 @@ class SecondFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -70,8 +81,17 @@ class SecondFragment : Fragment() {
             imageProvider.useCamera()
         }
 
-        algorithmModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.loadingSpinner.visibility = if (isLoading) View.VISIBLE else View.GONE
+        algorithmModel.progressIndicator.observe(viewLifecycleOwner) { status ->
+            binding.loadingSpinner.visibility = when (status) {
+                Progress.Started, Progress.Resizing, Progress.Analyzing -> View.VISIBLE
+                else -> View.GONE
+            }
+
+            binding.progressIndicatorText.text = when(status) {
+                Progress.Resizing -> "Processing image..."
+                Progress.Analyzing -> "Finding events..."
+                else -> ""
+            }
         }
 
         algorithmModel.errorOccurred.observe(viewLifecycleOwner) { isError ->
@@ -90,14 +110,14 @@ class SecondFragment : Fragment() {
             if (res != null) {
                 // Reset the model for the next time
                 algorithmModel.eventData.postValue(null)
-                algorithmModel.isLoading.postValue(false)
+                algorithmModel.progressIndicator.postValue(Progress.NotStarted)
                 algorithmModel.errorOccurred.postValue(false)
 
 
                 // Prepare data to be passed to ModifyEvent
                 val bundle =
                     bundleOf(
-                        "data" to res!!
+                        "data" to res
                         //"date" to res[0].eventDateTime,
                         //"title" to algorithmModel.eventData.value!![0]
                     )
@@ -114,11 +134,16 @@ class SecondFragment : Fragment() {
         fun handleError() {
 
             algorithmModel.errorOccurred.postValue(true)
-            algorithmModel.isLoading.postValue(false)
+            algorithmModel.progressIndicator.postValue(Progress.NotStarted)
         }
 
         activity?.let { a ->
+
+            // Tell the loading spinner to start spinning.
+            algorithmModel.progressIndicator.postValue(Progress.Started)
+
             a.contentResolver.openInputStream(uri)?.let { inputStream ->
+
 
                 val bytes: ByteArray = inputStream.readBytes()
 
@@ -135,22 +160,26 @@ class SecondFragment : Fragment() {
                     val image =
                         if (bytes.size > 4_000_000) context?.let {
 
+                            algorithmModel.progressIndicator.postValue(Progress.Resizing)
                             // Only write bytes in case you actually have to create a new image.
                             tempFile.writeBytes(bytes)
 
-                            Log.d("OCR", "Image resized.")
-                            Compressor.compress(it, tempFile) {
-                                size(4_000_000)
+                            Compressor.compress(it,tempFile){
+                                size(maxFileSize = 4_000_000, maxIteration = 10)
+
                             }
+
                         }!!.readBytes()
                         else
                             bytes
 
-                    Log.d("OCR", """Final image size: ${image.size / 1_000_000} MB.""")
+                    Log.d("OCR" , "Final image size: ${image.size/1_000_000} MB.")
 
                     val ocr = OCRAzureREST()
                     val algo = Algorithm()
-                    algorithmModel.isLoading.postValue(true) // Tell the loading spinner that it can stop
+
+                    algorithmModel.progressIndicator.postValue(Progress.Analyzing)
+
                     ocr.getImageTextData(image, { s ->
                         s?.let { result ->
                             Log.d("OCR", result)

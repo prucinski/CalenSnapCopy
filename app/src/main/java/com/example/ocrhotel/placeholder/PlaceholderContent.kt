@@ -1,7 +1,6 @@
 package com.example.ocrhotel.placeholder
 
-import com.example.ocrhotel.Event
-import java.util.ArrayList
+import com.example.ocrhotel.models.Event
 import java.util.HashMap
 
 /**
@@ -26,7 +25,7 @@ object PlaceholderContent {
     init {
         // Add some sample items.
         for (i in 1..COUNT) {
-            addItem(i.toString(),Event())
+            addItem(i.toString(), Event())
         }
     }
 

@@ -26,6 +26,8 @@
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="55dp"
+        android:tag="tagMainContent"
         android:name="androidx.navigation.fragment.NavHostFragment"
         app:layout_constraintBottom_toTopOf="@id/appBar_layout"
         app:layout_constraintTop_toBottomOf="@id/adView"
@@ -38,6 +40,7 @@
         android:id="@+id/appBar_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/main_content"
         app:layout_constraintBottom_toBottomOf="parent"
         >
 
@@ -76,10 +79,16 @@
             app:layout_anchor="@id/bottom_bar"
             app:maxImageSize="32dp"
             app:srcCompat="@drawable/cam_icon"
-            tools:ignore="ImageContrastCheck"
-            tools:visibility="visible" />
+            />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

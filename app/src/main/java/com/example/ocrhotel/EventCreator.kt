@@ -6,6 +6,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.provider.CalendarContract.Events
+import com.example.ocrhotel.models.Event
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*

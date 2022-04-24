@@ -6,14 +6,16 @@ import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.preference.*
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.joda.time.DateTime
+import java.time.LocalDate
+import java.time.LocalDate.now
+import java.time.format.DateTimeFormatter
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +27,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         //set the "calendar"
         populateCalendarList()
+
         checkAndUpdate()
     }
 
@@ -98,8 +101,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val bExpMth = sh.getInt("businessExpirationMonth", -1)
         if (a.premiumAccount) {
             premiumPreference!!.title = "You are a Premium user"
+
             val pStringSummary =
-                "Your subscription will expire on $pExpDay.$pExpMth. Press to cancel"
+                if (pExpDay == -1 || pExpMth == -1) "You have lifetime access to CalenSnap."
+                else {
+                    val endDate = LocalDate.of(now().year,pExpMth,pExpDay).format(DateTimeFormatter.ofPattern("dd MMMM"))
+
+                    "Your subscription will expire on $endDate. \nPress to cancel."
+                }
             premiumPreference.summary = pStringSummary
             premiumPreference.setOnPreferenceClickListener {
                 MaterialAlertDialogBuilder(requireContext())
@@ -120,15 +129,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
         //if user is a business one, that will override the premium account anyway!
         if (a.businessAccount) {
             premiumPreference!!.title = "You are a Business user"
+
             val bStringSummary =
-                "Your business subscription will expire on $bExpDay.$bExpMth. Press to cancel"
+                if (bExpDay == -1 || bExpMth == -1) "You have lifetime access to CalenSnap."
+                else {
+                    val endDate = LocalDate.of(now().year,bExpMth,bExpDay).format(DateTimeFormatter.ofPattern("dd MMMM"))
+
+                    "Your subscription will expire on $endDate. \nPress to cancel."
+                }
+
             premiumPreference.summary = bStringSummary
             premiumPreference.setOnPreferenceClickListener {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Cancelling business")
                     .setMessage("Are you sure you want to cancel your subscription? You will " +
-                            "lose any remaining days of business access you might have." +
-                            "")
+                            "lose any remaining days of business access you might have.")
                     .setPositiveButton("OK"){_,_->
                         removeBusiness()
                     }
@@ -182,10 +197,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val editor = sh.edit()
         val m = (activity as MainActivity)
         m.premiumAccount = false
-        editor.putInt("premiumExpirationDay)", -1)
-        editor.putInt("premiumExpirationMonth)", -1)
+        editor.putInt("premiumExpirationDay", -1)
+        editor.putInt("premiumExpirationMonth", -1)
         //no need to update the expiration dates as they will not be read anyway
-        editor.commit()
+        editor.apply()
         refreshFragment()
 
     }
@@ -199,13 +214,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val m = (activity as MainActivity)
         m.businessAccount = false
         m.premiumAccount = false
-        //cautinary update of the other values.
+        //cautionary update of the other values.
         editor.putInt("premiumExpirationDay)", -1)
         editor.putInt("premiumExpirationMonth)", -1)
         editor.putInt("businessExpirationDay)", -1)
         editor.putInt("businessExpirationMonth)", -1)
 
-        editor.commit()
+        editor.apply()
         refreshFragment()
     }
 

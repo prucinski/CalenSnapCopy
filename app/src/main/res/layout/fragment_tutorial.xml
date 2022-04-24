@@ -9,5 +9,5 @@
         android:adjustViewBounds="true"
         android:contentDescription="Specs"
         android:scrollbars="vertical"
-        android:src="@drawable/long_image_test"/>
+        android:src="@drawable/tutorial_infographic"/>
 </ScrollView>
