@@ -28,9 +28,8 @@ import com.example.ocrhotel.databinding.FragmentEventsHistoryBinding
 import com.example.ocrhotel.models.EventListModel
 import com.example.ocrhotel.widgets.EventTile
 import com.google.android.material.composethemeadapter.MdcTheme
-
-import com.example.ocrhotel.ui.home.EventListModel
 import android.util.Log
+import androidx.navigation.fragment.NavHostFragment
 
 
 /**

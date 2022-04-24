@@ -7,11 +7,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -23,12 +25,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.NavHostFragment
 import com.example.ocrhotel.widgets.EventTile
 import com.example.ocrhotel.MainActivity
 import com.example.ocrhotel.R
@@ -85,9 +89,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         _binding = null
     }
 
-    private fun composeHomeView(){
+    private fun composeHomeView() {
         val composeView = binding.composeHome
-        composeView.apply{
+        composeView.apply {
 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
@@ -99,143 +103,143 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     @Composable
-    fun Home(){
+    fun Home() {
         val events by remember {
             mutableStateOf(model)
         }
 
-                MdcTheme {
-                    Scaffold(
-                        modifier = Modifier
-                            .padding(top = if (!premium.value && !business.value) 55.dp else 0.dp)
-                        ,
-                        topBar = {
-                            ProfileScreen()
-                        }
-                    ) { contentPadding ->
+        MdcTheme {
+            Scaffold(
+                modifier = Modifier
+                    .padding(top = if (!premium.value && !business.value) 55.dp else 0.dp),
+                topBar = {
+                    ProfileScreen()
+                }
+            ) { contentPadding ->
 
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .padding(contentPadding)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(contentPadding)
 
-                        ) {
-                            Divider(thickness=2.dp)
+                ) {
+                    Divider(thickness = 2.dp)
 
-                            Text(
-                                "Upcoming Events",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(5.dp)
-                            )
-                            Divider(thickness=2.dp)
-                            LazyColumn(
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                items(items = events.getFutureEvents()) { event ->
-                                    EventTile(event) {
-                                        // On press of delete button
-                                        events.removeEvent(event)
-                                    }
-                                }
+                    Text(
+                        "Upcoming Events",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(5.dp)
+                    )
+                    Divider(thickness = 2.dp)
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        items(items = events.getFutureEvents()) { event ->
+                            EventTile(event) {
+                                // On press of delete button
+                                events.removeEvent(event)
                             }
                         }
                     }
                 }
-
-}
-
-@ExperimentalFoundationApi
-@Preview
-@Composable
-fun ProfileScreen() {
-    Column() {
-        TopBar(
-            name = "Home",
-            modifier = Modifier
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        ProfileSection()
-    }
-}
-
-@Composable
-fun TopBar(
-    name: String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround,
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        Box(
-            Modifier
-                .background(color=MaterialTheme.colors.primary)
-                .fillMaxWidth(),
-            Alignment.Center,
-        ){
-            Text(
-                text = name,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                fontSize = 24.sp,
-                color = MaterialTheme.colors.onPrimary,
-                modifier = Modifier.padding(10.dp)
-            )
+            }
         }
 
     }
-}
 
-@Composable
-@Preview
-fun ProfileSection(
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    @ExperimentalFoundationApi
+    @Preview
+    @Composable
+    fun ProfileScreen() {
+        Column() {
+            TopBar(
+                name = "Home",
+                modifier = Modifier
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            ProfileSection()
+        }
+    }
+
+    @Composable
+    fun TopBar(
+        name: String,
+        modifier: Modifier = Modifier
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 10.dp)
         ) {
-            RoundImage(
-                image = painterResource(id = R.drawable.ic_baseline_person_24),
-                modifier = Modifier
-                    .size(70.dp)
-                    .weight(5f)
-            )
-            Spacer(modifier = Modifier.width(20.dp))
-            ProfileDescription(
-                displayName = "John Smith",
-                description = "“Pleasure in the job puts perfection in the work.”\n - Aristotle",
-            )
+            Box(
+                Modifier
+                    .background(color = MaterialTheme.colors.primary)
+                    .fillMaxWidth(),
+                Alignment.Center,
+            ) {
+                Text(
+                    text = name,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
+
         }
     }
-}
 
-@Composable
-fun RoundImage(
-    image: Painter,
-    modifier: Modifier = Modifier
-) {
-    Image(
-        painter = image,
-        contentDescription = null,
-        modifier = modifier
-            .aspectRatio(ratio = 1f, matchHeightConstraintsFirst = true)
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colors.primary,
-                shape = CircleShape)
+    @Composable
+    @Preview
+    fun ProfileSection(
+        modifier: Modifier = Modifier
+    ) {
+        Column(modifier = modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 10.dp)
+            ) {
+                RoundImage(
+                    image = painterResource(id = R.drawable.ic_baseline_person_24),
+                    modifier = Modifier
+                        .size(70.dp)
+                        .weight(5f)
+                )
+                Spacer(modifier = Modifier.width(20.dp))
+                ProfileDescription(
+                    displayName = "John Smith",
+                    description = "“Pleasure in the job puts perfection in the work.”\n - Aristotle",
+                )
+            }
+        }
+    }
 
-            .padding(3.dp)
-            .clip(CircleShape)
-    )
-}
+    @Composable
+    fun RoundImage(
+        image: Painter,
+        modifier: Modifier = Modifier
+    ) {
+        Image(
+            painter = image,
+            contentDescription = null,
+            modifier = modifier
+                .aspectRatio(ratio = 1f, matchHeightConstraintsFirst = true)
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colors.primary,
+                    shape = CircleShape
+                )
+
+                .padding(3.dp)
+                .clip(CircleShape)
+        )
+    }
 
 // @Composable
 // fun StatSection(modifier: Modifier = Modifier) {
@@ -271,29 +275,30 @@ fun RoundImage(
 //     }
 // }
 
-@Composable
-fun ProfileDescription(
-    displayName: String,
-    description: String,
-) {
-    val letterSpacing = 0.5.sp
-    val lineHeight = 20.sp
-    Column(
-        modifier = Modifier
-            // .fillMaxWidth()
-            .padding(horizontal = 10.dp)
-            .width(220.dp)
+    @Composable
+    fun ProfileDescription(
+        displayName: String,
+        description: String,
     ) {
-        Text(
-            text = displayName,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = letterSpacing,
-            lineHeight = lineHeight
-        )
-        Text(
-            text = description,
-            letterSpacing = letterSpacing,
-            lineHeight = lineHeight
-        )
+        val letterSpacing = 0.5.sp
+        val lineHeight = 20.sp
+        Column(
+            modifier = Modifier
+                // .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .width(220.dp)
+        ) {
+            Text(
+                text = displayName,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = letterSpacing,
+                lineHeight = lineHeight
+            )
+            Text(
+                text = description,
+                letterSpacing = letterSpacing,
+                lineHeight = lineHeight
+            )
+        }
     }
 }
