@@ -14,8 +14,6 @@ import java.util.stream.Collectors
 
 class TOSFragment : Fragment() {
 
-    private lateinit var _binding : FragmentTOSBinding
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

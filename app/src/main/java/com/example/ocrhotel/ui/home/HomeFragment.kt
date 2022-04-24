@@ -153,12 +153,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     @Preview
     @Composable
     fun ProfileScreen() {
-        Column() {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             TopBar(
                 name = "Home",
                 modifier = Modifier
             )
-            Spacer(modifier = Modifier.height(4.dp))
             ProfileSection()
         }
     }
@@ -198,27 +199,66 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     fun ProfileSection(
         modifier: Modifier = Modifier
     ) {
-        Column(modifier = modifier.fillMaxWidth()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+                // .fillMaxWidth()
+                // .fillMaxSize(0.6F)
+                .height(IntrinsicSize.Min)
+                .padding(horizontal = 60.dp, vertical = 10.dp)
+        ) {
+            Text(
+                // TODO: Add profile name here
+                text = "John Smith",
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp,
+                fontSize = 24.sp
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            RoundImage(
+                image = painterResource(id = R.drawable.ic_baseline_person_24),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
-            ) {
-                RoundImage(
-                    image = painterResource(id = R.drawable.ic_baseline_person_24),
-                    modifier = Modifier
-                        .size(70.dp)
-                        .weight(5f)
-                )
-                Spacer(modifier = Modifier.width(20.dp))
-                ProfileDescription(
-                    displayName = "John Smith",
-                    description = "“Pleasure in the job puts perfection in the work.”\n - Aristotle",
-                )
-            }
+                    .size(90.dp)
+                    .weight(5f)
+
+            )
         }
     }
+
+    //--------------------
+    // Old Profile
+    //--------------------
+    // @Composable
+    // @Preview
+    // fun ProfileSection(
+    //     modifier: Modifier = Modifier
+    // ) {
+    //     Column(modifier = modifier.fillMaxWidth()) {
+    //         Row(
+    //             verticalAlignment = Alignment.CenterVertically,
+    //             modifier = Modifier
+    //                 .fillMaxWidth()
+    //                 .padding(horizontal = 20.dp, vertical = 10.dp)
+    //         ) {
+    //             RoundImage(
+    //                 image = painterResource(id = R.drawable.ic_baseline_person_24),
+    //                 modifier = Modifier
+    //                     .size(70.dp)
+    //                     .weight(5f)
+    //             )
+    //             Spacer(modifier = Modifier.width(20.dp))
+    //             ProfileDescription(
+    //                 displayName = "John Smith",
+    //                 description = "“Pleasure in the job puts perfection in the work.”\n - Aristotle",
+    //             )
+    //         }
+    //     }
+    // }
+    //
+
 
     @Composable
     fun RoundImage(
@@ -229,7 +269,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             painter = image,
             contentDescription = null,
             modifier = modifier
-                .aspectRatio(ratio = 1f, matchHeightConstraintsFirst = true)
+                .aspectRatio(ratio = 1f)
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colors.primary,
