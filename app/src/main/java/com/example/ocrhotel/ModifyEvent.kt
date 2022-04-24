@@ -40,7 +40,7 @@ class ModifyEvent : Fragment() {
 
     // Keep track which event we're looking at now. By default we're looking at the first event.
     private var selectedIdx = 0
-    private lateinit var selectedEvent : Event
+    private lateinit var selectedEvent: Event
 
     // Custom date format that we may use while displaying the date to clients.
     private val dateFormatter = DateTimeFormatter.ofPattern("dd-MM-uuuu")
@@ -77,8 +77,8 @@ class ModifyEvent : Fragment() {
         @Suppress("UNCHECKED_CAST")
         eventsList = arguments?.getSerializable("data") as MutableList<Event>
 
-        if(eventsList.size == 0){
-            Toast.makeText(context, "No events were found.",Toast.LENGTH_LONG).show()
+        if (eventsList.size == 0) {
+            Toast.makeText(context, "No events were found.", Toast.LENGTH_LONG).show()
             eventsList.add(Event())
         }
         // Set the current event
@@ -86,7 +86,7 @@ class ModifyEvent : Fragment() {
 
         // TODO: Use this whenever the algorithm has been modified to actually understand multiple titles.
         // val fillEvents = eventsList.map{it.eventName}.toMutableList()
-        val fillEvents = eventsList.mapIndexed{idx,_-> "Event ${idx+1}" }.toMutableList()
+        val fillEvents = eventsList.mapIndexed { idx, _ -> "Event ${idx + 1}" }.toMutableList()
 
         super.onViewCreated(view, savedInstanceState)
 
@@ -96,7 +96,7 @@ class ModifyEvent : Fragment() {
         //Applying the spinner
         val spinner: Spinner = binding.foundEventsSelector
         ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents)
-            .also{adapter ->
+            .also { adapter ->
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
             }
@@ -126,7 +126,7 @@ class ModifyEvent : Fragment() {
 
 
         //update event date
-        binding.EventDate.setOnClickListener{
+        binding.EventDate.setOnClickListener {
             val currentDate = LocalDate.parse(binding.EventDate.text.toString(), dateFormatter)
             val datePicker =
                 MaterialDatePicker.Builder.datePicker()
@@ -166,27 +166,31 @@ class ModifyEvent : Fragment() {
         }
 
         //update event date
-        binding.endEventDate.setOnClickListener{
-            val endDate = eventsList[selectedIdx].eventDateTime.plusMinutes(eventsList[selectedIdx].duration)
+        binding.endEventDate.setOnClickListener {
+            val endDate =
+                eventsList[selectedIdx].eventDateTime.plusMinutes(eventsList[selectedIdx].duration)
             val datePicker =
                 MaterialDatePicker.Builder.datePicker()
                     .setTitleText("Select date")
-                    .setSelection(endDate.toEpochSecond(ZoneOffset.UTC)*1000)
+                    .setSelection(endDate.toEpochSecond(ZoneOffset.UTC) * 1000)
                     .build()
 
-            datePicker.show(parentFragmentManager,"DATE")
+            datePicker.show(parentFragmentManager, "DATE")
 
             datePicker.addOnPositiveButtonClickListener {
                 binding.EventDate.text = LocalDateTime.ofEpochSecond(
-                    datePicker.selection!!/1000,0, ZoneOffset.UTC)
+                    datePicker.selection!! / 1000, 0, ZoneOffset.UTC
+                )
                     .format(dateFormatter)
 
             }
         }
         //update event hour
         binding.endEventHour.setOnClickListener {
-            val clockFormat = if (is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
-            val endHour = eventsList[selectedIdx].eventDateTime.plusMinutes(eventsList[selectedIdx].duration)
+            val clockFormat =
+                if (is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+            val endHour =
+                eventsList[selectedIdx].eventDateTime.plusMinutes(eventsList[selectedIdx].duration)
             val timePicker = MaterialTimePicker.Builder()
                 .setTimeFormat(clockFormat)
                 .setHour(endHour.hour)
@@ -194,10 +198,10 @@ class ModifyEvent : Fragment() {
                 .setTitleText("Select time")
                 .build()
 
-            timePicker.show(parentFragmentManager,"TIME")
+            timePicker.show(parentFragmentManager, "TIME")
 
-            timePicker.addOnPositiveButtonClickListener{
-                binding.EventHour.text = LocalTime.of(timePicker.hour,timePicker.minute)
+            timePicker.addOnPositiveButtonClickListener {
+                binding.EventHour.text = LocalTime.of(timePicker.hour, timePicker.minute)
                     .toString()
 
             }
@@ -210,43 +214,43 @@ class ModifyEvent : Fragment() {
             fillEvents.add("Event")
             //recreate the spinner
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents)
-                .also{adapter ->
+                .also { adapter ->
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     spinner.adapter = adapter
                 }
             //select the event that was just added
-            spinner.setSelection(eventsList.size-1)
+            spinner.setSelection(eventsList.size - 1)
         }
 
         // Button "Delete". Used to delete an unwanted event.
-        binding.deleteButton.setOnClickListener{
+        binding.deleteButton.setOnClickListener {
             //leave the screen if all the events have been deleted.
-            if(eventsList.size == 1){
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.deleteLastTitle)
-                        .setMessage(R.string.deleteLastMessage)
-                        .setNegativeButton(R.string.deleteLastNo) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .setPositiveButton("Delete anyway") { _, _ ->
-                            findNavController().popBackStack()
-                            // findNavController().navigate(R.id.action_modifyEvent_to_home)
-                        }
-                        .show()
+            if (eventsList.size == 1) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.deleteLastTitle)
+                    .setMessage(R.string.deleteLastMessage)
+                    .setNegativeButton(R.string.deleteLastNo) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("Delete anyway") { _, _ ->
+                        findNavController().popBackStack()
+                        // findNavController().navigate(R.id.action_modifyEvent_to_home)
+                    }
+                    .show()
             }
             // Delete the event
-            else{
+            else {
                 eventsList.removeAt(selectedIdx)
                 fillEvents.removeAt(selectedIdx)
                 //repopulate the spinner
                 ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, fillEvents)
-                    .also{adapter ->
+                    .also { adapter ->
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spinner.adapter = adapter
                     }
 
-                if(selectedIdx > 0) selectedIdx -= 1
-                else if(eventsList.size == 1) selectedIdx = 0
+                if (selectedIdx > 0) selectedIdx -= 1
+                else if (eventsList.size == 1) selectedIdx = 0
                 // if index is already 0 and it's not the only element in list, we do not change anything
 
                 selectedEvent = eventsList[selectedIdx]
@@ -262,8 +266,12 @@ class ModifyEvent : Fragment() {
         binding.finish.setOnClickListener {
             activity?.let { activity ->
                 //request permission from user to access their calendars
-                ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 1)
-                if(checkIfHasPermission()) {
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR),
+                    1
+                )
+                if (checkIfHasPermission()) {
 
                     // Update the list again with the current value before completing.
                     updateEventsList()
@@ -282,9 +290,12 @@ class ModifyEvent : Fragment() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
-                }
-                else{
-                    Toast.makeText(context, "Sorry, you don't have permissions for your calendar enabled. Try restarting the app.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Sorry, you don't have permissions for your calendar enabled. Try restarting the app.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -326,7 +337,7 @@ class ModifyEvent : Fragment() {
         eventsList[selectedIdx] = selectedEvent
     }
 
-    private fun checkIfHasPermission() :Boolean{
+    private fun checkIfHasPermission(): Boolean {
         val result = context?.let {
             ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CALENDAR)
         }
@@ -338,18 +349,22 @@ class ModifyEvent : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    
-   // Function for loading the interstitial ad
-   private fun loadInterAd(){
-        InterstitialAd.load(requireContext(),getString(R.string.ad_id_interstitial), adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                mInterstitialAd = null
-            }
 
-            override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                mInterstitialAd = interstitialAd
-            }
-        })
+    // Function for loading the interstitial ad
+    private fun loadInterAd() {
+        InterstitialAd.load(
+            requireContext(),
+            getString(R.string.ad_id_interstitial),
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    mInterstitialAd = interstitialAd
+                }
+            })
     }
 
     // Displays the interstitial ad to the user.
