@@ -116,13 +116,12 @@ class MainActivity : AppCompatActivity() {
         retrieveAppSettings()
 
         initializeAds()
-
+        reloadEvents()
         setupNavigation()
-        jwtAndPopulateTables()
     }
 
     private fun initializeAds() {
-        if (!(premiumAccount || businessAccount)){
+        if (!(premiumAccount || businessAccount)) {
             //Code for ads
             MobileAds.initialize(this) {}
 
@@ -137,8 +136,15 @@ class MainActivity : AppCompatActivity() {
         setupNavigation()
     }
 
+    fun synchronizeChanges() {
+        // Send changes made to the preferences to the
+    }
+
     fun logOut() {
+        synchronizeChanges()
         jwt = "" // this means user is logged out
+        premiumAccount = false
+        businessAccount = false
         resetEvents()
     }
 
@@ -177,10 +183,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     //function to be called after logging out to clear the tables.
-    fun resetEvents(){
+    fun resetEvents() {
         this.viewModels<EventListModel>().value.eventsList = emptyList()
     }
-
 
 
     private fun setupSharedPrefs() {
@@ -243,9 +248,9 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton("I understand") { _, _ ->
                     requestPermissionLauncher.launch(permissions.toTypedArray())
                 }
-                .setNegativeButton("I disagree"){_,_->
+                .setNegativeButton("I disagree") { _, _ ->
                     //turn off the app if permissions are not granted.
-                     this.finish()
+                    this.finish()
                 }.show()
         }
     }
@@ -289,14 +294,20 @@ class MainActivity : AppCompatActivity() {
 
                 // Go to the settings page
                 R.id.navigation_settings ->
-                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED){
-                     navController.navigate(R.id.settingsMenu)
-                }
-                else{
-                    Toast.makeText(this, "You don't have calendar permissions enabled. The app will " +
-                               "not function without them. Please restart the application and grant these permissions."
-                        , Toast.LENGTH_LONG).show()
-                }
+                    if (ActivityCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.READ_CALENDAR
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        navController.navigate(R.id.settingsMenu)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "You don't have calendar permissions enabled. The app will " +
+                                    "not function without them. Please restart the application and grant these permissions.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
 
 
             }
@@ -345,7 +356,7 @@ class MainActivity : AppCompatActivity() {
 
     // Function for loading the reward ad
     private fun loadRewardedAd() {
-        if(premiumAccount || businessAccount){
+        if (premiumAccount || businessAccount) {
             return
         }
         RewardedAd.load(
@@ -425,8 +436,12 @@ class MainActivity : AppCompatActivity() {
                 val idCol = calCursor.getColumnIndex(projection[0])
                 calName = calCursor.getString(nameCol)
                 calID = calCursor.getString(idCol)
-                Log.d("CAL","Calendar name = $calName Calendar ID = $calID")
-                val helloTutorial = Toast.makeText(applicationContext, "Events will be created at this calendar: $calName", Toast.LENGTH_SHORT)
+                Log.d("CAL", "Calendar name = $calName Calendar ID = $calID")
+                val helloTutorial = Toast.makeText(
+                    applicationContext,
+                    "Events will be created at this calendar: $calName",
+                    Toast.LENGTH_SHORT
+                )
                 helloTutorial.show()
                 calCursor.close()
                 return calID.toLong()
@@ -435,7 +450,7 @@ class MainActivity : AppCompatActivity() {
         return null
     }
 
-    fun showTermsAndConditions(){
+    fun showTermsAndConditions() {
         val myWebView: WebView = findViewById(R.id.webview)
         myWebView.visibility = VISIBLE
 
