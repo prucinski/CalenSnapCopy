@@ -156,7 +156,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (userEvents != null) {
                     for (event in userEvents.events) {
-                        events.add(Event(event.title, extractDate(event.event_time)))
+                        events.add(Event(event.title, extractDate(event.event_time), id=event.id))
                     }
                 } else {
                     navController.navigate(R.id.loginFragment)

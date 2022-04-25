@@ -42,6 +42,8 @@ class EventsHistoryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val model: EventListModel by activityViewModels()
+    private val jwt = mutableStateOf("")
+
 
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
@@ -52,6 +54,7 @@ class EventsHistoryFragment : Fragment() {
         val view = binding.root
 
         val m = activity as MainActivity
+        jwt.value = m.jwt
         // If the user is not logged in, they should be redirected to the login page.
         Log.d("LOGIN STATUS", "${m.jwt}; " + if (m.loggedIn) "Logged in" else "Not logged in")
         if (!m.loggedIn) {
@@ -62,16 +65,16 @@ class EventsHistoryFragment : Fragment() {
         }
 
 
-        binding.composeView.apply{
+        binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            setContent{
+            setContent {
 
-                val events by remember{
+                val events by remember {
                     mutableStateOf(model)
                 }
 
-                MdcTheme{
+                MdcTheme {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
@@ -96,6 +99,9 @@ class EventsHistoryFragment : Fragment() {
 
                             items(items = events.getPastEvents()) { event ->
                                 EventTile(event) {
+                                    if (event.id != null) {
+                                        deleteUserEvent(event.id, jwt.value) {}
+                                    }
                                     events.removeEvent(event)
                                 }
                             }

@@ -37,6 +37,7 @@ import com.example.ocrhotel.widgets.EventTile
 import com.example.ocrhotel.MainActivity
 import com.example.ocrhotel.R
 import com.example.ocrhotel.databinding.FragmentHomeBinding
+import com.example.ocrhotel.deleteUserEvent
 import com.example.ocrhotel.models.EventListModel
 import com.google.android.material.composethemeadapter.MdcTheme
 
@@ -51,6 +52,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val model: EventListModel by activityViewModels()
     private val premium = mutableStateOf(false)
     private val business = mutableStateOf(false)
+    private val jwt = mutableStateOf("")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,6 +74,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         premium.value = m.premiumAccount
         business.value = m.businessAccount
+        jwt.value = m.jwt
         composeHomeView()
         return root
     }
@@ -139,6 +142,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         items(items = events.getFutureEvents()) { event ->
                             EventTile(event) {
                                 // On press of delete button
+                                if (event.id != null) {
+                                    deleteUserEvent(event.id, jwt.value) {}
+                                }
                                 events.removeEvent(event)
                             }
                         }
