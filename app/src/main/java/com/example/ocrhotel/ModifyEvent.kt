@@ -280,9 +280,15 @@ class ModifyEvent : Fragment() {
                     val eventCreator = EventCreator(eventsList, activity)
 
                     if (eventCreator.addEvent()) {
-                        (activity as MainActivity).scanCountSub() //removes a scan
-                        showInterAd()
-
+                        if (!((activity as MainActivity).premiumAccount || (activity as MainActivity).businessAccount)) {
+                            activity.scanCountSub() //removes a scan
+                            Toast.makeText(
+                                context,
+                                "You are not a premium user, so here is your ad",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            showInterAd()
+                        }
                         findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
                     } else {
                         Toast.makeText(
