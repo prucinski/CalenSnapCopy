@@ -356,10 +356,6 @@ fun main(args: Array<String>) {
             readProfile(token) { profile ->
                 println(profile?.username)
             }
-
-            updateScans(token, 10) {
-
-            }
             
 
 //            upgradeProfile(token, false, false) {
