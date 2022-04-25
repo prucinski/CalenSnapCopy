@@ -356,7 +356,7 @@ fun main(args: Array<String>) {
             readProfile(token) { profile ->
                 println(profile?.username)
             }
-            
+
 
 //            upgradeProfile(token, false, false) {
 //                if (it) println("Success")
