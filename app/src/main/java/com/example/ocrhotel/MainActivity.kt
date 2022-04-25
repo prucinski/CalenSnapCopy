@@ -114,10 +114,9 @@ class MainActivity : AppCompatActivity() {
 
         // Retrieve values that we want.
         retrieveAppSettings()
-
         initializeAds()
-        reloadEvents()
         setupNavigation()
+        reloadEvents()
     }
 
     private fun initializeAds() {
@@ -132,8 +131,8 @@ class MainActivity : AppCompatActivity() {
             //Load reward ad
             loadRewardedAd()
         }
-        reloadEvents()
         setupNavigation()
+        reloadEvents()
     }
 
     fun synchronizeChanges() {
@@ -362,7 +361,7 @@ class MainActivity : AppCompatActivity() {
             adRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(logTag, adError?.message)
+                    Log.d(logTag, adError.message)
                     mRewardedAd = null
                 }
 
@@ -454,6 +453,22 @@ class MainActivity : AppCompatActivity() {
         val url = "https://gist.github.com/Rinto-kun/2f1b25dbf101ab61d2ea8ab2a195bd89"
 
         myWebView.loadUrl(url)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        tutorial()
+    }
+
+    private fun tutorial(){
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        val myEdit = sh.edit()
+
+        if (!sh.contains("prevRun")) {
+            myEdit.putBoolean("prevRun", true)
+            myEdit.apply()
+            navController.navigate(R.id.tutorialFragment)
+        }
     }
 
 }
