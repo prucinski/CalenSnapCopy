@@ -121,11 +121,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             1 - (scrollState.firstVisibleItemScrollOffset / 1024f + scrollState.firstVisibleItemIndex)
         )
 
-        Log.e(
-            "comp",
-            """${scrollState.firstVisibleItemScrollOffset} | $scrollOffset | ${scrollState.firstVisibleItemIndex}"""
-        )
-
         MdcTheme {
             Scaffold(
                 modifier = Modifier
