@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
-import android.view.View.VISIBLE
-import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -41,9 +39,9 @@ class MainActivity : AppCompatActivity() {
     private var _businessAccount = false
     private var _scans = 1
     private var _jwt = ""
+    private var _name = ""
 
     // All of these properties below are automatically synced with the shared preferences.
-
     val loggedIn: Boolean
         get() = jwt.isNotEmpty()
 
@@ -82,10 +80,12 @@ class MainActivity : AppCompatActivity() {
             edit.putString("JWT", value)
             edit.apply()
         }
-    // Initialize to arbitrary values
-//    var premiumAccount = false
-//    var businessAccount = false
-//    var scans = 1
+
+    var name: String
+        get() = _name
+        set(value) {
+            _name = value
+        }
 
     fun getEdit(): SharedPreferences.Editor {
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
@@ -174,6 +174,7 @@ class MainActivity : AppCompatActivity() {
                     businessAccount = profile.business_user
                     premiumAccount = profile.premium_user
                     scans = profile.remaining_free_uses
+                    name = profile.username
                 }
 
             }
@@ -182,7 +183,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //function to be called after logging out to clear the tables.
-    fun resetEvents() {
+    private fun resetEvents() {
         this.viewModels<EventListModel>().value.eventsList = emptyList()
     }
 
@@ -212,6 +213,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("SameParameterValue")
     private fun checkPermissions(
         permissions: List<String>,
         explanation: String,
@@ -336,7 +338,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Dialog for when there is no leftover scans
-    fun noScanDialog() {
+    private fun noScanDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.alert_dialog_title))
             .setMessage(resources.getString(R.string.alert_dialog_message))
@@ -387,7 +389,7 @@ class MainActivity : AppCompatActivity() {
                     loadRewardedAd()
                 }
 
-                override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                     Log.d("Reward AD", "Ad failed to show.")
                     mRewardedAd = null
                 }
@@ -444,15 +446,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return null
-    }
-
-    fun showTermsAndConditions() {
-        val myWebView: WebView = findViewById(R.id.webview)
-        myWebView.visibility = VISIBLE
-
-        val url = "https://gist.github.com/Rinto-kun/2f1b25dbf101ab61d2ea8ab2a195bd89"
-
-        myWebView.loadUrl(url)
     }
 
     override fun onStart() {

@@ -22,12 +22,10 @@ class EventListModel : ViewModel() {
     }
 
     fun addEvent(newEvent: Event){
-        // TODO: Adding of an event via the database needs to be added here.
         eventsList = eventsList.plus(newEvent)
     }
 
     fun removeEvent(event: Event){
-        // TODO: Removal of an event via the database needs to be added here.
         eventsList = eventsList.minus(event)
     }
 
@@ -35,8 +33,7 @@ class EventListModel : ViewModel() {
         eventsList = eventsList.map{
             if(it==event){
 
-                // TODO: In this case, open the ModifyEvent fragment, modify it,
-                    //  update it in the database, and go back here.
+                // TODO: In this case, open the ModifyEvent fragment, modify it, etc
                 it.eventName = "Modified"
                 return@map it
             }
