@@ -43,13 +43,6 @@ private val daysOfWeek = mapOf(
     "friday" to DayOfWeek.FRIDAY,
     "saturday" to DayOfWeek.SATURDAY,
     "sunday" to DayOfWeek.SUNDAY,
-    "mon" to DayOfWeek.MONDAY,
-    "tue" to DayOfWeek.TUESDAY,
-    "wed" to DayOfWeek.WEDNESDAY,
-    "thu" to DayOfWeek.THURSDAY,
-    "fri" to DayOfWeek.FRIDAY,
-    "sat" to DayOfWeek.SATURDAY,
-    "sun" to DayOfWeek.SUNDAY,
     )
 
 class Algorithm {
@@ -75,13 +68,18 @@ class Algorithm {
     // Time regex corresponds to the following: HH:mm-HH:mm PM || HH-HH PM
     private val timeRegex = Regex("""\b(?:(\d{1,2})[.:,]?(\d{1,2})?-)?(\d{1,2})[.:,](\d{1,2})\s?(am|pm)?\b|\b(?:(\d{1,2})-)?(\d{1,2})\s?(am|pm)\b""")
 
-    private val weekdayRegex = Regex("""(every|each|next)\s($weekdaysString)""")
+    private val weekdayRegex = Regex("""(every|each|next)\s($weekdaysString)|($weekdaysString)s""")
 
+    /**
+     * Extracts date-like objects from a single string, applying date and time
+     * recognition via regex and simple natural language processing.
+     *
+     * @param string The string to be processed. Only event-like objects separated with spaces
+     * or at the start/end of string are considered.
+     */
     fun extractDates(string: String): List<Event> {
 
         val text = string.lowercase()
-            //    Pointless since the OCR cleans the input relatively well
-            // .replace("\\s+"," ")
 
         // Match the OCR text against regex to find all matches
         val matchesDates = dateRegex.findAll(text).toMutableList()
@@ -119,21 +117,37 @@ class Algorithm {
     ) {
         weekdayRegex.findAll(text).toMutableList().forEach { match ->
 
-            val day = daysOfWeek[match.groups[2]?.value!!]
             var today = LocalDateTime.now()
 
-            when (match.groups[1]?.value) {
-                "every", "each" -> {
-                    for (i in 1..4) {
+            match.groups[2]?.value?.let{
+                val day = daysOfWeek[it]
+
+                // Handles every/each/next <day-of-Week>
+                when (match.groups[1]?.value) {
+                    "every", "each" -> {
+                        for (i in 1..4) {
+                            val newDay = today.with(TemporalAdjusters.next(day))
+                            dates.add(Event(eventDateTime = newDay))
+                            today = newDay
+                        }
+
+                    }
+                    "next" -> {
                         val newDay = today.with(TemporalAdjusters.next(day))
                         dates.add(Event(eventDateTime = newDay))
-                        today = newDay
                     }
-
+                    else -> {}
                 }
-                "next" -> {
+            }
+
+
+            // Handles <day-of-week> + s, e.g. Mondays, Wednesdays, etc.
+            match.groups[3]?.value?.let{
+                val day = daysOfWeek[it]
+                for (i in 1..4) {
                     val newDay = today.with(TemporalAdjusters.next(day))
                     dates.add(Event(eventDateTime = newDay))
+                    today = newDay
                 }
             }
         }
@@ -160,8 +174,8 @@ class Algorithm {
                     ?: 12
                 var m2 = match.groups[4]?.value?.toIntOrNull() ?: 0
 
-                val ampm = match.groups[5]?.value ?: match.groups[8]?.value
-                if (ampm == "pm") {
+                val pm = match.groups[5]?.value ?: match.groups[8]?.value
+                if (pm == "pm") {
                     h1 += 12;h2 += 12
                 }
 
@@ -186,9 +200,9 @@ class Algorithm {
                 var hour =
                     match.groups[3]?.value?.toIntOrNull() ?: match.groups[7]?.value?.toInt() ?: 12
                 var minute = match.groups[4]?.value?.toIntOrNull() ?: 0
-                val ampm = match.groups[5]?.value ?: match.groups[8]?.value
+                val pm = match.groups[5]?.value ?: match.groups[8]?.value
 
-                if (ampm == "pm") hour += 12
+                if (pm == "pm") hour += 12
 
                 if (hour > 23 || hour < 0 || minute > 59 || minute < 0) {
                     hour = firstFoundTime.first
@@ -256,8 +270,8 @@ class Algorithm {
                 day = splitDates.elementAt(0).toInt()
                 val day2 = splitDates.elementAt(1).toInt()
 
-                val date1 = tryGetDateFromDatelike(year, month, day) ?: return@mapNotNull null
-                val date2 = tryGetDateFromDatelike(year, month, day2) ?: return@mapNotNull null
+                val date1 = getLocalDateTimeOrNull(year, month, day) ?: return@mapNotNull null
+                val date2 = getLocalDateTimeOrNull(year, month, day2) ?: return@mapNotNull null
 
                 val duration = MINUTES.between(date1, date2)
 
@@ -275,7 +289,7 @@ class Algorithm {
                 month = splitDates.elementAt(if (flag) 1 else 0).toIntOrNull()
                     ?: currentDate.monthValue
 
-                val ret = tryGetDateFromDatelike(year, month, day) ?: return@mapNotNull null
+                val ret = getLocalDateTimeOrNull(year, month, day) ?: return@mapNotNull null
 
                 return@mapNotNull Event(eventDateTime = ret)
             }
@@ -283,17 +297,17 @@ class Algorithm {
 
         // Handles US date format.
         // TODO: Handle US format for real.
-        //  (Preferably through a setting, although it should make do.)
+        //  (Preferably through a setting, although this should make do.)
         if (month > 12) {
             month = day.also { day = month }
         }
 
-        val res = tryGetDateFromDatelike(year, month, day) ?: return@mapNotNull null
+        val res = getLocalDateTimeOrNull(year, month, day) ?: return@mapNotNull null
 
         return@mapNotNull Event(eventDateTime = res)
     }
 
-    private fun tryGetDateFromDatelike(year : Int, month: Int, day: Int): LocalDateTime?{
+    private fun getLocalDateTimeOrNull(year : Int, month: Int, day: Int): LocalDateTime?{
         return try {
             LocalDateTime.of(year,month,day,12,0)
         }
