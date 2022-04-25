@@ -166,7 +166,6 @@ def upgrade():
     """ Upgrade the user account to premium or to business. """
     username = get_jwt_identity()
     try:
-
         is_premium = request.json['premium']
         is_business = request.json['business']
 
@@ -174,6 +173,26 @@ def upgrade():
         cursor = connection.cursor()
         cursor.execute(""" UPDATE profile SET premium_user = %s, business_user = %s WHERE username = %s; """, (
             is_premium, is_business, username))
+        connection.commit()
+
+        return {'success': True}, 200
+
+    except Exception as e:
+        app.logger.warn(e)
+        return {'success': False}, 400
+
+
+@app.route("/profile/update", methods=['PUT'])
+@jwt_required()
+def update_profile():
+    username = get_jwt_identity()
+    try:
+        remaining_free_uses = request.json['remaining_free_uses']
+
+        connection = connect()
+        cursor = connection.cursor()
+        cursor.execute(
+            """ UPDATE profile SET remaining_free_uses = %s WHERE username = %s; """, (remaining_free_uses, username))
         connection.commit()
 
         return {'success': True}, 200

@@ -322,10 +322,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateScanNumber() {
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-        val myEdit = sh.edit()
-        myEdit.putInt("numberOfScans", scans)
-        myEdit.apply()
+        updateScans(jwt, scans) {}
     }
 
     // Used in Modify Event to subtract the amount of scans

@@ -208,6 +208,14 @@ fun upgradeProfile(
     put(path("upgrade"), payload, validateCallback(callback), jwt)
 }
 
+fun updateScans(jwt: String, scans: Int, callback: (Boolean) -> Unit) {
+    val gson = Gson()
+    val payload = gson.toJson(object {
+        val remaining_free_uses = scans
+    })
+    put(path("profile", "update"), payload, validateCallback(callback), jwt)
+}
+
 // Create a new event for the user with profileId. This updates both the userevent and the event table.
 fun createEvent(
     jwt: String,
@@ -348,6 +356,7 @@ fun main(args: Array<String>) {
             readProfile(token) { profile ->
                 println(profile?.username)
             }
+            
 
 //            upgradeProfile(token, false, false) {
 //                if (it) println("Success")
