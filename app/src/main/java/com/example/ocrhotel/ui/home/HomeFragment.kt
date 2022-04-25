@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalUnitApi::class, ExperimentalFoundationApi::class)
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
 
 package com.example.ocrhotel.ui.home
 
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +40,8 @@ import com.example.ocrhotel.R
 import com.example.ocrhotel.databinding.FragmentHomeBinding
 import com.example.ocrhotel.models.EventListModel
 import com.google.android.material.composethemeadapter.MdcTheme
+import kotlin.math.max
+import kotlin.math.min
 
 @ExperimentalMaterialApi
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -51,6 +54,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val model: EventListModel by activityViewModels()
     private val premium = mutableStateOf(false)
     private val business = mutableStateOf(false)
+    private var name : String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,7 +65,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val composeView = binding.composeHome
         // If the user is not logged in, they should be redirected to the login page.
         val m = (activity as MainActivity)
         if (!m.loggedIn) {
@@ -72,6 +75,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         premium.value = m.premiumAccount
         business.value = m.businessAccount
+        name = m.name
         composeHomeView()
         return root
     }
@@ -108,21 +112,38 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             mutableStateOf(model)
         }
 
+        val scrollState = rememberLazyListState()
+        val scrollOffset: Float = min(
+            1f,
+            1 - (scrollState.firstVisibleItemScrollOffset / 1024f + scrollState.firstVisibleItemIndex)
+        )
+
+        Log.e(
+            "comp",
+            """${scrollState.firstVisibleItemScrollOffset} | $scrollOffset | ${scrollState.firstVisibleItemIndex}"""
+        )
+
         MdcTheme {
             Scaffold(
                 modifier = Modifier
-                    .padding(top = if (!premium.value && !business.value) 55.dp else 0.dp),
+                    .padding(top = if (!(premium.value || business.value)) 55.dp else 0.dp),
                 topBar = {
-                    ProfileScreen()
+                    TopBar(title = "Home")
                 }
             ) { contentPadding ->
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top,
                     modifier = Modifier
                         .padding(contentPadding)
 
                 ) {
+                    ProfileSection(
+                        scrollOffset = scrollOffset,
+                        name = name
+                    )
+
                     Divider(thickness = 2.dp)
 
                     Text(
@@ -134,7 +155,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     )
                     Divider(thickness = 2.dp)
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        state = scrollState
                     ) {
                         items(items = events.getFutureEvents()) { event ->
                             EventTile(event) {
@@ -149,24 +171,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     }
 
-    @ExperimentalFoundationApi
-    @Preview
-    @Composable
-    fun ProfileScreen() {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TopBar(
-                name = "Home",
-                modifier = Modifier
-            )
-            ProfileSection()
-        }
-    }
 
     @Composable
     fun TopBar(
-        name: String,
+        title: String,
         modifier: Modifier = Modifier
     ) {
         Row(
@@ -182,7 +190,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 Alignment.Center,
             ) {
                 Text(
-                    text = name,
+                    text = title,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     fontSize = 24.sp,
@@ -197,31 +205,33 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     @Composable
     @Preview
     fun ProfileSection(
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        name: String? = null,
+        scrollOffset: Float = 1f
     ) {
+        val size by animateFloatAsState(targetValue = max(0f, scrollOffset))
+
         Column(
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
-                // .fillMaxWidth()
-                // .fillMaxSize(0.6F)
                 .height(IntrinsicSize.Min)
-                .padding(horizontal = 60.dp, vertical = 10.dp)
+                // .padding(horizontal = 20.dp, vertical = 10.dp)
+                .fillMaxSize(size)
+
         ) {
+            if(name!=null)
             Text(
-                // TODO: Add profile name here
-                text = "John Smith",
+                text = name,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.5.sp,
-                fontSize = 24.sp
+                fontSize = (24*size).sp,
             )
-
-            Spacer(modifier = Modifier.height(10.dp))
 
             RoundImage(
                 image = painterResource(id = R.drawable.ic_baseline_person_24),
                 modifier = Modifier
-                    .size(90.dp)
+                    .size((90*size).dp)
                     .weight(5f)
 
             )
@@ -280,6 +290,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 .clip(CircleShape)
         )
     }
+}
 
 // @Composable
 // fun StatSection(modifier: Modifier = Modifier) {
@@ -315,30 +326,29 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 //     }
 // }
 
-    @Composable
-    fun ProfileDescription(
-        displayName: String,
-        description: String,
-    ) {
-        val letterSpacing = 0.5.sp
-        val lineHeight = 20.sp
-        Column(
-            modifier = Modifier
-                // .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-                .width(220.dp)
-        ) {
-            Text(
-                text = displayName,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = letterSpacing,
-                lineHeight = lineHeight
-            )
-            Text(
-                text = description,
-                letterSpacing = letterSpacing,
-                lineHeight = lineHeight
-            )
-        }
-    }
-}
+//     @Composable
+//     fun ProfileDescription(
+//         displayName: String,
+//         description: String,
+//     ) {
+//         val letterSpacing = 0.5.sp
+//         val lineHeight = 20.sp
+//         Column(
+//             modifier = Modifier
+//                 // .fillMaxWidth()
+//                 .padding(horizontal = 10.dp)
+//                 .width(220.dp)
+//         ) {
+//             Text(
+//                 text = displayName,
+//                 fontWeight = FontWeight.Bold,
+//                 letterSpacing = letterSpacing,
+//                 lineHeight = lineHeight
+//             )
+//             Text(
+//                 text = description,
+//                 letterSpacing = letterSpacing,
+//                 lineHeight = lineHeight
+//             )
+//         }
+//     }
