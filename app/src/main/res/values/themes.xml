@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
 
-    <style name="Theme.OCRHotel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.OCRHotel" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Adding so that the Action bar is not visible -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

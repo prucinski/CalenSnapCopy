@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
 
-    <style name="Theme.OCRHotel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.OCRHotel" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Adding so that the Action bar is not visible -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -9,7 +9,7 @@
 
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
         <item name="colorOnPrimary">@color/secondaryColor</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/secondaryColor</item>
@@ -26,7 +26,7 @@
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
 
         <!-- Setting text color. -->>
-        <item name="android:textColorPrimary">@color/primaryDarkColor</item>
+        <item name="android:textColorPrimary">@color/secondaryColor</item>
         <item name="android:textColorSecondary">@android:color/tab_indicator_text</item>
         <item name ="android:textColorTertiary">@android:color/tab_indicator_text</item>
         <item name ="android:textColorHint">@android:color/tab_indicator_text</item>

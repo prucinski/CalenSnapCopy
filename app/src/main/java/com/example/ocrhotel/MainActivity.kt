@@ -114,10 +114,9 @@ class MainActivity : AppCompatActivity() {
 
         // Retrieve values that we want.
         retrieveAppSettings()
-
         initializeAds()
-        reloadEvents()
         setupNavigation()
+        reloadEvents()
     }
 
     private fun initializeAds() {
@@ -132,8 +131,8 @@ class MainActivity : AppCompatActivity() {
             //Load reward ad
             loadRewardedAd()
         }
-        reloadEvents()
         setupNavigation()
+        reloadEvents()
     }
 
     fun synchronizeChanges() {
@@ -156,7 +155,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (userEvents != null) {
                     for (event in userEvents.events) {
-                        events.add(Event(event.title, extractDate(event.event_time)))
+                        events.add(Event(event.title, extractDate(event.event_time), id=event.id))
                     }
                 } else {
                     navController.navigate(R.id.loginFragment)
@@ -324,10 +323,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateScanNumber() {
-        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
-        val myEdit = sh.edit()
-        myEdit.putInt("numberOfScans", scans)
-        myEdit.apply()
+        updateScans(jwt, scans) {}
     }
 
     // Used in Modify Event to subtract the amount of scans
@@ -450,6 +446,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return null
+    }
+
+    override fun onStart() {
+        super.onStart()
+        tutorial()
+    }
+
+    private fun tutorial(){
+        val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+        val myEdit = sh.edit()
+
+        if (!sh.contains("prevRun")) {
+            myEdit.putBoolean("prevRun", true)
+            myEdit.apply()
+            navController.navigate(R.id.tutorialFragment)
+        }
     }
 
 }
