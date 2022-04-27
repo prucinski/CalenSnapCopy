@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
+import android.view.View.GONE
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     private var _businessAccount = false
     private var _scans = 1
     private var _jwt = ""
-    private var _name = ""
+    private var _name: String? = null
 
     // All of these properties below are automatically synced with the shared preferences.
     val loggedIn: Boolean
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             edit.apply()
         }
 
-    var name: String
+    var name: String?
         get() = _name
         set(value) {
             _name = value
@@ -131,8 +132,11 @@ class MainActivity : AppCompatActivity() {
             //Load reward ad
             loadRewardedAd()
         }
-        setupNavigation()
-        reloadEvents()
+    }
+
+    fun removeAds(){
+        val mAdView = findViewById<AdView>(R.id.adView)
+        mAdView.visibility = GONE
     }
 
     fun synchronizeChanges() {
@@ -225,10 +229,10 @@ class MainActivity : AppCompatActivity() {
                 ActivityResultContracts.RequestMultiplePermissions()
             ) { results ->
                 if (results.all { (_, permission) -> permission }) {
-                    // Permission is granted. Set the shared preferences up.
+                    // Permissions granted. Set the shared preferences up.
                     whenPermissionGranted()
                 } else {
-                    //this.finish()
+                    this.finish()
                 }
             }
 
