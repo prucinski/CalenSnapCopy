@@ -21,15 +21,17 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
         for (events in eventArray) {
             // Send events to API
             if (activity.loggedIn) {
-                createEvent(
-                    activity.jwt,
-                    events.eventName,
-                    events.eventDateTime,
-                    LocalDateTime.now(),
-                    0.0, // TODO: Get actual location here
-                    0.0
-                ) {
-                    Log.w("EVENT CREATED?", it.toString())
+                activity.currentLoc?.let { location ->
+                    createEvent(
+                        activity.jwt,
+                        events.eventName,
+                        events.eventDateTime,
+                        LocalDateTime.now(),
+                        location.latitude,
+                        location.longitude
+                    ) {
+                        Log.w("EVENT CREATED?", it.toString())
+                    }
                 }
             }
 
