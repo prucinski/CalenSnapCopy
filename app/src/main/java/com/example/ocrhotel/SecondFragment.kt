@@ -186,13 +186,15 @@ class SecondFragment : Fragment() {
                             try {
                                 val data = algo.execute(ocr.resultsText, ocr.results)
                                 algorithmModel.eventData.postValue(data)
-                            } catch (_: Exception) {
+                            } catch (ex: Exception) {
+                                Log.e("OCR", "Get image text data exception:\n ${ex.stackTraceToString()}")
                                 handleError()
                             }
                         }
                     })
                     // Error handling callback
                     {
+                        Log.e("OCR", "Error handling callback: \n ${it.stackTraceToString()}")
                         handleError()
                     }
                 }

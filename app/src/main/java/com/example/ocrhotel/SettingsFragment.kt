@@ -1,7 +1,5 @@
 package com.example.ocrhotel
 
-import android.os.Build
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
@@ -18,9 +16,6 @@ import java.time.LocalDate.now
 import java.time.format.DateTimeFormatter
 
 class SettingsFragment : PreferenceFragmentCompat() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         //different settings can be setup at root_preferences.
@@ -42,7 +37,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         // Projection array. Creating indices for this array instead of doing
         // dynamic lookups improves performance.
-        val EVENT_PROJECTION: Array<String> = arrayOf(
+        val eventProjection: Array<String> = arrayOf(
             CalendarContract.Calendars._ID,                     // 0
             CalendarContract.Calendars.ACCOUNT_NAME,            // 1
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,   // 2
@@ -50,18 +45,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         )
 
         // The indices for the projection array above.
-        val PROJECTION_ID_INDEX = 0
-        val PROJECTION_ACCOUNT_NAME_INDEX = 1
-        val PROJECTION_DISPLAY_NAME_INDEX = 2
-        val PROJECTION_OWNER_ACCOUNT_INDEX = 3
+        val projectionIDIndex = 0
+        // val projectionAccountNameIndex = 1
+        val projectionDisplayNameIndex = 2
+        // val projectionOwnerAccountIndex = 3
         val uri = CalendarContract.Calendars.CONTENT_URI
-        val cur = requireContext().contentResolver.query(uri, EVENT_PROJECTION, "", null, null)
+        val cur = requireContext().contentResolver.query(uri, eventProjection, "", null, null)
         //return first n calendars (if it even gets to this point)
         var counter = 0
         while (cur!!.moveToNext() && counter < size) {
             // Get the field values
-            val calID: Long = cur.getLong(PROJECTION_ID_INDEX)
-            val displayName: String = cur.getString(PROJECTION_DISPLAY_NAME_INDEX)
+            val calID: Long = cur.getLong(projectionIDIndex)
+            val displayName: String = cur.getString(projectionDisplayNameIndex)
             // Add the relevant values to relevant arrays.
             Log.e("CALENDAR", calID.toString())
             calendarNames[counter] = displayName
@@ -114,8 +109,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Cancelling premium")
                     .setMessage("Are you sure you want to cancel your subscription? You will" +
-                            "lose any remaining days of premium you might have." +
-                            "")
+                            "lose any remaining days of premium you might have.")
                     .setPositiveButton("OK"){_,_->
                         //sadly this coupling is required to minimize opening sharedPrefs
                         (activity as MainActivity).premiumAccount = false
@@ -224,7 +218,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         refreshFragment()
     }
 
-    //refresh by renavigating to this fragment
+    //refresh by re-navigating to this fragment
     private fun refreshFragment(){
         val navController: NavController =
             NavHostFragment.findNavController(this)

@@ -54,16 +54,10 @@ android {
 }
 
 dependencies {
-
+    // Necessary AndroidX libraries
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
-    implementation 'id.zelory:compressor:3.0.1'
-	implementation 'com.google.maps.android:android-maps-utils:2.3.0'
-
-    implementation 'com.google.android.gms:play-services-ads:20.6.0'
-    implementation 'com.google.android.gms:play-services-wallet:19.1.0'
-    implementation 'com.google.android.gms:play-services-pay:16.0.3'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
@@ -73,37 +67,14 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation("androidx.fragment:fragment-ktx:1.4.1")
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
-    implementation "com.google.android.gms:play-services-wallet:19.1.0"
-    implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
 
-
-    // This prevents a very weird error from happening, so keep it.
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-
-    // The current version of Azure Computer Vision
-    implementation 'com.microsoft.azure.cognitiveservices:azure-cognitiveservices-computervision:1.0.8-beta'
-
-    // MLKit variant
-    implementation 'com.google.mlkit:text-recognition:16.0.0-beta3'
-
-    // Those below are for the REST API that would be the alternative way of doing it.
-    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-    implementation 'com.google.http-client:google-http-client:1.40.1'
-    implementation 'com.google.code.gson:gson:2.8.9'
-
-
-    // Compose is the new UI framework/library we will be adopting
-    implementation "androidx.compose.compiler:compiler:1.2.0-alpha08"
-    implementation "androidx.compose.runtime:runtime:1.2.0-alpha08"
-    implementation "androidx.compose.runtime:runtime-livedata:1.2.0-alpha08"
-
+    // Jetpack Compose UI Necessary libraries.
+    implementation 'androidx.compose.compiler:compiler:1.2.0-alpha08'
+    implementation 'androidx.compose.runtime:runtime:1.2.0-alpha08'
+    implementation 'androidx.compose.runtime:runtime-livedata:1.2.0-alpha08'
     // Integration with activities
     implementation 'androidx.activity:activity-compose:1.4.0'
     // Compose Material Design
@@ -115,11 +86,44 @@ dependencies {
     // Integration with ViewModels
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
     // When using a MDC theme
-    implementation "com.google.android.material:compose-theme-adapter:1.1.7"
-    // When using a AppCompat theme
-    implementation "com.google.accompanist:accompanist-appcompat-theme:0.24.6-alpha"
+    implementation 'com.google.android.material:compose-theme-adapter:1.1.7'
 
-    // Markdown library for Terms and Conditions. Can delete if apk too big.
+
+    /*********************************************************
+     *
+     *              Necessary Libraries in the App
+     *
+     *********************************************************/
+
+
+    // The current version of Azure Computer Vision
+    implementation 'com.microsoft.azure.cognitiveservices:azure-cognitiveservices-computervision:1.0.8-beta'
+
+    // Libraries required for implementation of REST-ful APIs.
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    // Image compression library
+    implementation 'id.zelory:compressor:3.0.1'
+    // Markdown library for Terms and Conditions.
     implementation "io.noties.markwon:core:4.6.2"
 
+    // Google maps for implementation of Heatmap (Business aspect).
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation 'com.google.maps.android:android-maps-utils:2.3.0'
+
+    // Google AdMob library
+    implementation 'com.google.android.gms:play-services-ads:20.6.0'
+
+    // Libraries for purchasing premium
+    implementation 'com.google.android.gms:play-services-wallet:19.1.0'
+    implementation 'com.google.android.gms:play-services-pay:16.0.3'
+
+    // Testing libraries
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // Fixes Duplicate Class error with Gradle. Thanks, Google.
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 }
