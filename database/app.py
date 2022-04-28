@@ -72,7 +72,7 @@ def login():
         app.logger.warning(e)
         return {'success': False}, 400
 
-    token = create_access_token(identity=username)
+    token = create_access_token(identity=username, expires_delta=False)
     return {'success': True, 'token': token}, 200
 
 
