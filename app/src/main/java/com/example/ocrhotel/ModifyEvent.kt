@@ -280,20 +280,24 @@ class ModifyEvent : Fragment() {
                     val eventCreator = EventCreator(eventsList, activity)
 
                     if (eventCreator.addEvent()) {
-                        if (!((activity as MainActivity).premiumAccount || (activity as MainActivity).businessAccount)) {
+                        if (!((activity as MainActivity).premiumAccount || activity.businessAccount)) {
                             activity.scanCountSub() //removes a scan
                             Toast.makeText(
                                 context,
-                                "You are not a premium user, so here is your ad",
+                                "You can buy premium to get rid of these pesky ads and support our work!",
                                 Toast.LENGTH_LONG
                             ).show()
                             showInterAd()
                         }
+                        // Update the database with the new entries
+                        activity.reloadEvents()
+
+                        // Process to splash screen.
                         findNavController().navigate(R.id.action_modifyEvent_to_successfulScan)
                     } else {
                         Toast.makeText(
                             context,
-                            "Something went horribly wrong with adding the event. Please restart the app.",
+                            "Something went wrong with adding the event. Please restart the app.",
                             Toast.LENGTH_LONG
                         ).show()
                     }

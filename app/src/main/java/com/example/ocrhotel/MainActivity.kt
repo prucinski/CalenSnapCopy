@@ -149,6 +149,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun retrieveLoc() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Generally, no one should be able to reach this point but just to be safe.
+            Toast.makeText(this,"Please, grant us location permissions!",Toast.LENGTH_LONG).show()
+            return
+        }
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 if (location != null) {
@@ -218,9 +230,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 runOnUiThread {
                     this.viewModels<EventListModel>().value.eventsList = events
-                    for (event in events) {
-                        Log.d("OCR EVENT", event.eventName)
-                    }
+                    Log.d("$logTag/Events", events.toString())
                     Log.d(logTag, "Reloaded Events")
                 }
             }
