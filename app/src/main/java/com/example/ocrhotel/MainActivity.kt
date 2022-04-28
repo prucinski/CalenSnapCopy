@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         if (premiumAccount || businessAccount) {
             removeAds()
         } else {
-            removeAds()
+            initializeAds()
         }
     }
 
@@ -198,6 +198,7 @@ class MainActivity : AppCompatActivity() {
         premiumAccount = false
         businessAccount = false
         resetEvents()
+        initializeAds()
     }
 
     fun reloadEvents() {
