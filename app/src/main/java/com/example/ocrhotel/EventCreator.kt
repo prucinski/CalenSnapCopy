@@ -17,21 +17,30 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
     //boolean as I use the success of the adding action as a means to move to next screen
     fun addEvent(): Boolean {
         val a = activity as MainActivity
+        var currentLat: Double = -1000.0
+        var currentLong: Double = -1000.0
+
+        if (a.currentLoc != null) {
+            currentLat = a.currentLoc!!.latitude
+            currentLong = a.currentLoc!!.longitude
+        }
+
         //go through all the confirmed events and add them into the calendar
         for (events in eventArray) {
             // Send events to API
-            if (activity.loggedIn) {
-                createEvent(
-                    activity.jwt,
-                    events.eventName,
-                    events.eventDateTime,
-                    LocalDateTime.now(),
-                    0.0, // TODO: Get actual location here
-                    0.0
-                ) {
-                    Log.w("EVENT CREATED?", it.toString())
+            if (a.loggedIn) {
+                    createEvent(
+                        a.jwt,
+                        events.eventName,
+                        events.eventDateTime,
+                        LocalDateTime.now(),
+                        currentLat,
+                        currentLong
+                    ) {
+                        Log.w("EVENT CREATED?", it.toString())
+                    }
                 }
-            }
+
 
             //Extract start time in milliseconds (that is the format that is accepted by the calendar)
             val startMillis =
@@ -42,7 +51,7 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
                 .toEpochMilli() + events.duration * 60 * 1000
 
             //retrieve the calendar ID from shared preferences.
-            val sh = activity?.getSharedPreferences(
+            val sh = activity.getSharedPreferences(
                 "com.example.ocrhotel_preferences",
                 Context.MODE_PRIVATE
             )
@@ -51,7 +60,7 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
             //Calendar not found in shared prefs, try again. To get to this screen, permissions must have been granted.
             //TODO: BAD COUPLING, THINK OF A FIX.
             if (calID == -1L) {
-                calID = (activity as MainActivity).getCalendarId()!!
+                calID = a.getCalendarId()!!
                 val editor = sh.edit()
                 //sadly these have to be as strings (see SettingsFragment.kt)
                 editor.putString("calendarID", calIDstr)
@@ -73,7 +82,7 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
             }
 
             val uri: Uri =
-                activity.contentResolver.insert(Events.CONTENT_URI, values) ?: return false
+                a.contentResolver.insert(Events.CONTENT_URI, values) ?: return false
         }
         return true
         // get the event ID that is the last element in the Uri
