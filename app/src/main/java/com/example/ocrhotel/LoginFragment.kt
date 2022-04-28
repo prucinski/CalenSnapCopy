@@ -70,16 +70,20 @@ class LoginFragment : Fragment() {
 
                 // Login was successful
                 requireActivity().runOnUiThread {
+                    // Inform user
                     Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                     requireActivity().runOnUiThread {
-                        readProfile(jwt) { profile ->
+                        readProfile(jwt) { profile -> // Now, the profile is loaded
                             val a = requireActivity()
                             if (a is MainActivity) {
                                 a.reloadEvents()
-                                if (profile != null) {
+                                if (profile != null) { // Update activity variables
                                     a.premiumAccount = profile.premium_user
                                     a.businessAccount = profile.business_user
                                     a.scans = profile.remaining_free_uses
+                                    a.runOnUiThread {
+                                        a.updateAds()
+                                    }
                                 }
                             }
                             // Return to previous fragment
@@ -89,6 +93,7 @@ class LoginFragment : Fragment() {
                 }
 
             } else {
+                // In this case, there was an issue with logging in
                 activity?.runOnUiThread {
                     Toast.makeText(
                         requireContext(),
