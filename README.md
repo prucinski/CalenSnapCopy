@@ -24,7 +24,7 @@ Android VM or emulator, or a device is required to use the application.
 ### Libraries and dependancies
 For the Android application, packages and dependancies are detailed in Gradle's dependency manager and more generally in the `app/src/build.gradle` file.
 
-The dependencies for the backend can be found `database/requirements.txt`. To install them using Python's package manager PIP, use the following command: `pip install -r requirements.txt`. 
+The dependencies for the backend can be found in `database/requirements.txt`. To install them using Python's package manager PIP, use the following command: `pip install -r requirements.txt`. 
  
 ### Building the application
 The application should be built via Android Studio with Gradle installed.
@@ -40,18 +40,6 @@ If the user wishes to change ownership of Azure's services, they need to change 
 The database-backend is a fairly standard Flask CRUD API that allows the Android app to access a PostgreSQL database by sending different HTTP requests. It is hosted on Heroku. To deploy a new version, both the Heroku and the Git CLI are required. For more detailed instructions, consult the [database deployment README](https://www.postgresql.org). 
 The API-endpoint is hardcoded into the Android app, and can be changed in `API.kt`.
 
-
-### Google AdMob?
-
-
-
-## Testing
-idk
-
-## Known bugs
-* The app may occasionally crash while synchronizing with Heroku's database. Clearing the cache resolves this.
-  
-* Sometimes, after premium is purchased, the app may need a reset to be completely cleared from advertisements.
 
 ## Team Members
 Leah Hughes (PL), Piotr Rucinski(DPL), Alexandru Closca-Gheorghiu, Matey Krastev, Aleksandra Nenkova, Erik Staas, Stanislav Stoyanov 
