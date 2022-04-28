@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -34,9 +35,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
+    private val logTag = "MainActivity"
+
     private val adRequest = AdRequest.Builder().build()
     private var mRewardedAd: RewardedAd? = null
-    private var logTag = "MainActivity"
 
 
     private var _premiumAccount = false
@@ -52,36 +54,51 @@ class MainActivity : AppCompatActivity() {
         get() = jwt.isNotEmpty()
 
     var premiumAccount: Boolean
-        get() = _premiumAccount
+        get() {
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            return sh.getBoolean("isPremiumUser", false)
+        }
         set(value) {
             _premiumAccount = value
             val edit = getEdit()
             edit.putBoolean("isPremiumUser", value)
             edit.apply()
+
+            // Update in database
+            upgradeProfile(jwt, isPremium = value, isBusiness = false) {}
         }
 
     var businessAccount: Boolean
-        get() = _businessAccount
+        get() {
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            return sh.getBoolean("isBusinessUser", false)
+        }
         set(value) {
-            _businessAccount = value
             val edit = getEdit()
             edit.putBoolean("isBusinessUser", value)
             edit.apply()
+
+            // Update in database
+            upgradeProfile(jwt, isPremium = value, isBusiness = value) {}
         }
 
     var scans: Int
-        get() = _scans
+        get() {
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            return sh.getInt("numberOfScans", 0)
+        }
         set(value) {
-            _scans = value
             val edit = getEdit()
             edit.putInt("numberOfScans", value)
             edit.apply()
         }
 
     var jwt: String
-        get() = _jwt
+        get() {
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            return sh.getString("JWT", "")!!
+        }
         set(value) {
-            _jwt = value
             val edit = getEdit()
             edit.putString("JWT", value)
             edit.apply()
@@ -95,7 +112,7 @@ class MainActivity : AppCompatActivity() {
 
     var currentLoc: Location? = null
 
-    fun getEdit(): SharedPreferences.Editor {
+    private fun getEdit(): SharedPreferences.Editor {
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         return sh.edit()!!
     }
@@ -148,15 +165,29 @@ class MainActivity : AppCompatActivity() {
             //Banner ad
             val mAdView = findViewById<AdView>(R.id.adView)
             mAdView.loadAd(adRequest)
+            mAdView.visibility = VISIBLE
 
             //Load reward ad
             loadRewardedAd()
         }
     }
 
-    fun removeAds() {
-        val mAdView = findViewById<AdView>(R.id.adView)
-        mAdView.visibility = GONE
+
+    override fun onResume() {
+        super.onResume()
+
+        // Update the ads in case the user has bought premium.
+        updateAds()
+    }
+
+    fun updateAds() {
+        if (premiumAccount || businessAccount) {
+            // Remove the adView
+            val mAdView = findViewById<AdView>(R.id.adView)
+            mAdView.visibility = GONE
+        } else {
+            initializeAds()
+        }
     }
 
     fun synchronizeChanges() {
@@ -169,6 +200,7 @@ class MainActivity : AppCompatActivity() {
         premiumAccount = false
         businessAccount = false
         resetEvents()
+        initializeAds()
     }
 
     fun reloadEvents() {
@@ -199,8 +231,10 @@ class MainActivity : AppCompatActivity() {
                     premiumAccount = profile.premium_user
                     scans = profile.remaining_free_uses
                     name = profile.username
+                } else {
+                    // In this case, the server likely responded with a 401 because the JWT timed out. Hence the user should be logged out.
+                    logOut()
                 }
-
             }
         } ?: navController.navigate(R.id.loginFragment)
 

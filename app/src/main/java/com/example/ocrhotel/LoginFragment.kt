@@ -56,7 +56,7 @@ class LoginFragment : Fragment() {
         // Make sure no blank username or password is provided
         if (username.isBlank() || password.isBlank()) {
             Toast.makeText(
-                requireContext(),
+                context,
                 "Please provide username and password.",
                 Toast.LENGTH_SHORT
             ).show()
@@ -69,30 +69,30 @@ class LoginFragment : Fragment() {
                 a.jwt = jwt
 
                 // Login was successful
-                requireActivity().runOnUiThread {
-                    Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-                    requireActivity().runOnUiThread {
-                        readProfile(jwt) { profile ->
-                            val a = requireActivity()
-                            if (a is MainActivity) {
-                                a.reloadEvents()
-                                if (profile != null) {
-                                    a.premiumAccount = profile.premium_user
-                                    a.businessAccount = profile.business_user
-                                    a.scans = profile.remaining_free_uses
-                                }
+                a.runOnUiThread {
+                    // Inform user
+                    Toast.makeText(a, "Login successful!", Toast.LENGTH_SHORT).show()
+                    readProfile(jwt) { profile -> // Now, the profile is loaded
+                        a.reloadEvents()
+                        if (profile != null) { // Update activity variables
+                            a.premiumAccount = profile.premium_user
+                            a.businessAccount = profile.business_user
+                            a.scans = profile.remaining_free_uses
+                            (activity as MainActivity).runOnUiThread{
+                                a.updateAds()
                             }
-                            // Return to previous fragment
-                            a.supportFragmentManager.popBackStack()
                         }
+                        // Return to previous fragment
+                        a.supportFragmentManager.popBackStack()
                     }
                 }
 
             } else {
+                // In this case, there was an issue with logging in
                 activity?.runOnUiThread {
                     Toast.makeText(
-                        requireContext(),
-                        "Username or password was wrong.",
+                        context,
+                        "Wrong username or password.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
