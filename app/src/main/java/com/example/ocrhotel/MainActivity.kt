@@ -52,7 +52,10 @@ class MainActivity : AppCompatActivity() {
         get() = jwt.isNotEmpty()
 
     var premiumAccount: Boolean
-        get() = _premiumAccount
+        get() {
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            return sh.getBoolean("isPremiumUser", false)
+        }
         set(value) {
             _premiumAccount = value
             val edit = getEdit()
@@ -61,27 +64,33 @@ class MainActivity : AppCompatActivity() {
         }
 
     var businessAccount: Boolean
-        get() = _businessAccount
+        get() {
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            return sh.getBoolean("isBusinessUser", false)
+        }
         set(value) {
-            _businessAccount = value
             val edit = getEdit()
             edit.putBoolean("isBusinessUser", value)
             edit.apply()
         }
 
     var scans: Int
-        get() = _scans
+        get() {
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            return sh.getInt("numberOfScans", 0)
+        }
         set(value) {
-            _scans = value
             val edit = getEdit()
             edit.putInt("numberOfScans", value)
             edit.apply()
         }
 
     var jwt: String
-        get() = _jwt
+        get() {
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            return sh.getString("JWT", "")!!
+        }
         set(value) {
-            _jwt = value
             val edit = getEdit()
             edit.putString("JWT", value)
             edit.apply()
@@ -95,7 +104,7 @@ class MainActivity : AppCompatActivity() {
 
     var currentLoc: Location? = null
 
-    fun getEdit(): SharedPreferences.Editor {
+    private fun getEdit(): SharedPreferences.Editor {
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         return sh.edit()!!
     }

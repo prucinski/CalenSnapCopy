@@ -11,6 +11,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.example.ocrhotel.databinding.ActivityPaymentPopupBinding
+import com.example.ocrhotel.upgradeProfile
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ResolvableApiException
@@ -27,6 +28,7 @@ class PaymentPopup : AppCompatActivity() {
     private lateinit var paymentsClient: PaymentsClient
     private lateinit var binding: ActivityPaymentPopupBinding
     private lateinit var googlePayButton: View
+
     //accepting only Mastercard or Visa
     private val baseCardPaymentMethod = JSONObject().apply {
         put("type", "CARD")
@@ -40,7 +42,7 @@ class PaymentPopup : AppCompatActivity() {
     private val googlePayBaseConfiguration = JSONObject().apply {
         put("apiVersion", 2)
         put("apiVersionMinor", 0)
-        put("allowedPaymentMethods",  JSONArray().put(baseCardPaymentMethod))
+        put("allowedPaymentMethods", JSONArray().put(baseCardPaymentMethod))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,9 +87,11 @@ class PaymentPopup : AppCompatActivity() {
 
 
         } else {
-            Toast.makeText(this,
+            Toast.makeText(
+                this,
                 "Sorry, but it doesn't seem like you have Google Pay set up!",
-                Toast.LENGTH_SHORT).show()
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -141,31 +145,36 @@ class PaymentPopup : AppCompatActivity() {
 
         try {
             // Token will be null if PaymentDataRequest was not constructed using fromJson(String).
-            val paymentMethodData = JSONObject(paymentInformation).getJSONObject("paymentMethodData")
+            val paymentMethodData =
+                JSONObject(paymentInformation).getJSONObject("paymentMethodData")
             val billingName = paymentMethodData.getJSONObject("info")
                 .getJSONObject("billingAddress").getString("name")
             Log.d("BillingName", billingName)
 
-            Toast.makeText(this,
-                "Payment successful!", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "Payment successful!", Toast.LENGTH_LONG
+            ).show()
 
             // Logging token string.
-            Log.d("Google Pay token", paymentMethodData
-                .getJSONObject("tokenizationData")
-                .getString("token"))
-
-
+            Log.d(
+                "Google Pay token", paymentMethodData
+                    .getJSONObject("tokenizationData")
+                    .getString("token")
+            )
             //Updating the premium account.
             val expirationDate = DateTime.now().plusDays(30)
             val sh = getSharedPreferences("com.example.ocrhotel_preferences", MODE_PRIVATE)
             val myEdit = sh.edit()
             myEdit.putBoolean("isPremiumUser", true)
+            val jwt = sh.getString("JWT", "")!!
+            upgradeProfile(jwt, true, false) {} // Notify the database of change
             myEdit.putInt("premiumExpirationMonth", expirationDate.monthOfYear)
             myEdit.putInt("premiumExpirationDay", expirationDate.dayOfMonth)
             myEdit.apply()
 
             // Close the activity
-            // this.finish()
+            this.finish()
 
         } catch (error: JSONException) {
             Log.e("handlePaymentSuccess", "Error: $error")
@@ -174,19 +183,19 @@ class PaymentPopup : AppCompatActivity() {
     }
 
     // Handle potential conflict from calling loadPaymentData
-    private val resolvePaymentForResult = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            result: ActivityResult ->
-        when (result.resultCode) {
-            RESULT_OK ->
-                result.data?.let { intent ->
-                    PaymentData.getFromIntent(intent)?.let(::handlePaymentSuccess)
-                }
+    private val resolvePaymentForResult =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
+            when (result.resultCode) {
+                RESULT_OK ->
+                    result.data?.let { intent ->
+                        PaymentData.getFromIntent(intent)?.let(::handlePaymentSuccess)
+                    }
 
-            RESULT_CANCELED -> {
-                // The user cancelled the payment attempt
+                RESULT_CANCELED -> {
+                    // The user cancelled the payment attempt
+                }
             }
         }
-    }
 
     /**
      * At this stage, the user has already seen a popup informing them an error occurred. Normally,
