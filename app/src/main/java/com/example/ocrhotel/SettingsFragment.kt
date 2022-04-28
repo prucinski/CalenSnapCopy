@@ -2,7 +2,6 @@ package com.example.ocrhotel
 
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -165,11 +164,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // Once you implement it, better set it inside the onCreatePref
         // instead of letting it sit here
         logout?.setOnPreferenceClickListener {
-            // TODO ("Implement Log out"), if this behaviour is not enough.
-            (activity as MainActivity).logOut()
+
+            a.logOut()
+            a.updateAds()
             refreshFragment()
+
             true
         }
+
         //check whether the subscriptions have expired. Right now, it doesn't automatically extend
         //due to the technicalities with the payment provider, but it is easily amendable.
         if (pExpDay == DateTime.now().dayOfMonth) {
@@ -188,13 +190,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.preferences_address),
             AppCompatActivity.MODE_PRIVATE
         )
+
         val editor = sh.edit()
         val m = (activity as MainActivity)
         m.premiumAccount = false
         editor.putInt("premiumExpirationDay", -1)
         editor.putInt("premiumExpirationMonth", -1)
-        //no need to update the expiration dates as they will not be read anyway
         editor.apply()
+
+        m.updateAds()
         refreshFragment()
 
     }
@@ -206,15 +210,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         )
         val editor = sh.edit()
         val m = (activity as MainActivity)
+
         m.businessAccount = false
         m.premiumAccount = false
+
         //cautionary update of the other values.
         editor.putInt("premiumExpirationDay", -1)
         editor.putInt("premiumExpirationMonth", -1)
         editor.putInt("businessExpirationDay", -1)
         editor.putInt("businessExpirationMonth", -1)
-
         editor.apply()
+
+        m.updateAds()
         refreshFragment()
     }
 

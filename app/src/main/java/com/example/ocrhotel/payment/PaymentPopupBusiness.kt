@@ -10,7 +10,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import com.example.ocrhotel.databinding.ActivityPaymentPopupBinding
 import com.example.ocrhotel.databinding.ActivityPaymentPopupBusinessBinding
 import com.example.ocrhotel.upgradeProfile
 import com.google.android.gms.common.api.ApiException
@@ -172,7 +171,7 @@ class PaymentPopupBusiness : AppCompatActivity() {
             myEdit.putBoolean("isPremiumUser", true)
             myEdit.putBoolean("isBusinessUser", true)
             val jwt = sh.getString("JWT", "")!!
-            upgradeProfile(jwt, true, true) {} // Notify the database of change
+            upgradeProfile(jwt, isPremium = true, isBusiness = true) {} // Notify the database of change
             myEdit.putInt("businessExpirationMonth", expirationDate.monthOfYear)
             myEdit.putInt("businessExpirationDay", expirationDate.dayOfMonth)
             myEdit.apply()

@@ -168,7 +168,7 @@ class PaymentPopup : AppCompatActivity() {
             val myEdit = sh.edit()
             myEdit.putBoolean("isPremiumUser", true)
             val jwt = sh.getString("JWT", "")!!
-            upgradeProfile(jwt, true, false) {} // Notify the database of change
+            upgradeProfile(jwt, isPremium = true, isBusiness = false) {} // Notify the database of change
             myEdit.putInt("premiumExpirationMonth", expirationDate.monthOfYear)
             myEdit.putInt("premiumExpirationDay", expirationDate.dayOfMonth)
             myEdit.apply()

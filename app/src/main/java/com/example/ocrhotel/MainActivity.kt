@@ -63,6 +63,9 @@ class MainActivity : AppCompatActivity() {
             val edit = getEdit()
             edit.putBoolean("isPremiumUser", value)
             edit.apply()
+
+            // Update in database
+            upgradeProfile(jwt, isPremium = value, isBusiness = false) {}
         }
 
     var businessAccount: Boolean
@@ -74,6 +77,9 @@ class MainActivity : AppCompatActivity() {
             val edit = getEdit()
             edit.putBoolean("isBusinessUser", value)
             edit.apply()
+
+            // Update in database
+            upgradeProfile(jwt, isPremium = value, isBusiness = value) {}
         }
 
     var scans: Int
@@ -166,28 +172,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.e(logTag,"onPause called")
-    }
 
     override fun onResume() {
         super.onResume()
-        Log.e(logTag,"onResume called")
+
+        // Update the ads in case the user has bought premium.
         updateAds()
     }
 
     fun updateAds() {
         if (premiumAccount || businessAccount) {
-            removeAds()
+            // Remove the adView
+            val mAdView = findViewById<AdView>(R.id.adView)
+            mAdView.visibility = GONE
         } else {
             initializeAds()
         }
-    }
-
-    fun removeAds() {
-        val mAdView = findViewById<AdView>(R.id.adView)
-        mAdView.visibility = GONE
     }
 
     fun synchronizeChanges() {
