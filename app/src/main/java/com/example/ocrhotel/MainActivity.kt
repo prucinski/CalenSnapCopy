@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -157,9 +158,28 @@ class MainActivity : AppCompatActivity() {
             //Banner ad
             val mAdView = findViewById<AdView>(R.id.adView)
             mAdView.loadAd(adRequest)
+            mAdView.visibility = VISIBLE
 
             //Load reward ad
             loadRewardedAd()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        removeAds()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initializeAds()
+    }
+
+    fun updateAds() {
+        if (premiumAccount || businessAccount) {
+            removeAds()
+        } else {
+            removeAds()
         }
     }
 
@@ -208,8 +228,10 @@ class MainActivity : AppCompatActivity() {
                     premiumAccount = profile.premium_user
                     scans = profile.remaining_free_uses
                     name = profile.username
+                } else {
+                    // In this case, the server likely responded with a 401 because the JWT timed out. Hence the user should be logged out.
+                    logOut()
                 }
-
             }
         } ?: navController.navigate(R.id.loginFragment)
 
