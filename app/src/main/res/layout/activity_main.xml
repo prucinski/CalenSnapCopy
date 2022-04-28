@@ -16,7 +16,6 @@
         android:layout_centerHorizontal="true"
         app:layout_constraintTop_toTopOf="parent"
         app:adSize="BANNER"
-        android:elevation="100dp"
         app:adUnitId="@string/ad_id_banner">
 
     </com.google.android.gms.ads.AdView>
@@ -24,13 +23,14 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/main_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="55dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:tag="tagMainContent"
         android:name="androidx.navigation.fragment.NavHostFragment"
         app:layout_constraintBottom_toTopOf="@id/appBar_layout"
         app:layout_constraintTop_toBottomOf="@id/adView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_anchorGravity="center_vertical"
         app:navGraph="@navigation/nav_graph"
         app:defaultNavHost="true">
@@ -39,17 +39,13 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/appBar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="30dp"
         app:layout_constraintTop_toBottomOf="@id/main_content"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         >
-
-<!--        To enable color theming for menu items you will also need
- to set the materialThemeOverlay attribute to a ThemeOverlay which
-  sets the colorControlNormal attribute to the correct color.
-  For example, if the background of the BottomAppBar is colorSurface,
-   as it is in the default style, you should set materialThemeOverlay
-    to @style/ThemeOverlay.MaterialComponents.BottomAppBar.Surface.-->
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_bar"
