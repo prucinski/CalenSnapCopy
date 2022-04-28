@@ -149,6 +149,7 @@ class APIJWTToken : APIValue() {
  * API functions
  * */
 
+// Logs in the user, the callback returns a JWT that can be used for further API calls.
 fun login(username: String, password: String, callback: (token: String?) -> Unit) {
     val gson = Gson()
     val payload = gson.toJson(object {
@@ -162,6 +163,7 @@ fun login(username: String, password: String, callback: (token: String?) -> Unit
         })
 }
 
+// Signs up the user with the specified username and password. Callback returns true on succes, false on failure.
 fun createProfile(username: String, password: String, callback: (Boolean) -> Unit) {
     val gson = Gson()
 
@@ -181,6 +183,7 @@ fun createProfile(username: String, password: String, callback: (Boolean) -> Uni
         })
 }
 
+// Gets the user profile specified by the JWT, including information about username, remaining scans, etc.
 fun readProfile(jwt: String, callback: (APIProfile?) -> Unit) {
     get(
         path("profile"),
@@ -194,6 +197,7 @@ fun deleteProfile(jwt: String, callback: (Boolean) -> Unit) {
     delete(path("profile"), validateCallback(callback), jwt)
 }
 
+// Upgrades the user profile from a standard one to a business / premium account.
 fun upgradeProfile(
     jwt: String,
     isPremium: Boolean,
@@ -237,7 +241,7 @@ fun createEvent(
             val N = latitude
             val W = longitude
         }
-        val snap_time = snapTime
+        val snap_time = snapTime.toString()
     })
 
     println(data)

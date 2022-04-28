@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     private var _scans = 1
     private var _jwt = ""
     private var _name: String? = null
-    private var _loc: Location? = null
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -94,11 +93,7 @@ class MainActivity : AppCompatActivity() {
             _name = value
         }
 
-    var currentLoc: Location?
-        get() = null
-        set(value) {
-            _loc = value
-        }
+    var currentLoc: Location? = null
 
     fun getEdit(): SharedPreferences.Editor {
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
@@ -138,7 +133,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun retrieveLoc() {
         fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location? ->
+            .addOnSuccessListener { location: Location? ->
                 if (location != null) {
                     currentLoc = location
                 }
@@ -159,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun removeAds(){
+    fun removeAds() {
         val mAdView = findViewById<AdView>(R.id.adView)
         mAdView.visibility = GONE
     }
@@ -184,7 +179,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (userEvents != null) {
                     for (event in userEvents.events) {
-                        events.add(Event(event.title, extractDate(event.event_time), id=event.id))
+                        events.add(Event(event.title, extractDate(event.event_time), id = event.id))
                     }
                 } else {
                     navController.navigate(R.id.loginFragment)
@@ -301,12 +296,14 @@ class MainActivity : AppCompatActivity() {
             if (!premiumAccount && !businessAccount)
                 if (scans > 0) {
                     binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
+                    retrieveLoc() // Update location
                     navController.navigate(R.id.SecondFragment)
                 } else {
                     noScanDialog()
                 }
             else {
                 binding.bottomNavigation.selectedItemId = R.id.placeholder_fab
+                retrieveLoc()
                 navController.navigate(R.id.SecondFragment)
             }
 
@@ -482,7 +479,7 @@ class MainActivity : AppCompatActivity() {
         tutorial()
     }
 
-    private fun tutorial(){
+    private fun tutorial() {
         val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
         val myEdit = sh.edit()
 
