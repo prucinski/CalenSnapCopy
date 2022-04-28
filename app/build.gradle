@@ -126,4 +126,7 @@ dependencies {
 
     // Fixes Duplicate Class error with Gradle. Thanks, Google.
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+
+    // Location services
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
 }
