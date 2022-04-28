@@ -35,9 +35,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
+    private val logTag = "MainActivity"
+
     private val adRequest = AdRequest.Builder().build()
     private var mRewardedAd: RewardedAd? = null
-    private var logTag = "MainActivity"
 
 
     private var _premiumAccount = false
@@ -167,19 +168,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        removeAds()
+        Log.e(logTag,"onPause called")
     }
 
     override fun onResume() {
         super.onResume()
-        initializeAds()
+        Log.e(logTag,"onResume called")
+        updateAds()
     }
 
     fun updateAds() {
         if (premiumAccount || businessAccount) {
             removeAds()
         } else {
-            removeAds()
+            initializeAds()
         }
     }
 

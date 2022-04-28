@@ -209,10 +209,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         m.businessAccount = false
         m.premiumAccount = false
         //cautionary update of the other values.
-        editor.putInt("premiumExpirationDay)", -1)
-        editor.putInt("premiumExpirationMonth)", -1)
-        editor.putInt("businessExpirationDay)", -1)
-        editor.putInt("businessExpirationMonth)", -1)
+        editor.putInt("premiumExpirationDay", -1)
+        editor.putInt("premiumExpirationMonth", -1)
+        editor.putInt("businessExpirationDay", -1)
+        editor.putInt("businessExpirationMonth", -1)
 
         editor.apply()
         refreshFragment()
