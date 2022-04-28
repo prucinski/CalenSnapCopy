@@ -57,8 +57,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             // Get the field values
             val calID: Long = cur.getLong(projectionIDIndex)
             val displayName: String = cur.getString(projectionDisplayNameIndex)
+
             // Add the relevant values to relevant arrays.
-            Log.e("CALENDAR", calID.toString())
             calendarNames[counter] = displayName
             calendarIDs[counter] = calID.toString()
             counter++

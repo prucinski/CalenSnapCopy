@@ -63,7 +63,7 @@ class PaymentPopup : AppCompatActivity() {
             try {
                 task.getResult(ApiException::class.java)?.let(::setGooglePayAvailable)
             } catch (exception: ApiException) {
-                Log.e("PAY",exception.toString())
+                Log.e("PAY",exception.stackTraceToString())
                 // Error determining readiness to use Google Pay.
                 // Inspect the logs for more details.
             }
@@ -153,6 +153,8 @@ class PaymentPopup : AppCompatActivity() {
             Log.d("Google Pay token", paymentMethodData
                 .getJSONObject("tokenizationData")
                 .getString("token"))
+
+
             //Updating the premium account.
             val expirationDate = DateTime.now().plusDays(30)
             val sh = getSharedPreferences("com.example.ocrhotel_preferences", MODE_PRIVATE)
@@ -163,7 +165,7 @@ class PaymentPopup : AppCompatActivity() {
             myEdit.apply()
 
             // Close the activity
-            this.finish()
+            // this.finish()
 
         } catch (error: JSONException) {
             Log.e("handlePaymentSuccess", "Error: $error")

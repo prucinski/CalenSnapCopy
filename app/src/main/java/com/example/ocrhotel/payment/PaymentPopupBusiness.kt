@@ -156,6 +156,8 @@ class PaymentPopupBusiness : AppCompatActivity() {
                 .getString("token"))
             // Updating the business account. Business account comes with built-in premium
             val expirationDate = DateTime.now().plusDays(30)
+
+
             val sh = getSharedPreferences("com.example.ocrhotel_preferences", MODE_PRIVATE)
             val myEdit = sh.edit()
             myEdit.putBoolean("isPremiumUser", true)

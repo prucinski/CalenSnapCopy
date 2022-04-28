@@ -85,7 +85,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onResume() {
         super.onResume()
-        Log.d("RESUMING", "onResume() called")
 
         premium.value = (activity as MainActivity).premiumAccount
         business.value = (activity as MainActivity).businessAccount
