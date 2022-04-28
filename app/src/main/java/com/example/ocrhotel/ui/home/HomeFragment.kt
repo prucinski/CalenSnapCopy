@@ -123,7 +123,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         MdcTheme {
             Scaffold(
                 modifier = Modifier
-                    .padding(top = if (!(premium.value || business.value)) 55.dp else 0.dp),
+                    .padding(top = if (!(premium.value || business.value)) 50.dp else 0.dp),
                 topBar = {
                     TopBar(title = "Home")
                 }

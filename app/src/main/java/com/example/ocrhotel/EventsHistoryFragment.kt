@@ -78,7 +78,7 @@ class EventsHistoryFragment : Fragment() {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .padding(top = if (!m.premiumAccount && !m.businessAccount) 55.dp else 0.dp)
+                            .padding(top = if (!m.premiumAccount && !m.businessAccount) 50.dp else 0.dp)
 
 
                     ) {
