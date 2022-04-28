@@ -200,6 +200,7 @@ class MainActivity : AppCompatActivity() {
         premiumAccount = false
         businessAccount = false
         resetEvents()
+        initializeAds()
     }
 
     fun reloadEvents() {
