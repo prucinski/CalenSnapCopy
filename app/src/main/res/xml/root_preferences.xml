@@ -87,6 +87,7 @@
         <Preference
             app:key="terms"
             app:title="Terms and Conditions"
+            app:summary=" "
             app:iconSpaceReserved="false"
             app:fragment="com.example.ocrhotel.TOSFragment"
             app:destination="@+id/TOSFragment"
