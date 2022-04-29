@@ -29,17 +29,17 @@ class EventCreator(private val eventArray: List<Event>, private val activity: Ac
         for (events in eventArray) {
             // Send events to API
             if (a.loggedIn) {
-                    createEvent(
-                        a.jwt,
-                        events.eventName,
-                        events.eventDateTime,
-                        LocalDateTime.now(),
-                        currentLat,
-                        currentLong
-                    ) {
-                        Log.w("EVENT CREATED?", it.toString())
-                    }
+                createEvent(
+                    a.jwt,
+                    events.eventName,
+                    events.eventDateTime,
+                    LocalDateTime.now(),
+                    currentLat,
+                    currentLong
+                ) {
+                    Log.w("EVENT CREATED?", it.toString())
                 }
+            }
 
 
             //Extract start time in milliseconds (that is the format that is accepted by the calendar)
