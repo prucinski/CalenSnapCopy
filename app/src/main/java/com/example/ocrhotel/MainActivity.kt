@@ -65,7 +65,11 @@ class MainActivity : AppCompatActivity() {
             edit.apply()
 
             // Update in database
-            upgradeProfile(jwt, isPremium = value, isBusiness = false) {}
+            //Sadly, this was an oversight that reset the business account. We noticed after submission.
+            // :(
+            val sh = getSharedPreferences(getString(R.string.preferences_address), MODE_PRIVATE)
+            val bs = sh.getBoolean("isBusinessUser", false)
+            upgradeProfile(jwt, isPremium = value, isBusiness = bs) {}
         }
 
     var businessAccount: Boolean
@@ -80,6 +84,7 @@ class MainActivity : AppCompatActivity() {
 
             // Update in database
             upgradeProfile(jwt, isPremium = value, isBusiness = value) {}
+
         }
 
     var scans: Int
@@ -209,8 +214,13 @@ class MainActivity : AppCompatActivity() {
     fun logOut() {
         synchronizeChanges()
         jwt = "" // this means user is logged out
-        premiumAccount = false
-        businessAccount = false
+        val ed = getEdit()
+        //POST-RELEASE fix: sadly last-second changes were not noticed in time. Logging out updated
+        //the database and effectively removed premium. By attempting bettering design we sadly ruined
+        //it
+        ed.putBoolean("isPremiumUser", false)
+        ed.putBoolean("isBusinessUser", false)
+        ed.apply()
         resetEvents()
         initializeAds()
     }
@@ -265,7 +275,7 @@ class MainActivity : AppCompatActivity() {
 
         // Check if file already present. if not, create it
         premiumAccount = sh.getBoolean("isPremiumUser", false)
-        businessAccount = sh.getBoolean("isBusinessAccount", false)
+        businessAccount = sh.getBoolean("isBusinessUser", false)
         jwt = sh.getString("JWT", "")!!
         scans = sh.getInt("numberOfScans", 1)
 
@@ -398,7 +408,9 @@ class MainActivity : AppCompatActivity() {
 
     // Used in Modify Event to subtract the amount of scans
     fun scanCountSub() {
-        scans--
+        if(!premiumAccount){
+            scans--
+        }
         updateScanNumber()
     }
 

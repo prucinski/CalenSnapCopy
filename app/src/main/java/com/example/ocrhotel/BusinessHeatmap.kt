@@ -91,6 +91,14 @@ class BusinessHeatmap : Fragment() {
                     // Check if events have actually been returned.
                     if(apiEvents!=null){
                         for (event in apiEvents.events) {
+                            //another post-release fix. Lack of communication between two sections
+                            //of the team led to invalid locations being recorded as (-1000,-1000)
+                            //Map person (me) thought they wouldn't be recorded at all (good design)
+                            //so this is quite literally a bandaid fix.
+                            if(event.snap_location.N == -1000.0 || event.snap_location.W == -1000.0){
+                                Log.e("InvPt", "Attempted drawing an invalid point")
+                                continue
+                            }
                             val lat = event.snap_location.N
                             val lng = event.snap_location.W
                             result.add(LatLng(lat, lng))

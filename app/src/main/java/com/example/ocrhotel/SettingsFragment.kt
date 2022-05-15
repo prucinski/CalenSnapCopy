@@ -93,6 +93,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val pExpMth = sh.getInt("premiumExpirationMonth", -1)
         val bExpDay = sh.getInt("businessExpirationDay", -1)
         val bExpMth = sh.getInt("businessExpirationMonth", -1)
+
         if (a.premiumAccount) {
             premiumPreference!!.title = "You are a Premium user"
 
@@ -155,10 +156,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if(a.loggedIn){
             login?.isVisible = false
             logout?.isVisible = true
+            //post-release fix: remove the loop of throwing money at the app
+            //without having an account
+            premiumPreference!!.isSelectable = true
+            businessPreference!!.isSelectable = true
         }
         else{
             login?.isVisible = true
             logout?.isVisible = false
+            premiumPreference!!.isSelectable = false
+            businessPreference!!.isSelectable = false
         }
 
         // Once you implement it, better set it inside the onCreatePref
