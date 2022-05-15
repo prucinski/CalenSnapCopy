@@ -64,14 +64,6 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (!(activity as MainActivity).loggedIn) {
-            // User has to be logged in to scan images
-            val navHostFragment =
-                requireActivity().supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
-            val navController = navHostFragment.navController
-            navController.navigate(R.id.loginFragment)
-        }
-
         imageProvider = ImageProvider(this, activity, this::handleImage)
         binding.uploadImage.setOnClickListener {
             imageProvider.useGallery()

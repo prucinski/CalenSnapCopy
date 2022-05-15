@@ -58,11 +58,11 @@ fun EventTile(
                         modifier = Modifier
                             .background(Color.White)
                     ) {
-                        DropdownMenuItem(onClick = {
-                            expandedMenu = false
-                        }) {
-                            Text("Reschedule")
-                        }
+                        // DropdownMenuItem(onClick = {
+                        //     expandedMenu = false
+                        // }) {
+                        //     Text("Reschedule")
+                        // }
                         DropdownMenuItem(onClick = {
                             expandedMenu = false
                             delDialog = true
